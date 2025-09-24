@@ -1,8 +1,10 @@
-<x-guest-layout>
-    {{-- 
-      Membuat form menjadi satu halaman dengan layout 2 kolom di layar medium ke atas.
-      Menambahkan Alpine.js untuk validasi nomor identitas secara real-time.
-    --}}
+<x-auth>
+
+    {{-- Memberi judul spesifik untuk halaman ini --}}
+    <x-slot name="title">
+        Register - {{ config('app.name', 'Laravel') }}
+    </x-slot>
+
     <div x-data="{
         id_card_type: '{{ old('id_card_type', '') }}',
         id_card_number: '{{ old('id_card_number', '') }}',
@@ -33,7 +35,7 @@
         }
     }" x-init="validateIdNumber()">
 
-        <h2 class="text-2xl font-bold text-center text-white mb-6">Daftar Akun Baru</h2>
+        <h2 class="text-3xl font-bold text-center text-white mb-8 form-gradient-text">Daftar Akun Baru</h2>
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
@@ -41,29 +43,25 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 {{-- Kolom Kiri: Informasi Akun --}}
                 <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-white border-b border-white/20 pb-2">1. Informasi Akun</h3>
-                    <!-- Name -->
+                    <h3 class="text-lg font-semibold text-white border-b border-white/20 pb-2">Informasi Akun</h3>
                     <div>
                         <x-input-label for="name" value="Nama Lengkap" class="text-white/80"/>
                         <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
-                    <!-- Email Address -->
                     <div>
                         <x-input-label for="email" value="Email" class="text-white/80"/>
                         <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
-                    <!-- Password -->
                     <div>
                         <x-input-label for="password" value="Password" class="text-white/80"/>
                         <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
-                    <!-- Confirm Password -->
                     <div>
                         <x-input-label for="password_confirmation" value="Konfirmasi Password" class="text-white/80"/>
                         <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required />
@@ -73,25 +71,23 @@
 
                 {{-- Kolom Kanan: Informasi Tambahan --}}
                 <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-white border-b border-white/20 pb-2">2. Informasi Tambahan (Opsional)</h3>
+                    <h3 class="text-lg font-semibold text-white border-b border-white/20 pb-2">Informasi Tambahan (Opsional)</h3>
 
-                    <!-- Company Name -->
                     <div>
                         <x-input-label for="company_name" value="Nama Perusahaan" class="text-white/80"/>
                         <x-text-input id="company_name" class="block mt-1 w-full" type="text" name="company_name" :value="old('company_name')" />
                     </div>
 
-                    <!-- Position -->
                     <div>
                         <x-input-label for="position" value="Jabatan" class="text-white/80"/>
                         <x-text-input id="position" class="block mt-1 w-full" type="text" name="position" :value="old('position')" />
                     </div>
                     
-                    <!-- ID Card Type -->
                     <div>
                         <x-input-label for="id_card_type" value="Tipe Identitas" class="text-white/80"/>
-                        <select name="id_card_type" id="id_card_type" class="block mt-1 w-full glass-card" 
-                                @change="id_card_type = $event.target.value; validateIdNumber()">
+                        <select name="id_card_type" id="id_card_type" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
+                                x-model="id_card_type" @change="validateIdNumber()">
                             <option value="" @selected(old('id_card_type') == '')>Pilih Tipe</option>
                             <option value="KTP" @selected(old('id_card_type') == 'KTP')>KTP</option>
                             <option value="Passport" @selected(old('id_card_type') == 'Passport')>Passport</option>
@@ -99,18 +95,16 @@
                         </select>
                     </div>
 
-                    <!-- ID Card Number -->
                     <div>
                         <x-input-label for="id_card_number" value="Nomor Identitas" class="text-white/80"/>
                         <x-text-input x-model="id_card_number" @input="validateIdNumber()" id="id_card_number" class="block mt-1 w-full" type="text" name="id_card_number" />
-                        <div x-show="id_error" class="text-red-400 text-sm mt-2" x-text="id_error"></div>
+                        <div x-show="id_error" class="text-red-400 text-sm mt-2" x-text="id_error" style="display: none;"></div>
+                        <x-input-error :messages="$errors->get('id_card_number')" class="mt-2" />
                     </div>
 
-                    <p class="text-center text-xs text-white/60 pt-4">Anda dapat melengkapi atau mengubah informasi ini nanti di halaman profil Anda.</p>
                 </div>
             </div>
 
-            <!-- Tombol Submit -->
             <div class="mt-8">
                 <x-primary-button class="w-full justify-center text-base py-3">
                     {{ __('Daftar Sekarang') }}
@@ -125,4 +119,4 @@
             </a>
         </p>
     </div>
-</x-guest-layout>
+</x-auth>
