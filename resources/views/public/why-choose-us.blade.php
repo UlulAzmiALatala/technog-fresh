@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Why Choose Us - TechnoG Solutions</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- Menggunakan defer agar script tidak memblokir rendering halaman --}}
+    <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="antialiased font-sans bg-white text-gray-800">
     <div x-data="{ openMenu: false }">
@@ -37,33 +36,36 @@
                 </div>
             </section>
 
-            {{-- 2. Pembeda Utama (Key Differentiators) --}}
+            {{-- 2. Pembeda Utama (Key Differentiators) dengan Efek Spotlight --}}
             <section class="py-24 bg-gray-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16">
                         <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">Fondasi Keunggulan Kami</h2>
                         <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Tiga pilar utama yang menjadikan kami mitra tepercaya untuk transformasi digital Anda.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                    
+                    <div x-data="{ active: 0 }" @mouseleave="active = 0" class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                        {{-- Kartu 1 --}}
+                        <div @mouseenter="active = 1" :class="active === 1 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                             <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                                {{-- [IKON BARU] Ikon untuk Proses Terstruktur --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
                             </div>
                             <h3 class="text-xl font-bold mb-2 text-gray-900">Pendekatan Terstruktur</h3>
                             <p class="text-gray-600">Setiap proyek kami jalankan dengan metodologi yang jelas dan teruji, memastikan hasil yang optimal dan tepat waktu.</p>
                         </div>
-                        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        
+                        {{-- Kartu 2 --}}
+                        <div @mouseenter="active = 2" :class="active === 2 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                             <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                                {{-- [IKON BARU] Ikon untuk Hasil Terbukti --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
                             </div>
                             <h3 class="text-xl font-bold mb-2 text-gray-900">Hasil yang Terbukti</h3>
                             <p class="text-gray-600">Portofolio kami adalah bukti nyata kemampuan kami dalam memberikan solusi yang berhasil dan memuaskan klien.</p>
                         </div>
-                        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                        
+                        {{-- Kartu 3 --}}
+                        <div @mouseenter="active = 3" :class="active === 3 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                             <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                                {{-- [IKON BARU] Ikon untuk Tim Kolaboratif --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                             </div>
                             <h3 class="text-xl font-bold mb-2 text-gray-900">Tim Ahli & Kolaboratif</h3>
@@ -85,41 +87,41 @@
                         
                         <div class="lg:sticky lg:top-28">
                             <div class="relative h-96 w-full rounded-2xl shadow-xl overflow-hidden">
-                                <div x-show="activeTab === 1" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                                <div x-show="activeTab === 1" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
                                     <img src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Discovery & Strategy">
                                 </div>
-                                <div x-show="activeTab === 2" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                                <div x-show="activeTab === 2" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
                                     <img src="https://images.unsplash.com/photo-1587440871875-191322ee64b0?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Design & Prototyping">
                                 </div>
-                                <div x-show="activeTab === 3" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                                <div x-show="activeTab === 3" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
                                     <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Development & Testing">
                                 </div>
-                                <div x-show="activeTab === 4" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                                <div x-show="activeTab === 4" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
                                     <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Deployment & Support">
                                 </div>
                             </div>
                         </div>
 
                         <div class="space-y-4">
-                            <div @click="activeTab = 1" :class="activeTab === 1 ? 'bg-white shadow-xl border-indigo-500' : 'bg-gray-100 hover:bg-white'" class="p-6 rounded-lg border-2 cursor-pointer transition-all duration-300">
+                            <div @click="activeTab = 1" :class="activeTab === 1 ? 'bg-white shadow-xl border-l-4 border-indigo-500' : 'bg-gray-50 hover:bg-white border-l-4 border-transparent'" class="p-6 rounded-lg cursor-pointer transition-all duration-300">
                                 <h3 class="text-xl font-bold text-gray-900">1. Discovery & Strategy</h3>
                                 <p :class="activeTab === 1 ? 'max-h-96 mt-2' : 'max-h-0'" class="text-base text-gray-600 overflow-hidden transition-all duration-500 ease-in-out">
                                     Setiap proyek sukses dimulai dengan pemahaman mendalam. Kami melakukan wawancara, analisis data, dan riset pasar untuk mendefinisikan tantangan inti dan menyusun peta jalan strategis menuju kesuksesan.
                                 </p>
                             </div>
-                            <div @click="activeTab = 2" :class="activeTab === 2 ? 'bg-white shadow-xl border-indigo-500' : 'bg-gray-100 hover:bg-white'" class="p-6 rounded-lg border-2 cursor-pointer transition-all duration-300">
+                            <div @click="activeTab = 2" :class="activeTab === 2 ? 'bg-white shadow-xl border-l-4 border-indigo-500' : 'bg-gray-50 hover:bg-white border-l-4 border-transparent'" class="p-6 rounded-lg cursor-pointer transition-all duration-300">
                                 <h3 class="text-xl font-bold text-gray-900">2. Design & Prototyping</h3>
                                 <p :class="activeTab === 2 ? 'max-h-96 mt-2' : 'max-h-0'" class="text-base text-gray-600 overflow-hidden transition-all duration-500 ease-in-out">
                                     Tim kami merancang antarmuka yang intuitif dan menarik. Kami membuat prototipe fungsional yang memungkinkan Anda melihat dan merasakan solusi potensial sejak dini untuk validasi konsep yang cepat.
                                 </p>
                             </div>
-                            <div @click="activeTab = 3" :class="activeTab === 3 ? 'bg-white shadow-xl border-indigo-500' : 'bg-gray-100 hover:bg-white'" class="p-6 rounded-lg border-2 cursor-pointer transition-all duration-300">
+                            <div @click="activeTab = 3" :class="activeTab === 3 ? 'bg-white shadow-xl border-l-4 border-indigo-500' : 'bg-gray-50 hover:bg-white border-l-4 border-transparent'" class="p-6 rounded-lg cursor-pointer transition-all duration-300">
                                 <h3 class="text-xl font-bold text-gray-900">3. Development & Testing</h3>
                                 <p :class="activeTab === 3 ? 'max-h-96 mt-2' : 'max-h-0'" class="text-base text-gray-600 overflow-hidden transition-all duration-500 ease-in-out">
                                     Tim developer kami mengimplementasikan desain menjadi solusi perangkat lunak yang tangguh dan skalabel, diikuti dengan pengujian menyeluruh untuk memastikan kualitas, keamanan, dan performa tertinggi.
                                 </p>
                             </div>
-                            <div @click="activeTab = 4" :class="activeTab === 4 ? 'bg-white shadow-xl border-indigo-500' : 'bg-gray-100 hover:bg-white'" class="p-6 rounded-lg border-2 cursor-pointer transition-all duration-300">
+                            <div @click="activeTab = 4" :class="activeTab === 4 ? 'bg-white shadow-xl border-l-4 border-indigo-500' : 'bg-gray-50 hover:bg-white border-l-4 border-transparent'" class="p-6 rounded-lg cursor-pointer transition-all duration-300">
                                 <h3 class="text-xl font-bold text-gray-900">4. Deployment & Support</h3>
                                 <p :class="activeTab === 4 ? 'max-h-96 mt-2' : 'max-h-0'" class="text-base text-gray-600 overflow-hidden transition-all duration-500 ease-in-out">
                                     Pekerjaan kami tidak berhenti saat peluncuran. Kami terus memantau kinerja, mengukur dampak di dunia nyata, dan memberikan dukungan berkelanjutan untuk memastikan solusi Anda terus optimal dan berkembang.
@@ -150,7 +152,7 @@
                                         <p class="mt-3 text-base text-gray-500">{{ Str::limit($caseStudy->solution, 120) }}</p>
                                         <span class="mt-4 inline-block font-semibold text-indigo-600 group-hover:text-indigo-800">Lihat studi kasus &rarr;</span>
                                     </div>
-                                </a>
+                                a>
                             </div>
                         @empty
                             <p class="md:col-span-3 text-center text-gray-500 py-10">Portofolio akan segera ditambahkan.</p>
@@ -197,4 +199,3 @@
     </div>
 </body>
 </html>
-
