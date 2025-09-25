@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 
 // --- Controller Publik ---
 use App\Http\Controllers\LandingPageController;
-use App\Http\Controllers\ContactController; // <-- Pastikan ini sudah diimport
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Midtrans\NotificationController;
 
 // --- Controller Klien ---
@@ -97,7 +97,7 @@ Route::get('/sitemap.xml', function () {
     });
 
     return $sitemap;
-})->name('sitemap'); // Beri nama rute sitemap untuk referensi lebih mudah
+})->name('sitemap');
 
 // --- RUTE OTENTIKASI ---
 require __DIR__ . '/auth.php';
@@ -163,12 +163,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/chat', fn() => view('admin.chat.index'))->name('chat.index');
 
         // (DIRAPIKAN) --- Fitur Founder & Konten ---
-        // Anda bisa menyederhanakan ini dengan Route::resource
         Route::prefix('founder')->name('founder.')->group(function () {
             // Khusus Founder
             Route::middleware(['role:Founder'])->group(function () {
-                // [MODIFIKASI] Gunakan 'except' pada resource untuk rute yang tidak digunakan
-                Route::resource('users', UserController::class)->except(['create', 'store', 'show']);
+                // [MODIFIKASI] Rute 'show' sekarang diizinkan untuk UserController
+                Route::resource('users', UserController::class)->except(['create', 'store']);
                 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
                 Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
                 Route::get('/management-fee', [ManagementFeeController::class, 'index'])->name('management-fee.index');
@@ -184,11 +183,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         // (DIRAPIKAN) --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
-        // Keduanya memiliki hak akses yang sama
         Route::middleware(['role:Founder|Pemasukan dan Pengeluaran'])->group(function () {
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {
-                // [MODIFIKASI] Gunakan 'except' pada resource untuk rute yang tidak digunakan
                 Route::resource('services', ServiceController::class)->except(['show']);
                 Route::post('services/categories/ajax', [CategoryController::class, 'storeServiceAjax'])->name('services.categories.storeAjax');
                 Route::get('/orders', [OrderManagementController::class, 'index'])->name('orders.index');
@@ -199,7 +196,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // Pengeluaran
             Route::prefix('pengeluaran')->name('pengeluaran.')->group(function () {
-                // [MODIFIKASI] Gunakan 'except' pada resource untuk rute yang tidak digunakan
                 Route::resource('expenses', ExpenseController::class)->except(['show']);
                 Route::post('expense-categories/ajax', [ExpenseCategoryController::class, 'storeAjax'])->name('expense-categories.storeAjax');
                 Route::patch('expense-categories/{category}', [ExpenseCategoryController::class, 'updateAjax'])->name('expense-categories.updateAjax');
