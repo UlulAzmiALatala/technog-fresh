@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Rules\Recaptcha; // <-- 1. TAMBAHKAN IMPORT INI
 
 class RegisteredUserController extends Controller
 {
@@ -36,12 +37,11 @@ class RegisteredUserController extends Controller
             'company_name' => ['nullable', 'string', 'max:255'],
             'position' => ['nullable', 'string', 'max:255'],
             'id_card_type' => ['nullable', 'string', 'max:255'],
-            // [PERUBAHAN] Validasi nomor identitas disesuaikan, contoh: NIK KTP adalah 16 digit numerik
             'id_card_number' => ['nullable', 'string', 'max:20'],
-            // [DIHAPUS] Validasi untuk id_card_image dihapus dari sini
-        ]);
 
-        // [DIHAPUS] Logika untuk menyimpan file gambar dihapus
+            // <-- 2. TAMBAHKAN VALIDASI RECAPTCHA DI SINI
+            'g-recaptcha-response' => ['required', new Recaptcha],
+        ]);
 
         $user = User::create([
             'name' => $request->name,
@@ -51,11 +51,9 @@ class RegisteredUserController extends Controller
             'position' => $request->position,
             'id_card_type' => $request->id_card_type,
             'id_card_number' => $request->id_card_number,
-            // [DIHAPUS] Kolom id_card_image tidak diisi saat registrasi
         ]);
 
         $user->assignRole('Client');
-        // --------------------------
 
         event(new Registered($user));
 

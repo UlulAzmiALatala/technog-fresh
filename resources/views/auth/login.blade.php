@@ -7,7 +7,6 @@
 
     {{-- Seluruh konten form dibungkus dalam div ini untuk membatasi lebarnya --}}
     <div class="max-w-md mx-auto">
-        {{-- Judul disesuaikan dengan tema --}}
         <h2 class="text-3xl font-bold text-center text-white mb-6 form-gradient-text">Login</h2>
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -38,6 +37,12 @@
                         {{ __('Lupa password?') }}
                     </a>
                 @endif
+            </div>
+
+            {{-- TAMBAHAN: reCAPTCHA --}}
+            <div class="mt-6">
+                <div id="recaptcha-container"></div>
+                <x-input-error :messages="$errors->get('g-recaptcha-response')" class="mt-2" />
             </div>
 
             <div class="flex items-center justify-center mt-6">
