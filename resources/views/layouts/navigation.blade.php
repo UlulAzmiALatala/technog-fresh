@@ -20,42 +20,40 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- MODIFIKASI: Gabungkan peran --}}
                     @hasanyrole('Founder|Pemasukan dan Pengeluaran')
                         <x-nav-link :href="route('pemasukan.services.index')" :active="request()->routeIs('pemasukan.services.*')">
-                            {{ __('Layanan') }}
+                            {{ __('Services') }}
                         </x-nav-link>
                         <x-nav-link :href="route('pemasukan.orders.index')" :active="request()->routeIs('pemasukan.orders.*')">
-                            {{ __('Pesanan') }}
+                            {{ __('Orders') }}
                         </x-nav-link>
                         <x-nav-link :href="route('pengeluaran.expenses.index')" :active="request()->routeIs('pengeluaran.expenses.*')">
-                            {{ __('Pengeluaran') }}
+                            {{ __('Expenses') }}
                         </x-nav-link>
                     @endhasanyrole
                     
                     @role('Founder')
                         <x-nav-link :href="route('founder.users.index')" :active="request()->routeIs('founder.users.*')">
-                            {{ __('Pengguna') }}
+                            {{ __('Users') }}
                         </x-nav-link>
                         <x-nav-link :href="route('founder.reports.index')" :active="request()->routeIs('founder.reports.*')">
-                            {{ __('Laporan') }}
+                            {{ __('Reports') }}
                         </x-nav-link>
                     @endrole
 
-                    {{-- MODIFIKASI: Tautan Blog untuk Founder & Konten --}}
                     @hasanyrole('Founder|Konten')
                         <x-nav-link :href="route('founder.posts.index')" :active="request()->routeIs('founder.posts.*')">
                             {{ __('Blog') }}
                         </x-nav-link>
                     @endhasanyrole
 
-                    {{-- MENU UNTUK CLIENT --}}
+                    {{-- MENU FOR CLIENT --}}
                     @role('Client')
                         <x-nav-link :href="route('client.orders')" :active="request()->routeIs('client.orders*')">
-                            {{ __('Riwayat Pesanan') }}
+                            {{ __('Order History') }}
                         </x-nav-link>
                          <x-nav-link :href="route('client.services.list')" :active="request()->routeIs('client.services.list')">
-                            {{ __('Pesan Layanan') }}
+                            {{ __('Order Service') }}
                         </x-nav-link>
                     @endrole
                 </div>
@@ -63,7 +61,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                {{-- Ikon Notifikasi --}}
+                {{-- Notification Icon --}}
                 <button class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 focus:outline-none">
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
                 </button>
@@ -76,7 +74,7 @@
                                     <span class="text-sm font-medium text-gray-600 hover:text-gray-800">{{ Auth::user()->name }}</span>
                                     <div class="ms-2 h-8 w-8 rounded-full overflow-hidden bg-gray-100">
                                         @if(Auth::user()->avatar)
-                                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Foto Profil" class="h-full w-full object-cover">
+                                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Photo" class="h-full w-full object-cover">
                                         @else
                                             <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                                         @endif
@@ -127,25 +125,24 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             
-            {{-- MENU RESPONSIVE UNTUK FOUNDER & ADMIN --}}
             @hasanyrole('Founder|Pemasukan dan Pengeluaran')
                 <x-responsive-nav-link :href="route('pemasukan.services.index')" :active="request()->routeIs('pemasukan.services.*')">
-                    {{ __('Layanan') }}
+                    {{ __('Services') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('pemasukan.orders.index')" :active="request()->routeIs('pemasukan.orders.*')">
-                    {{ __('Pesanan') }}
+                    {{ __('Orders') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('pengeluaran.expenses.index')" :active="request()->routeIs('pengeluaran.expenses.*')">
-                    {{ __('Pengeluaran') }}
+                    {{ __('Expenses') }}
                 </x-responsive-nav-link>
             @endhasanyrole
             
             @role('Founder')
                 <x-responsive-nav-link :href="route('founder.users.index')" :active="request()->routeIs('founder.users.*')">
-                    {{ __('Pengguna') }}
+                    {{ __('Users') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('founder.reports.index')" :active="request()->routeIs('founder.reports.*')">
-                    {{ __('Laporan') }}
+                    {{ __('Reports') }}
                 </x-responsive-nav-link>
             @endrole
 
@@ -155,13 +152,12 @@
                 </x-responsive-nav-link>
             @endhasanyrole
 
-            {{-- MENU RESPONSIVE UNTUK CLIENT --}}
             @role('Client')
                 <x-responsive-nav-link :href="route('client.orders')" :active="request()->routeIs('client.orders*')">
-                    {{ __('Riwayat Pesanan') }}
+                    {{ __('Order History') }}
                 </x-responsive-nav-link>
                  <x-responsive-nav-link :href="route('client.services.list')" :active="request()->routeIs('client.services.list')">
-                    {{ __('Pesan Layanan') }}
+                    {{ __('Order Service') }}
                 </x-responsive-nav-link>
             @endrole
         </div>
@@ -195,6 +191,5 @@
         </div>
     </div>
 </nav>
-
 
 </header>

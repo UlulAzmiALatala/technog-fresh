@@ -1,36 +1,36 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pesan Layanan Kami') }}
+            {{ __('Order Our Services') }}
         </h2>
     </x-slot>
 
     <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Judul dan Deskripsi --}}
+            {{-- Title and Description --}}
             <div class="text-center mb-12">
                 <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-                    Temukan Paket yang Tepat untuk Anda
+                    Find the Right Package for You
                 </h1>
                 <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-                    Pilih kategori layanan, lalu jelajahi paket-paket yang kami rancang khusus untuk kebutuhan Anda.
+                    Select a service category, then explore the packages we've designed specifically for your needs.
                 </p>
             </div>
 
-            {{-- Sistem Tab untuk Kategori --}}
+            {{-- Tab System for Categories --}}
             <div x-data="{ selectedCategory: '{{ $serviceCategories->first()->id ?? '' }}' }">
                 <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-10" aria-label="Tabs">
                     @foreach ($serviceCategories as $category)
                         @php
                             $categoryStyle = '';
                             switch ($category->name) {
-                                case 'IT Solution':
+                                case 'IT SOLUTION':
                                     $categoryStyle = 'background-color:#333F4F; color:#FFFFFF;';
                                     break;
-                                case 'Statistical Solution':
+                                case 'STATISTICAL SOLUTION':
                                     $categoryStyle = 'background-color:#375623; color:#FFFFFF;';
                                     break;
-                                case 'Hybrid Pathway':
+                                case 'HYBRID PATHWAY':
                                     $categoryStyle = 'background-color:#00FFFF; color:#083344;';
                                     break;
                             }
@@ -46,13 +46,13 @@
                     @endforeach
                 </div>
 
-                {{-- Konten untuk Setiap Kategori --}}
+                {{-- Content for Each Category --}}
                 <div class="mt-8">
                     @foreach ($serviceCategories as $category)
                         <div x-show="selectedCategory === '{{ $category->id }}'" style="display:none;"
                              x-data="{ selectedPackage: '' }">
 
-                            {{-- Urutkan paket --}}
+                            {{-- Sort packages --}}
                             @php
                                 $order = ['Silver Plan', 'Gold Plan', 'Platinum Sphere', 'Diamond Class', 'Ultima Partnership', 'Custom Engagement'];
                                 $servicesOrdered = collect($groupedServices[$category->id] ?? [])->sortBy(function($value, $key) use ($order) {
@@ -60,7 +60,7 @@
                                 });
                             @endphp
 
-                            {{-- Tampilan Daftar Paket --}}
+                            {{-- Package List View --}}
                             <div x-show="!selectedPackage" x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -80,28 +80,28 @@
                                             <p class="mt-2 text-sm opacity-80 min-h-[40px]">
                                                 @switch($packageName)
                                                     @case('Diamond Class')
-                                                        Solusi premium untuk kebutuhan paling kompleks.
+                                                        Premium solutions for the most complex needs.
                                                         @break
                                                     @case('Platinum Sphere')
-                                                        Keseimbangan sempurna antara fitur dan harga.
+                                                        The perfect balance between features and price.
                                                         @break
                                                     @case('Gold Plan')
-                                                        Paket populer dengan semua fitur esensial.
+                                                        A popular package with all essential features.
                                                         @break
                                                     @case('Silver Plan')
-                                                        Pilihan tepat untuk memulai dengan budget terjangkau.
+                                                        The right choice to start on a budget.
                                                         @break
                                                     @case('Ultima Partnership')
-                                                        Kemitraan strategis untuk pertumbuhan jangka panjang.
+                                                        A strategic partnership for long-term growth.
                                                         @break
                                                     @case('Custom Engagement')
-                                                        Rancang sendiri layanan yang sesuai kebutuhan Anda.
+                                                        Design your own service to fit your needs.
                                                         @break
                                                 @endswitch
                                             </p>
                                         </div>
                                         <div class="p-6 mt-auto">
-                                            <p class="text-sm opacity-80">Mulai dari</p>
+                                            <p class="text-sm opacity-80">Starting from</p>
                                             <p class="text-3xl font-extrabold">
                                                 ${{ number_format($servicesInPackage->min('price'), 0) }}
                                             </p>
@@ -111,29 +111,29 @@
                                                         @else
                                                             background-color:rgba(255,255,255,0.9);color:#333;
                                                         @endif">
-                                                Lihat Layanan
+                                                View Services
                                             </div>
                                         </div>
                                     </div>
                                 @empty
                                     <p class="col-span-3 text-center text-gray-500 py-12">
-                                        Belum ada paket layanan di kategori ini.
+                                        There are no service packages in this category yet.
                                     </p>
                                 @endforelse
                             </div>
 
-                            {{-- Tampilan Daftar Layanan --}}
+                            {{-- Service List View --}}
                             <div x-show="selectedPackage" x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                  style="display:none;">
 
                                 <div class="flex justify-between items-center mb-6">
                                     <h2 class="text-2xl font-bold text-gray-800">
-                                        Layanan di <span class="text-indigo-600" x-text="selectedPackage"></span>
+                                        Services in <span class="text-indigo-600" x-text="selectedPackage"></span>
                                     </h2>
                                     <button @click="selectedPackage=''"
                                             class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm font-medium transition-colors">
-                                        &larr; Kembali ke Paket
+                                        &larr; Back to Packages
                                     </button>
                                 </div>
 
@@ -143,7 +143,7 @@
                                             <template x-if="selectedPackage === '{{ $packageName }}'">
                                                 <div class="contents">
                                                     @foreach ($servicesInPackage as $service)
-                                                        {{-- Card Layanan --}}
+                                                        {{-- Service Card --}}
                                                         <div class="rounded-3xl shadow-md overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-200"
                                                              style="@switch($packageName)
                                                                         @case('Silver Plan') background-color:#F2F2F2;color:#000;@break
@@ -154,14 +154,12 @@
                                                                         @case('Custom Engagement') background-color:#1E4174;color:#DDA94B;@break
                                                                     @endswitch">
 
-                                                            {{-- Gambar --}}
+                                                            {{-- Image --}}
                                                             <div class="relative h-52">
-                                                                <img src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/400x300/eee/999?text=Layanan' }}"
+                                                                <img src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/400x300/eee/999?text=Service' }}"
                                                                      alt="{{ $service->name }}"
                                                                      class="w-full h-full object-cover">
-
                                                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-
                                                                 <div class="absolute top-4 right-4">
                                                                     <span class="px-4 py-1 text-sm font-semibold rounded-full shadow"
                                                                           style="@switch($packageName)
@@ -175,20 +173,19 @@
                                                                         ${{ number_format($service->price, 0) }}
                                                                     </span>
                                                                 </div>
-
                                                                 <div class="absolute bottom-4 left-4">
                                                                     <h3 class="text-white font-bold text-lg tracking-tight">
                                                                         {{ $service->name }}
                                                                     </h3>
                                                                     <p class="text-gray-200 text-sm">
-                                                                        Estimasi {{ $service->estimated_duration }} {{ $service->duration_unit }}
+                                                                        Est. {{ $service->estimated_duration }} {{ $service->duration_unit }}
                                                                     </p>
                                                                 </div>
                                                             </div>
 
-                                                            {{-- Konten --}}
+                                                            {{-- Content --}}
                                                             <div class="p-6 flex flex-col flex-grow">
-                                                                {{-- Fitur Utama --}}
+                                                                {{-- Main Features --}}
                                                                 <ul class="space-y-2 text-sm leading-relaxed flex-grow">
                                                                     @if($service->features)
                                                                         @foreach(explode("\n", $service->features) as $index => $feature)
@@ -204,25 +201,25 @@
                                                                             @endif
                                                                         @endforeach
                                                                     @else
-                                                                        <li class="text-gray-400 italic">Detail fitur belum tersedia.</li>
+                                                                        <li class="text-gray-400 italic">Feature details not yet available.</li>
                                                                     @endif
                                                                 </ul>
 
-                                                                {{-- Tombol --}}
+                                                                {{-- Buttons --}}
                                                                 <div class="mt-6 flex space-x-3">
                                                                     <a href="{{ route('client.services.show', $service->id) }}"
                                                                        class="flex-1 text-center px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium transition-colors">
-                                                                        Detail
+                                                                        Details
                                                                     </a>
                                                                     
                                                                     <form action="{{ route('client.services.order', $service->id) }}" method="POST" class="flex-1">
                                                                         @csrf
                                                                         <button type="submit"
-                                                                            class="w-full text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-semibold shadow-md transition-all">
-                                                                            Pesan
+                                                                                class="w-full text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-semibold shadow-md transition-all">
+                                                                            Order
                                                                         </button>
                                                                     </form>
-                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     @endforeach

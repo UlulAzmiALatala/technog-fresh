@@ -78,5 +78,7 @@
             </div>
         </div>
     </div>
+
+    @include('layouts.partials.app-footer')
 </x-app-layout>
 

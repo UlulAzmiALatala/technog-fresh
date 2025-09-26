@@ -294,5 +294,7 @@
             });
         });
     </script>
+
+    @include('layouts.partials.app-footer')
 </x-app-layout>
 

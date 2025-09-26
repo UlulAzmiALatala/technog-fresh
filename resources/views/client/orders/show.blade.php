@@ -1,4 +1,4 @@
-{{-- Lokasi: resources/views/client/orders/show.blade.php --}}
+{{-- Location: resources/views/client/orders/show.blade.php --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -7,7 +7,7 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Detail Pesanan #{{ $order->id }}
+                Order Details #{{ $order->id }}
             </h2>
         </div>
     </x-slot>
@@ -15,15 +15,15 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            {{-- Kolom Kiri: Detail & Dokumen --}}
+            {{-- Left Column: Details & Documents --}}
             <div class="lg:col-span-2 space-y-8">
-                {{-- Kartu Detail Pesanan --}}
+                {{-- Order Details Card --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Ringkasan Pesanan</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Order Summary</h3>
                     </div>
                     <div class="p-6 text-gray-900">
-                        {{-- Menggunakan Definition List untuk kerapian --}}
+                        {{-- Using Definition List for neatness --}}
                         <dl class="space-y-4 text-sm">
                             @foreach ($order->detailOrders as $detail)
                                 <div class="flex justify-between items-center">
@@ -33,26 +33,26 @@
                             @endforeach
                             <div class="border-t border-gray-200 !my-6"></div>
                             <div class="flex justify-between text-base">
-                                <dt class="text-gray-800 font-bold">Total Pembayaran</dt>
+                                <dt class="text-gray-800 font-bold">Total Payment</dt>
                                 <dd class="font-bold text-indigo-600">$ {{ number_format($order->total_price, 0, ',', '.') }}</dd>
                             </div>
                         </dl>
                     </div>
                 </div>
 
-                {{-- Kartu Dokumen & Hasil Kerja --}}
+                {{-- Documents & Deliverables Card --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Dokumen & Hasil Kerja</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Documents & Deliverables</h3>
                     </div>
                     <div class="p-6 text-gray-900">
-                        {{-- Ganti dengan data dinamis --}}
+                        {{-- Replace with dynamic data --}}
                         @if(false) 
                             <ul class="space-y-3">
                                 <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors duration-200">
                                     <div class="flex items-center">
                                         <i class="fas fa-file-pdf text-red-500 fa-lg w-6 text-center mr-3"></i>
-                                        <span class="text-sm font-medium text-gray-700">Dokumen-Brief-Proyek.pdf</span>
+                                        <span class="text-sm font-medium text-gray-700">Project-Brief-Document.pdf</span>
                                     </div>
                                     <a href="#" class="inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">Download</a>
                                 </li>
@@ -60,33 +60,34 @@
                         @else
                             <div class="text-center py-10">
                                 <i class="fas fa-folder-open fa-3x text-gray-300"></i>
-                                <p class="mt-4 text-sm text-gray-500">Belum ada dokumen yang diunggah untuk pesanan ini.</p>
+                                <p class="mt-4 text-sm text-gray-500">No documents have been uploaded for this order yet.</p>
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
 
-            {{-- Kolom Kanan: Status & Info --}}
+            {{-- Right Column: Status & Info --}}
             <div class="lg:col-span-1 space-y-8">
-                {{-- Kartu Info Pembayaran --}}
+                {{-- Payment Info Card --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Informasi Pembayaran</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Payment Information</h3>
                     </div>
                     <div class="p-6">
                         <dl class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <dt class="text-gray-600">Metode</dt>
-                                <dd class="font-semibold">{{ $order->payment->method ?? 'Belum Dipilih' }}</dd>
+                                <dt class="text-gray-600">Method</dt>
+                                <dd class="font-semibold">{{ optional($order->payment)->method ?? 'Not Selected' }}</dd>
                             </div>
                             <div class="flex justify-between">
                                 <dt class="text-gray-600">Status</dt>
                                 <dd>
+                                    {{-- [PERBAIKAN] Gunakan optional() untuk mengecek status invoice dengan aman --}}
                                     <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        {{ $order->invoice && $order->invoice->status == 'Lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}
+                                        {{ optional($order->invoice)->status == 'Lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}
                                     ">
-                                        {{ $order->invoice->status ?? 'Belum Lunas' }}
+                                        {{ optional($order->invoice)->status == 'Lunas' ? 'Paid' : 'Unpaid' }}
                                     </span>
                                 </dd>
                             </div>
@@ -94,10 +95,10 @@
                     </div>
                 </div>
 
-                {{-- Kartu Progres Pesanan (Timeline Dinamis) --}}
+                {{-- Order Progress Card (Dynamic Timeline) --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900">Progres Pesanan</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Order Progress</h3>
                     </div>
                     <div class="p-6">
                         @php
@@ -126,11 +127,18 @@
                                         'mb-1 text-base font-semibold',
                                         'text-gray-900' => $index <= $currentStatusIndex,
                                         'text-gray-400' => $index > $currentStatusIndex,
-                                    ])>{{ $status }}</h4>
+                                    ])>
+                                        @switch($status)
+                                            @case('Menunggu Pembayaran') Waiting for Payment @break
+                                            @case('Diproses') In Progress @break
+                                            @case('Selesai') Completed @break
+                                            @default {{ $status }}
+                                        @endswitch
+                                    </h4>
                                     @if ($index == 0 && $order->status == 'Menunggu Pembayaran')
-                                        <p class="text-sm text-gray-500">Menunggu pembayaran Anda.</p>
+                                        <p class="text-sm text-gray-500">Awaiting your payment.</p>
                                     @elseif($index == 1 && $order->status == 'Diproses')
-                                        <p class="text-sm text-gray-500">Tim kami sedang mengerjakan pesanan Anda.</p>
+                                        <p class="text-sm text-gray-500">Our team is working on your order.</p>
                                     @endif
                                 </li>
                             @endforeach
@@ -138,7 +146,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

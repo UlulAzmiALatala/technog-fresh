@@ -42,9 +42,9 @@
                         @php
                             $categoryStyle = '';
                             switch ($category->name) {
-                                case 'IT Solution': $categoryStyle = 'background-color:#333F4F; color:#FFFFFF;'; break;
-                                case 'Statistical Solution': $categoryStyle = 'background-color:#375623; color:#FFFFFF;'; break;
-                                case 'Hybrid Pathway': $categoryStyle = 'background-color:#00FFFF; color:#083344;'; break;
+                                case 'IT SOLUTION': $categoryStyle = 'background-color:#333F4F; color:#FFFFFF;'; break;
+                                case 'STATISTICAL SOLUTION': $categoryStyle = 'background-color:#375623; color:#FFFFFF;'; break;
+                                case 'HYBRID PATHWAY': $categoryStyle = 'background-color:#00FFFF; color:#083344;'; break;
                             }
                         @endphp
                         <button
