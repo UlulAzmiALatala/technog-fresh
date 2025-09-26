@@ -9,7 +9,7 @@
     <x-slot name="hero">
         <section class="relative text-white overflow-hidden">
             <div class="absolute inset-0">
-                <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80" alt="Collaborative Team" class="w-full h-full object-cover">
+                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80" alt="Collaborative Team" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/50 to-transparent"></div>
             </div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">

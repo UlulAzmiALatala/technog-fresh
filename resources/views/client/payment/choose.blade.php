@@ -91,7 +91,7 @@
                                             <div>
                                                 <label for="dp_amount" class="block text-sm font-medium text-gray-700">Jumlah DP</label>
                                                 <div class="mt-1 flex rounded-md shadow-sm">
-                                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">Rp</span>
+                                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">$</span>
                                                     {{-- (DIPERBAIKI) Mengganti .debounce dengan .lazy untuk UX yang lebih baik --}}
                                                     <input type="number" id="dp_amount" name="dp_amount" x-model.lazy.number="dpAmount" class="block w-full rounded-none border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" step="10000">
                                                     <span class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-800 text-sm font-semibold" x-text="`${dpPercentage.toFixed(0)}%`"></span>
@@ -145,7 +145,7 @@
                                     @foreach ($order->detailOrders as $detail)
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600 w-3/4">{{ $detail->service->name }} (x{{ $detail->quantity }})</span>
-                                        <span class="font-medium text-right">Rp {{ number_format($detail->price * $detail->quantity, 0, ',', '.') }}</span>
+                                        <span class="font-medium text-right">$ {{ number_format($detail->price * $detail->quantity, 0, ',', '.') }}</span>
                                     </div>
                                     @endforeach
 

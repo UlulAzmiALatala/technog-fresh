@@ -12,7 +12,7 @@
                 <img src="{{ asset('images/backgrounds/contact-hero.jpg') }}" alt="Contact Background" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gray-900/50"></div>
             </div>
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-36 text-center z-10">
                 <div x-data="{}" x-init="$nextTick(() => {
                     $refs.heading.classList.remove('opacity-0', 'translate-y-4');
                     setTimeout(() => $refs.paragraph.classList.remove('opacity-0', 'translate-y-4'), 200);

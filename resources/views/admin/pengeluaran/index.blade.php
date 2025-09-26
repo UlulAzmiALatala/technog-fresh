@@ -66,7 +66,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $expense->description }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $expense->category->name ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">$ {{ number_format($expense->amount, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <a href="{{ route('admin.pengeluaran.expenses.edit', $expense->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                         <form class="inline-block ml-2" action="{{ route('admin.pengeluaran.expenses.destroy', $expense->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?');">

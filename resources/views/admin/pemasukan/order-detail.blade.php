@@ -47,7 +47,7 @@
                                             {{-- Gambar ini sekarang akan memicu modal canggih --}}
                                             <img @click="open('{{ asset('storage/' . $payment->payment_proof) }}')" src="{{ asset('storage/' . $payment->payment_proof) }}" alt="Bukti Pembayaran" class="w-20 h-20 object-cover rounded-md border mr-4 cursor-pointer hover:opacity-80 transition-opacity">
                                             <div>
-                                                <p class="font-bold text-gray-800">Rp {{ number_format($payment->amount, 0, ',', '.') }}</p>
+                                                <p class="font-bold text-gray-800">$ {{ number_format($payment->amount, 0, ',', '.') }}</p>
                                                 <p class="text-xs text-gray-500">Diajukan pada: {{ $payment->created_at->format('d M Y, H:i') }}</p>
                                                 @if($payment->payment_date)
                                                     <p class="text-xs text-green-600 font-medium">Diverifikasi pada: {{ \Carbon\Carbon::parse($payment->payment_date)->format('d M Y, H:i') }}</p>
@@ -138,17 +138,17 @@
                                </div>
                                <div class="flex justify-between items-center">
                                    <dt class="text-gray-500">Total Tagihan</dt>
-                                   <dd class="font-semibold text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</dd>
+                                   <dd class="font-semibold text-gray-900">$ {{ number_format($order->total_price, 0, ',', '.') }}</dd>
                                </div>
                                <div class="flex justify-between items-center">
                                    <dt class="text-gray-500">Telah Diverifikasi</dt>
-                                   <dd class="font-semibold text-green-600">Rp {{ number_format($amountPaid, 0, ',', '.') }}</dd>
+                                   <dd class="font-semibold text-green-600">$ {{ number_format($amountPaid, 0, ',', '.') }}</dd>
                                </div>
                                <div class="border-t my-2"></div>
                                <div class="flex justify-between items-center text-base">
                                    <dt class="font-bold text-gray-800">Sisa Tagihan</dt>
                                    <dd class="font-bold {{ $remainingAmount > 0 ? 'text-red-600' : 'text-gray-800' }}">
-                                       Rp {{ number_format($remainingAmount, 0, ',', '.') }}
+                                       $ {{ number_format($remainingAmount, 0, ',', '.') }}
                                    </dd>
                                </div>
                            </dl>
@@ -189,7 +189,7 @@
                                 @forelse ($order->detailOrders as $detail)
                                     <li class="text-sm text-gray-700 flex justify-between items-center">
                                         <span>{{ $detail->service->name }} (x{{$detail->quantity}})</span>
-                                        <span class="font-medium">Rp {{ number_format($detail->price, 0, ',', '.') }}</span>
+                                        <span class="font-medium">$ {{ number_format($detail->price, 0, ',', '.') }}</span>
                                     </li>
                                 @empty
                                     <li class="text-sm text-gray-500">Tidak ada detail layanan.</li>

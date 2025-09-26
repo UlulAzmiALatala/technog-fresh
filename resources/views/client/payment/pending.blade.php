@@ -54,7 +54,7 @@
                                     Jumlah Diajukan
                                 </dt>
                                 <dd class="text-gray-800">
-                                    Rp {{ number_format(optional($lastPayment)->amount ?? 0, 0, ',', '.') }}
+                                    $ {{ number_format(optional($lastPayment)->amount ?? 0, 0, ',', '.') }}
                                 </dd>
                             </div>
                         </dl>

@@ -99,7 +99,7 @@
                         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                             <div>
                                 <span class="text-sm font-medium text-gray-600">Mulai dari</span>
-                                <p class="text-4xl font-extrabold text-indigo-600">Rp {{ number_format($service->price, 0, ',', '.') }}</p>
+                                <p class="text-4xl font-extrabold text-indigo-600">$ {{ number_format($service->price, 0, ',', '.') }}</p>
                             </div>
                             <div class="text-left md:text-right">
                                 <span class="text-sm font-medium text-gray-600">Estimasi Pengerjaan</span>

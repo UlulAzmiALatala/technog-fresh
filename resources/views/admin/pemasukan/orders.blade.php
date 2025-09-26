@@ -66,7 +66,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $order->id }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $order->user->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$ {{ number_format($order->total_price, 0, ',', '.') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
                                             @if($order->payment_type == 'dp')
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">DP</span>

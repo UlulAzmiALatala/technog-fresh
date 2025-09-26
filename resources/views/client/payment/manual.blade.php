@@ -20,7 +20,7 @@
                     <div class="p-6 space-y-6">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Silakan lakukan transfer sejumlah:</p>
-                            <p class="font-bold text-3xl text-indigo-600">Rp {{ number_format($amountToPay, 0, ',', '.') }}</p>
+                            <p class="font-bold text-3xl text-indigo-600">$ {{ number_format($amountToPay, 0, ',', '.') }}</p>
                         </div>
                         <div class="border-t"></div>
                         <div>

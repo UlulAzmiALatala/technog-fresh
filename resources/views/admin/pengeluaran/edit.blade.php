@@ -103,7 +103,7 @@
 
                             {{-- Jumlah (Amount) --}}
                             <div>
-                                <label for="amount" class="block font-medium text-sm text-gray-700">Jumlah (Rp)</label>
+                                <label for="amount" class="block font-medium text-sm text-gray-700">Jumlah ($)</label>
                                 <input type="number" name="amount" id="amount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" value="{{ old('amount', $expense->amount) }}" required>
                             </div>
                         </div>

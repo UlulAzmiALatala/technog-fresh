@@ -26,16 +26,16 @@
                             <div class="p-6 space-y-4">
                                 <div class="flex justify-between text-base">
                                     <span class="text-gray-600">Total Harga Pesanan</span>
-                                    <span class="font-medium text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                                    <span class="font-medium text-gray-900">$ {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="flex justify-between text-base">
                                     <span class="text-gray-600">Sudah Dibayar (DP)</span>
-                                    <span class="font-medium text-green-600">- Rp {{ number_format($amountPaid, 0, ',', '.') }}</span>
+                                    <span class="font-medium text-green-600">- $ {{ number_format($amountPaid, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="border-t border-dashed my-4"></div>
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-xl text-red-600">Sisa Tagihan</span>
-                                    <span class="font-bold text-3xl text-red-600">Rp {{ number_format($remainingAmount, 0, ',', '.') }}</span>
+                                    <span class="font-bold text-3xl text-red-600">$ {{ number_format($remainingAmount, 0, ',', '.') }}</span>
                                 </div>
                             </div>
                         </div>

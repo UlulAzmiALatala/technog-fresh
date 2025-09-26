@@ -77,7 +77,7 @@
                             <div>
                                 <h3 class="text-2xl font-bold text-white">{{ $service->name }}</h3>
                                 <div class="mt-2 flex justify-between items-center">
-                                    <p class="text-lg font-semibold text-white">Rp {{ number_format($service->price, 0, ',', '.') }}</p>
+                                    <p class="text-lg font-semibold text-white">$ {{ number_format($service->price, 0, ',', '.') }}</p>
                                 </div>
                             </div>
                         </div>
