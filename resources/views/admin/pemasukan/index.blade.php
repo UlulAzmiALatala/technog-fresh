@@ -3,10 +3,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Manajemen Layanan') }}
+                {{ __('Service Management') }}
             </h2>
             <a href="{{ route('admin.pemasukan.services.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
-                + Tambah Layanan Baru
+                + Add New Service
             </a>
         </div>
     </x-slot>
@@ -22,18 +22,18 @@
             <form action="{{ route('admin.pemasukan.services.index') }}" method="GET">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
-                        <label for="search" class="sr-only">Cari</label>
+                        <label for="search" class="sr-only">Search</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                             </div>
-                            <input type="text" name="search" id="search" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md" placeholder="Cari berdasarkan nama layanan..." value="{{ request('search') }}">
+                            <input type="text" name="search" id="search" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md" placeholder="Search by service name..." value="{{ request('search') }}">
                         </div>
                     </div>
                     <div>
-                        <label for="package_plan" class="sr-only">Filter Paket</label>
+                        <label for="package_plan" class="sr-only">Filter Package</label>
                         <select id="package_plan" name="package_plan" class="block w-full rounded-md border-gray-300" onchange="this.form.submit()">
-                            <option value="">Semua Paket</option>
+                            <option value="">All Packages</option>
                             <option value="Silver Plan" @selected(request('package_plan') == 'Silver Plan')>Silver Plan</option>
                             <option value="Gold Plan" @selected(request('package_plan') == 'Gold Plan')>Gold Plan</option>
                             <option value="Platinum Sphere" @selected(request('package_plan') == 'Platinum Sphere')>Platinum Sphere</option>
@@ -53,19 +53,19 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Layanan
+                                    Service Name
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Kategori
+                                    Category
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Paket
+                                    Package
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Harga
+                                    Price
                                 </th>
                                 <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Aksi</span>
+                                    <span class="sr-only">Actions</span>
                                 </th>
                             </tr>
                         </thead>
@@ -106,12 +106,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <a href="{{ route('admin.pemasukan.services.edit', $service->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                         
-                                        {{-- PERBAIKAN: Menambahkan tombol hapus --}}
-                                        <form class="inline-block ml-2" action="{{ route('admin.pemasukan.services.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan ini?');">
+                                        <form class="inline-block ml-2" action="{{ route('admin.pemasukan.services.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900">
-                                                Hapus
+                                                Delete
                                             </button>
                                         </form>
                                     </td>
@@ -119,7 +118,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                        Tidak ada layanan yang cocok dengan filter.
+                                        No services match the filters.
                                     </td>
                                 </tr>
                             @endforelse
@@ -135,4 +134,3 @@
         </div>
     </div>
 </x-admin-layout>
-

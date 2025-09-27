@@ -24,8 +24,49 @@
     
     {{-- Slot untuk library tambahan (misal: particles.js) --}}
     {{ $scripts ?? '' }}
+
+    {{-- CSS untuk Preloader --}}
+        <style>
+            #preloader {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-color: #f9fafb; z-index: 9999; display: flex;
+                justify-content: center; align-items: center; flex-direction: column;
+                gap: 1.5rem; opacity: 1; transition: opacity 0.75s ease, visibility 0.75s ease;
+            }
+            #preloader.hidden { opacity: 0; visibility: hidden; }
+            @media (prefers-color-scheme: dark) {
+                #preloader { background-color: #111827; }
+                #preloader .preloader-text { color: #9ca3af; }
+            }
+            .node-network { position: relative; width: 120px; height: 120px; }
+            .node {
+                width: 12px; height: 12px; background-color: #4f46e5;
+                border-radius: 50%; position: absolute; top: 50%; left: 50%;
+                transform: translate(-50%, -50%);
+                animation: move-and-connect 4s ease-in-out infinite; opacity: 0;
+            }
+            .node:nth-child(1) { animation-delay: 0s; } .node:nth-child(2) { animation-delay: -0.8s; }
+            .node:nth-child(3) { animation-delay: -1.6s; } .node:nth-child(4) { animation-delay: -2.4s; }
+            .node:nth-child(5) { animation-delay: -3.2s; }
+            .preloader-text { font-size: 0.875rem; color: #6b7280; font-family: 'Figtree', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+            @keyframes move-and-connect {
+                0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+                25% { transform: translate(-100%, -100%) scale(1.2); opacity: 1; }
+                50% { transform: translate(0, 50%) scale(0.7); opacity: 1; }
+                75% { transform: translate(100%, -100%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            }
+        </style>
 </head>
 <body class="antialiased font-sans bg-gray-50 text-gray-900">
+
+    <div id="preloader">
+        <div class="node-network">
+            <div class="node"></div><div class="node"></div><div class="node"></div><div class="node"></div><div class="node"></div>
+        </div>
+        <p class="preloader-text">Processing Data...</p>
+    </div>
+
     <div x-data="{ openMenu: false }">
         @include('layouts.public-navigation')
         
@@ -57,6 +98,17 @@
             </template>
         </div>
     </div>
+
+    <script>
+        // Preloader script
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('hidden');
+                setTimeout(() => { preloader.style.display = 'none'; }, 800);
+            }
+        });
+    </script>
     
     {{-- Slot untuk skrip spesifik halaman --}}
     {{ $pageScripts ?? '' }}

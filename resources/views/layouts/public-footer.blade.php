@@ -5,7 +5,7 @@
             {{-- Kolom Kiri: Logo & Info --}}
             <div class="space-y-8 xl:col-span-1">
                 <a href="{{ route('home') }}">
-                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" class="h-28 w-auto">
+                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" class="h-16 w-auto">
                 </a>
                 <p class="text-gray-400 text-base">
                     Turn your digital ideas into precision technology solutions, powered by data.

@@ -60,7 +60,7 @@
             <div class="node-network">
                 <div class="node"></div><div class="node"></div><div class="node"></div><div class="node"></div><div class="node"></div>
             </div>
-            <p class="preloader-text">Memproses Data...</p>
+            <p class="preloader-text">Processing Data...</p>
         </div>
 
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

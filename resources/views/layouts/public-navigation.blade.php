@@ -4,8 +4,8 @@
             
             {{-- Logo --}}
             <div class="flex-shrink-0">
-                <a href="{{ route('home') }}" title="TechnoG Home">
-                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" class="h-24 w-auto">
+                <a href="{{ route('home') }}" title="TechnoG Solutions Logo">
+                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" class="h-16 w-auto">
                 </a>
             </div>
             
