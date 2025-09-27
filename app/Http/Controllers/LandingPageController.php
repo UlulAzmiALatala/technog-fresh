@@ -12,14 +12,14 @@ class LandingPageController extends Controller
 {
     public function index()
     {
-        // Ambil 3 layanan terbaru
-        $services = Service::latest()->take(3)->get();
+        // Ambil 3 layanan terbaru BESERTA KATEGORINYA
+        $services = Service::with('category')->latest()->take(3)->get();
 
-        // Ambil 3 artikel blog terbaru yang sudah di-publish
-        $posts = Post::where('status', 'PUBLISHED')->latest()->take(3)->get();
+        // Ambil 3 artikel blog terbaru BESERTA KATEGORINYA
+        $posts = Post::with('category')->where('status', 'PUBLISHED')->latest()->take(3)->get();
 
-        // [PERBAIKAN] Hapus filter status karena kolomnya tidak ada
-        $caseStudies = CaseStudy::latest()->take(2)->get();
+        // Ambil 2 studi kasus terbaru BESERTA KATEGORINYA
+        $caseStudies = CaseStudy::with('category')->latest()->take(2)->get();
 
         return view('welcome', compact('services', 'posts', 'caseStudies'));
     }
@@ -54,9 +54,7 @@ class LandingPageController extends Controller
 
     public function portfolio()
     {
-        // [PERBAIKAN] Mengambil data studi kasus dan mengirimkannya
-        // ke view dengan nama variabel yang benar ('caseStudies').
-        $caseStudies = CaseStudy::latest()->get();
+        $caseStudies = CaseStudy::with('category')->latest()->paginate(10); // Gunakan paginate jika datanya banyak
         return view('public.portfolio', compact('caseStudies'));
     }
 

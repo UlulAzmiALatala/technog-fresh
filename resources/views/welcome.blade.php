@@ -45,11 +45,10 @@
             </div>
 
             {{-- Indikator Scroll Down --}}
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-30">
-                <a href="#featured-services" class="animate-bounce text-white/50 hover:text-white transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-                </a>
-            </div>
+            <a href="#featured-services" class="animate-bounce text-white/50 hover:text-white transition-colors">
+                <span class="sr-only">Lompat ke layanan unggulan</span>
+                <svg xmlns="http://www.w.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+            </a>
         </div>
     </section>
     </x-slot>
