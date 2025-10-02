@@ -15,11 +15,18 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        // [BAGIAN BARU] Menghitung data statistik untuk kartu
+        $totalUsers = User::count();
+        $newUsersThisMonth = User::where('created_at', '>=', now()->startOfMonth())->count();
+        $totalClients = User::role('Client')->count();
+        $totalAdmins = User::whereHas('roles', function ($query) {
+            $query->where('name', '!=', 'Client');
+        })->count();
+
+        // Kode Anda yang sudah ada
         $roles = Role::all();
-        // Mulai query, ambil semua user kecuali diri sendiri
         $query = User::where('id', '!=', Auth::id())->with('roles');
 
-        // Filter berdasarkan pencarian nama atau email
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -27,16 +34,24 @@ class UserController extends Controller
             });
         }
 
-        // Filter berdasarkan peran (role)
         if ($request->filled('role')) {
             $query->whereHas('roles', function ($q) use ($request) {
                 $q->where('name', $request->role);
             });
         }
 
-        $users = $query->latest()->get();
+        // [MODIFIKASI] Menggunakan paginate() agar pagination berfungsi
+        $users = $query->latest()->paginate(12)->withQueryString();
 
-        return view('admin.founder.users.index', compact('users', 'roles'));
+        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
+        return view('admin.founder.users.index', compact(
+            'users',
+            'roles',
+            'totalUsers',
+            'newUsersThisMonth',
+            'totalClients',
+            'totalAdmins'
+        ));
     }
 
     /**

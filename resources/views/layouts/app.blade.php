@@ -25,13 +25,21 @@
         <style>
             #preloader {
                 position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background-color: #f9fafb; z-index: 9999; display: flex;
+                /* [PERUBAHAN] Ganti background solid menjadi semi-transparan dengan blur */
+                background-color: rgba(249, 250, 251, 0.8); /* bg-gray-50 dengan 80% opacity */
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px); /* Untuk support browser Safari */
+                
+                z-index: 9999; display: flex;
                 justify-content: center; align-items: center; flex-direction: column;
                 gap: 1.5rem; opacity: 1; transition: opacity 0.75s ease, visibility 0.75s ease;
             }
             #preloader.hidden { opacity: 0; visibility: hidden; }
             @media (prefers-color-scheme: dark) {
-                #preloader { background-color: #111827; }
+                #preloader {
+                    /* [PERUBAHAN] Ganti background solid menjadi semi-transparan dengan blur untuk mode gelap */
+                    background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 dengan 80% opacity */
+                }
                 #preloader .preloader-text { color: #9ca3af; }
             }
             .node-network { position: relative; width: 120px; height: 120px; }

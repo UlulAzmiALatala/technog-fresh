@@ -13,57 +13,54 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Tentukan rentang tanggal
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        // --- 1. Tentukan Periode Saat Ini ---
+        $startDate = Carbon::parse($request->input('start_date', now()->startOfMonth()))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date', now()->endOfMonth()))->endOfDay();
 
-        // --- Data untuk Kartu & Tabel ---
-        $pendapatanDetails = Order::where('status', 'Selesai')
-            ->whereBetween('updated_at', [$startDate, Carbon::parse($endDate)->endOfDay()])
-            ->with('user')
-            ->get();
+        // --- 2. Tentukan Periode Sebelumnya ---
+        $durationInDays = $startDate->diffInDays($endDate);
+        $prevStartDate = $startDate->copy()->subDays($durationInDays + 1);
+        $prevEndDate = $endDate->copy()->subDays($durationInDays + 1);
 
-        $pengeluaranDetails = Expense::with('category')
-            ->whereBetween('expense_date', [$startDate, $endDate])
-            ->get();
+        // --- 3. Hitung Metrik Periode Saat Ini ---
+        $pendapatanDetails = Order::where('status', 'Selesai')->whereBetween('updated_at', [$startDate, $endDate])->with('user')->get();
+        $pengeluaranDetails = Expense::with('category')->whereBetween('expense_date', [$startDate, $endDate])->get();
 
         $totalPendapatan = $pendapatanDetails->sum('total_price');
         $totalPengeluaran = $pengeluaranDetails->sum('amount');
         $labaBersih = $totalPendapatan - $totalPengeluaran;
+        $totalOrders = Order::whereBetween('created_at', [$startDate, $endDate])->count();
 
-        // --- Data untuk Grafik ---
-        // 1. Grafik Komposisi Pengeluaran (Pie Chart)
-        $expenseByCategory = $pengeluaranDetails->groupBy('category.name')
-            ->map(fn($group) => $group->sum('amount'));
+        // --- 4. Hitung Metrik Periode Sebelumnya ---
+        $prevTotalPendapatan = Order::where('status', 'Selesai')->whereBetween('updated_at', [$prevStartDate, $prevEndDate])->sum('total_price');
+        $prevTotalPengeluaran = Expense::whereBetween('expense_date', [$prevStartDate, $prevEndDate])->sum('amount');
+        $prevLabaBersih = $prevTotalPendapatan - $prevTotalPengeluaran;
+        $prevTotalOrders = Order::whereBetween('created_at', [$prevStartDate, $prevEndDate])->count();
 
-        // 2. Grafik Tren Keuangan (Line Chart)
-        $period = CarbonPeriod::create($startDate, $endDate);
+        // --- 5. Hitung Persentase Perubahan ---
+        // Logika ini mencegah error "division by zero"
+        $pendapatanChange = ($prevTotalPendapatan > 0) ? (($totalPendapatan - $prevTotalPendapatan) / $prevTotalPendapatan) * 100 : ($totalPendapatan > 0 ? 100 : 0);
+        $pengeluaranChange = ($prevTotalPengeluaran > 0) ? (($totalPengeluaran - $prevTotalPengeluaran) / $prevTotalPengeluaran) * 100 : ($totalPengeluaran > 0 ? 100 : 0);
+        $labaBersihChange = ($prevLabaBersih != 0) ? (($labaBersih - $prevLabaBersih) / abs($prevLabaBersih)) * 100 : ($labaBersih != 0 ? 100 : 0);
+        $ordersChange = ($prevTotalOrders > 0) ? (($totalOrders - $prevTotalOrders) / $prevTotalOrders) * 100 : ($totalOrders > 0 ? 100 : 0);
+
+        // --- 6. Data untuk Grafik (Kode Anda yang sudah ada, sedikit disesuaikan) ---
+        $expenseByCategory = $pengeluaranDetails->groupBy('category.name')->map(fn($group) => $group->sum('amount'));
+
+        $period = CarbonPeriod::create($startDate->toDateString(), $endDate->toDateString());
         $dates = collect($period)->map(fn($date) => $date->format('d M'));
 
-        $datesWithData = $dates->mapWithKeys(fn($date) => [$date => ['pendapatan' => 0, 'pengeluaran' => 0]]);
-
-        $pendapatanPerHari = Order::where('status', 'Selesai')
-            ->whereBetween('updated_at', [$startDate, Carbon::parse($endDate)->endOfDay()])
-            ->get()
-            ->groupBy(fn($order) => Carbon::parse($order->updated_at)->format('d M'))
+        $pendapatanPerHari = $pendapatanDetails->groupBy(fn($order) => Carbon::parse($order->updated_at)->format('d M'))
             ->map(fn($group) => $group->sum('total_price'));
 
-        $pengeluaranPerHari = Expense::whereBetween('expense_date', [$startDate, $endDate])
-            ->get()
-            ->groupBy(fn($expense) => Carbon::parse($expense->expense_date)->format('d M'))
+        $pengeluaranPerHari = $pengeluaranDetails->groupBy(fn($expense) => Carbon::parse($expense->expense_date)->format('d M'))
             ->map(fn($group) => $group->sum('amount'));
 
-        $mergedData = $datesWithData->map(function ($value, $key) use ($pendapatanPerHari, $pengeluaranPerHari) {
-            $value['pendapatan'] = $pendapatanPerHari->get($key, 0);
-            $value['pengeluaran'] = $pengeluaranPerHari->get($key, 0);
-            return $value;
-        });
+        $chartPendapatan = $dates->map(fn($date) => $pendapatanPerHari->get($date, 0))->values();
+        $chartPengeluaran = $dates->map(fn($date) => $pengeluaranPerHari->get($date, 0))->values();
+        $chartLabaBersih = $chartPendapatan->map(fn($p, $i) => $p - $chartPengeluaran[$i]);
 
-        $chartPendapatan = $mergedData->pluck('pendapatan');
-        $chartPengeluaran = $mergedData->pluck('pengeluaran');
-        $chartLabaBersih = $mergedData->map(fn($data) => $data['pendapatan'] - $data['pengeluaran']);
-
-        // Logika untuk Management Fee
+        // --- 7. Logika Distribusi & Management Fee (Kode Anda yang sudah ada) ---
         $distribusi = [
             'Founder' => 0.15,
             'Co Founder' => 0.05,
@@ -74,30 +71,33 @@ class ReportController extends Controller
             'Pengembangan' => 0.075,
             'Pelaksana Project' => 0.40,
         ];
-
         $hasilDistribusi = [];
         foreach ($distribusi as $pos => $persentase) {
             $hasilDistribusi[$pos] = $labaBersih > 0 ? $labaBersih * $persentase : 0;
         }
-
-        // PERBAIKAN: Hitung total management fee
         $totalManagementFee = $hasilDistribusi['Founder'] + $hasilDistribusi['Co Founder'] + $hasilDistribusi['Allah'];
 
+        // --- 8. Kirim semua variabel ke view ---
         return view('admin.founder.reports.index', compact(
             'startDate',
             'endDate',
-            'pendapatanDetails',
-            'pengeluaranDetails',
             'totalPendapatan',
             'totalPengeluaran',
             'labaBersih',
+            'totalManagementFee',
+            'totalOrders',
+            'pendapatanChange',
+            'pengeluaranChange',
+            'labaBersihChange',
+            'ordersChange',
+            'pendapatanDetails',
+            'pengeluaranDetails',
             'expenseByCategory',
             'dates',
             'chartPendapatan',
             'chartPengeluaran',
             'chartLabaBersih',
-            'hasilDistribusi',
-            'totalManagementFee' // Kirim data baru
+            'hasilDistribusi'
         ));
     }
 

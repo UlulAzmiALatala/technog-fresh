@@ -11,11 +11,6 @@
     </x-slot>
 
     <div class="mt-4">
-        @if (session('success'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
-        @endif
 
         {{-- Search & Filter Features --}}
         <div class="mb-6 bg-white p-4 rounded-lg shadow-sm">

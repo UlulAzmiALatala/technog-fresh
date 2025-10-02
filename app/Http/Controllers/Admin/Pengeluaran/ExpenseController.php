@@ -15,23 +15,29 @@ class ExpenseController extends Controller
      */
     public function index(Request $request)
     {
-        // PERBAIKAN: Ambil kategori dengan tipe 'expense' untuk filter
-        $categories = Category::where('type', 'expense')->get();
-        $query = Expense::with(['category', 'user']);
+        // [BAGIAN BARU] Menghitung total pengeluaran bulan ini
+        $totalThisMonth = Expense::whereBetween('expense_date', [now()->startOfMonth(), now()->endOfMonth()])->sum('amount');
 
-        // Filter berdasarkan pencarian deskripsi
+        // Kode Anda yang sudah ada
+        $categories = Category::where('type', 'expense')->get();
+        $query = Expense::with(['category', 'user'])->latest('expense_date'); // Diurutkan berdasarkan tanggal pengeluaran
+
         if ($request->filled('search')) {
             $query->where('description', 'like', '%' . $request->search . '%');
         }
 
-        // Filter berdasarkan kategori
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        $expenses = $query->paginate(10);
+        $expenses = $query->paginate(10)->withQueryString();
 
-        return view('admin.pengeluaran.index', compact('expenses', 'categories'));
+        // [MODIFIKASI] Mengirim variabel baru ke view
+        return view('admin.pengeluaran.index', compact(
+            'expenses',
+            'categories',
+            'totalThisMonth'
+        ));
     }
 
     /**

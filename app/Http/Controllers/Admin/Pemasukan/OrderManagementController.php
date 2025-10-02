@@ -15,6 +15,13 @@ class OrderManagementController extends Controller
      */
     public function index(Request $request)
     {
+        // [BAGIAN BARU] Menghitung data statistik untuk kartu di atas
+        $totalOrders = Order::count();
+        $pendingConfirmationCount = Order::where('status', 'Menunggu Konfirmasi')->count();
+        $inProgressCount = Order::where('status', 'Diproses')->count();
+        $totalRevenue = Order::where('status', 'Selesai')->sum('total_price');
+
+        // Logika query Anda yang sudah ada
         $query = Order::with('user', 'invoice')->latest();
 
         if ($request->filled('search')) {
@@ -32,9 +39,15 @@ class OrderManagementController extends Controller
 
         $orders = $query->paginate(10)->withQueryString();
 
-        return view('admin.pemasukan.orders', compact('orders'));
+        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
+        return view('admin.pemasukan.orders', compact(
+            'orders',
+            'totalOrders',
+            'pendingConfirmationCount',
+            'inProgressCount',
+            'totalRevenue'
+        ));
     }
-
     /**
      * Menampilkan halaman detail pesanan dengan ringkasan pembayaran.
      */

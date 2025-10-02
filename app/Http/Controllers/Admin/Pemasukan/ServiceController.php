@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Pemasukan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
-use App\Models\Category; // PERBAIKAN: Import model Category
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,21 +15,31 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
+        // [BAGIAN BARU] Menghitung data statistik
+        $totalServices = Service::count();
+        $totalCategories = Category::where('type', 'service')->count();
+
+        // Logika query Anda yang sudah ada
         $query = Service::with('category')->latest();
 
-        // Logika untuk fitur pencarian
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // Logika untuk fitur filter paket
         if ($request->filled('package_plan')) {
             $query->where('package_plan', $request->package_plan);
         }
 
-        $services = $query->paginate(10);
+        // [MODIFIKASI] Menambahkan withQueryString() agar filter tidak hilang saat ganti halaman
+        $services = $query->paginate(10)->withQueryString();
 
-        return view('admin.pemasukan.index', compact('services'));
+        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
+        // dan menyesuaikan path view Anda
+        return view('admin.pemasukan.index', compact(
+            'services',
+            'totalServices',
+            'totalCategories'
+        ));
     }
 
     /**
