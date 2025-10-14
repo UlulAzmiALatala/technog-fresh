@@ -24,10 +24,17 @@ class Order extends Model
         'status',
         'snap_token',
         'notes',
-        'payment_type', // <-- DITAMBAHKAN
-        'dp_amount',    // <-- DITAMBAHKAN
-    ];
+        'payment_type',
+        'dp_amount',
 
+        'progress',
+        'due_date',
+        'delivery_option',
+        'discount_code',
+        'discount_amount',
+        'negotiated_price_fast',
+        'negotiated_price_express',
+    ];
     /**
      * Get the user that owns the order.
      */

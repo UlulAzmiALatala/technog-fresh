@@ -136,6 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/profile', [ClientProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ClientProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::post('/validate-discount', [PaymentController::class, 'validateDiscountCode'])->name('payment.validate_discount');
         // Rute Pembayaran (Lengkap)
         Route::prefix('orders/{order}')->name('payment.')->group(function () {
             Route::get('/choose-payment', [PaymentController::class, 'choosePayment'])->name('choose');
@@ -192,6 +193,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/orders/{order}', [OrderManagementController::class, 'show'])->name('orders.show');
                 Route::patch('/orders/{order}/status', [OrderManagementController::class, 'updateStatus'])->name('orders.updateStatus');
                 Route::post('/orders/{order}/verify-payment', [OrderManagementController::class, 'verifyPayment'])->name('orders.verifyPayment');
+                Route::patch('/orders/{order}/negotiated-price', [OrderManagementController::class, 'updateNegotiatedPrice'])->name('orders.updateNegotiatedPrice');
+                Route::patch('/orders/{order}/progress', [OrderManagementController::class, 'updateProgress'])->name('orders.updateProgress');
+                Route::resource('discounts', \App\Http\Controllers\Admin\Pemasukan\DiscountController::class);
             });
 
             // Pengeluaran

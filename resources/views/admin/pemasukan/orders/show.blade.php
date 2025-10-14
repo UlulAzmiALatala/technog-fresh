@@ -1,4 +1,5 @@
-<x-admin-layout x-data="imageViewer()">
+{{-- 'Otak' Alpine.js untuk mengelola semua interaksi di halaman ini --}}
+<x-admin-layout x-data="pageManager()">
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -80,7 +81,7 @@
                             @foreach ($order->invoice->payments->sortByDesc('created_at') as $payment)
                                 <div class="flex items-start justify-between p-4 rounded-lg {{ !$payment->payment_date ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'bg-gray-50 dark:bg-slate-700/50' }}">
                                     <div class="flex items-start">
-                                        <img @click="open('{{ asset('storage/' . $payment->payment_proof) }}')" src="{{ asset('storage/' . $payment->payment_proof) }}" alt="Payment Proof" class="w-20 h-20 object-cover rounded-md border dark:border-slate-600 mr-4 cursor-pointer hover:opacity-80 transition-opacity">
+                                        <img @click="openImageViewer('{{ asset('storage/' . $payment->payment_proof) }}')" src="{{ asset('storage/' . $payment->payment_proof) }}" alt="Payment Proof" class="w-20 h-20 object-cover rounded-md border dark:border-slate-600 mr-4 cursor-pointer hover:opacity-80 transition-opacity">
                                         <div>
                                             <p class="font-bold text-gray-800 dark:text-slate-200">$ {{ number_format($payment->amount, 0, ',', '.') }}</p>
                                             <p class="text-xs text-gray-500 dark:text-slate-400">Submitted on: {{ $payment->created_at->format('d M Y, H:i') }}</p>
@@ -92,19 +93,19 @@
                                     
                                     @if(!$payment->payment_date)
                                         <div class="flex items-center space-x-2 flex-shrink-0">
-                                            <form action="{{ route('admin.pemasukan.orders.verifyPayment', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to APPROVE this payment?');">
+                                            <form x-ref="approveForm{{$payment->id}}" action="{{ route('admin.pemasukan.orders.verifyPayment', $order->id) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="payment_id" value="{{ $payment->id }}">
                                                 <input type="hidden" name="action" value="accept">
-                                                <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-xs font-medium flex items-center">
+                                                <button type="button" @click="openConfirmModal('Approve Payment', 'Are you sure you want to APPROVE this payment?', 'approve', $refs.approveForm{{$payment->id}})" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-xs font-medium flex items-center">
                                                     <i class="fas fa-check mr-1"></i> Approve
                                                 </button>
                                             </form>
-                                            <form action="{{ route('admin.pemasukan.orders.verifyPayment', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to REJECT this payment?');">
+                                            <form x-ref="rejectForm{{$payment->id}}" action="{{ route('admin.pemasukan.orders.verifyPayment', $order->id) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="payment_id" value="{{ $payment->id }}">
                                                 <input type="hidden" name="action" value="reject">
-                                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs font-medium flex items-center">
+                                                <button type="button" @click="openConfirmModal('Reject Payment', 'Are you sure you want to REJECT this payment?', 'danger', $refs.rejectForm{{$payment->id}})" class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs font-medium flex items-center">
                                                     <i class="fas fa-times mr-1"></i> Reject
                                                 </button>
                                             </form>
@@ -191,9 +192,43 @@
                         </form>
                     </div>
                 </div>
+
+                {{-- [KARTU BARU] Kartu untuk Mengatur Progress --}}
+                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-2xl">
+                    <div class="p-6 border-b border-gray-200 dark:border-slate-700">
+                        <h3 class="text-lg font-semibold flex items-center text-gray-900 dark:text-slate-200">
+                            <i class="fas fa-tasks mr-3 text-gray-400 dark:text-slate-500"></i>
+                            Order Progress
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('admin.pemasukan.orders.updateProgress', $order->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="progress" class="flex justify-between text-sm font-medium text-gray-700 dark:text-slate-300">
+                                        <span>Manual Progress Update</span>
+                                        <span class="font-bold text-indigo-600 dark:text-indigo-400" x-text="`${progressValue}%`"></span>
+                                    </label>
+                                    <div class="mt-2">
+                                        {{-- Input slider yang terhubung dengan Alpine.js --}}
+                                        <input type="range" name="progress" id="progress" x-model="progressValue" min="0" max="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                                    </div>
+                                    <x-input-error :messages="$errors->get('progress')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        Update Progress
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 
                 {{-- Financial Summary Card --}}
-                 <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 border-b border-gray-200 dark:border-slate-700">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-slate-200 flex items-center"><i class="fas fa-dollar-sign mr-3 text-gray-400 dark:text-slate-500"></i>Financial Summary</h3>
                     </div>
@@ -230,6 +265,52 @@
                     </div>
                 </div>
 
+                {{-- Kartu Negotiated Pricing --}}
+                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-2xl">
+                    <div class="p-6 border-b border-gray-200 dark:border-slate-700">
+                        <h3 class="text-lg font-semibold flex items-center text-gray-900 dark:text-slate-200">
+                            <i class="fas fa-handshake mr-3 text-gray-400 dark:text-slate-500"></i>
+                            Negotiated Pricing
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('admin.pemasukan.orders.updateNegotiatedPrice', $order->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="space-y-4">
+                                @php
+                                    $service = $order->detailOrders->first()->service;
+                                @endphp
+                                @if($service && $service->duration_fast_multiplier)
+                                    <div>
+                                        <label for="negotiated_price_fast" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Fast Price ({{ ceil($service->estimated_duration * $service->duration_fast_multiplier) }} Days)</label>
+                                        <div class="mt-1 flex rounded-md shadow-sm">
+                                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 text-sm">$</span>
+                                            <input type="number" name="negotiated_price_fast" id="negotiated_price_fast" value="{{ old('negotiated_price_fast', $order->negotiated_price_fast) }}" class="block w-full flex-1 rounded-none rounded-r-md border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter additional fee">
+                                        </div>
+                                        <x-input-error :messages="$errors->get('negotiated_price_fast')" class="mt-2" />
+                                    </div>
+                                @endif
+                                @if($service && $service->duration_express_multiplier)
+                                    <div>
+                                        <label for="negotiated_price_express" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Express Price ({{ ceil($service->estimated_duration * $service->duration_express_multiplier) }} Days)</label>
+                                        <div class="mt-1 flex rounded-md shadow-sm">
+                                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 text-sm">$</span>
+                                            <input type="number" name="negotiated_price_express" id="negotiated_price_express" value="{{ old('negotiated_price_express', $order->negotiated_price_express) }}" class="block w-full flex-1 rounded-none rounded-r-md border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter additional fee">
+                                        </div>
+                                        <x-input-error :messages="$errors->get('negotiated_price_express')" class="mt-2" />
+                                    </div>
+                                @endif
+                                <div class="pt-2">
+                                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        Save Prices
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 {{-- Ordered Services Card --}}
                 <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 border-b border-gray-200 dark:border-slate-700">
@@ -253,41 +334,60 @@
     </div>
 
     {{-- Image Viewer Modal --}}
-    <div x-show="show" x-cloak
-         @keydown.escape.window="close()"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
-        
-        <div @click.away="close()" 
-             class="relative w-full h-full flex items-center justify-center">
-
-            {{-- Toolbar --}}
+    <div x-show="showImageViewer" x-cloak @keydown.escape.window="closeImageViewer()" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
+        <div @click.away="closeImageViewer()" class="relative w-full h-full flex items-center justify-center">
             <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-2 bg-gray-800 bg-opacity-75 text-white p-2 rounded-lg">
                 <button @click="zoomIn()" title="Zoom In" class="w-10 h-10 hover:bg-gray-700 rounded-md"><i class="fas fa-search-plus"></i></button>
                 <button @click="zoomOut()" title="Zoom Out" class="w-10 h-10 hover:bg-gray-700 rounded-md"><i class="fas fa-search-minus"></i></button>
-                <button @click="reset()" title="Reset Zoom" class="w-10 h-10 hover:bg-gray-700 rounded-md"><i class="fas fa-expand"></i></button>
+                <button @click="resetZoom()" title="Reset Zoom" class="w-10 h-10 hover:bg-gray-700 rounded-md"><i class="fas fa-expand"></i></button>
             </div>
-            
-            {{-- Close Button --}}
-            <button @click="close()" class="absolute top-4 right-4 z-20 w-10 h-10 bg-gray-800 bg-opacity-75 text-white rounded-full flex items-center justify-center hover:bg-gray-700">
+            <button @click="closeImageViewer()" class="absolute top-4 right-4 z-20 w-10 h-10 bg-gray-800 bg-opacity-75 text-white rounded-full flex items-center justify-center hover:bg-gray-700">
                 <i class="fas fa-times"></i>
             </button>
-            
-            {{-- Image Container --}}
-            <div class="w-full h-full overflow-hidden" 
-                 @wheel.prevent="handleWheel($event)">
-                <img :src="imageUrl" 
-                     class="absolute top-1/2 left-1/2 transition-transform duration-200 cursor-grab" 
-                     :style="`transform: translate(-50%, -50%) scale(${scale}) translateX(${translateX}px) translateY(${translateY}px);`"
-                     @mousedown="startPan($event)">
+            <div class="w-full h-full overflow-hidden" @wheel.prevent="handleWheel($event)">
+                <img :src="imageUrl" class="absolute top-1/2 left-1/2 transition-transform duration-200 cursor-grab" :style="`transform: translate(-50%, -50%) scale(${scale}) translateX(${translateX}px) translateY(${translateY}px);`" @mousedown="startPan($event)">
             </div>
         </div>
     </div>
 
-    {{-- JavaScript for Image Viewer --}}
+    {{-- Confirmation Modal --}}
+    <div x-show="isConfirmModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen px-4 text-center md:items-center sm:block sm:p-0">
+            <div x-show="isConfirmModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="isConfirmModalOpen = false" aria-hidden="true"></div>
+            <div x-show="isConfirmModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block w-full max-w-md p-8 my-20 overflow-hidden text-left transition-all transform bg-white dark:bg-slate-800 rounded-lg shadow-xl">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10" :class="confirmModalType === 'danger' ? 'bg-red-100 dark:bg-red-900/50' : 'bg-green-100 dark:bg-green-900/50'">
+                        <i class="fas" :class="{'fa-exclamation-triangle text-red-600 dark:text-red-400': confirmModalType === 'danger', 'fa-check-circle text-green-600 dark:text-green-400': confirmModalType !== 'danger'}"></i>
+                    </div>
+                    <div class="ml-4 text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" x-text="confirmModalTitle"></h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500 dark:text-gray-400" x-text="confirmModalText"></p>
+                        </div>
+                    </div>
+                </div>
+                <form class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse" :action="confirmActionUrl" method="POST">
+                    <div x-html="confirmHiddenInputs"></div>
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white sm:ml-3 sm:w-auto sm:text-sm" :class="confirmModalType === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'">
+                        Confirm
+                    </button>
+                    <button type="button" @click="isConfirmModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-slate-600 shadow-sm px-4 py-2 bg-white dark:bg-slate-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
     <script>
-        function imageViewer() {
+        function pageManager() {
             return {
-                show: false,
+                // --- Progress Bar Logic ---
+                progressValue: {{ $order->progress ?? 0 }},
+                
+                // --- Image Viewer Logic ---
+                showImageViewer: false,
                 imageUrl: '',
                 scale: 1,
                 translateX: 0,
@@ -295,55 +395,56 @@
                 isPanning: false,
                 panStartX: 0,
                 panStartY: 0,
-
-                open(url) {
-                    this.imageUrl = url;
-                    this.show = true;
-                    this.reset();
-                },
-                close() {
-                    this.show = false;
-                },
-                zoomIn() {
-                    this.scale = Math.min(3, this.scale + 0.2); // Batasi maks zoom 3x
-                },
-                zoomOut() {
-                    this.scale = Math.max(0.2, this.scale - 0.2); // Batasi min zoom 0.2x
-                },
-                reset() {
-                    this.scale = 1;
-                    this.translateX = 0;
-                    this.translateY = 0;
-                },
+                openImageViewer(url) { this.imageUrl = url; this.showImageViewer = true; this.resetZoom(); },
+                closeImageViewer() { this.showImageViewer = false; },
+                zoomIn() { this.scale = Math.min(3, this.scale + 0.2); },
+                zoomOut() { this.scale = Math.max(0.2, this.scale - 0.2); },
+                resetZoom() { this.scale = 1; this.translateX = 0; this.translateY = 0; },
                 handleWheel(event) {
-                    if (event.deltaY < 0) {
-                        this.zoomIn();
-                    } else {
-                        this.zoomOut();
-                    }
+                    if (event.deltaY < 0) { this.zoomIn(); } else { this.zoomOut(); }
                 },
                 startPan(event) {
                     event.preventDefault();
                     this.isPanning = true;
                     this.panStartX = event.clientX - this.translateX;
                     this.panStartY = event.clientY - this.translateY;
-                    
                     const handleMouseMove = (e) => {
                         if (!this.isPanning) return;
                         this.translateX = e.clientX - this.panStartX;
                         this.translateY = e.clientY - this.panStartY;
                     };
-
                     const handleMouseUp = () => {
                         this.isPanning = false;
                         window.removeEventListener('mousemove', handleMouseMove);
                         window.removeEventListener('mouseup', handleMouseUp);
                     };
-
                     window.addEventListener('mousemove', handleMouseMove);
                     window.addEventListener('mouseup', handleMouseUp);
+                },
+
+                // --- Confirmation Modal Logic ---
+                isConfirmModalOpen: false,
+                confirmModalTitle: '',
+                confirmModalText: '',
+                confirmModalType: 'approve',
+                confirmActionUrl: '',
+                confirmHiddenInputs: '',
+                
+                openConfirmModal(title, text, type, formRef) {
+                    this.confirmModalTitle = title;
+                    this.confirmModalText = text;
+                    this.confirmModalType = type;
+                    this.confirmActionUrl = formRef.getAttribute('action');
+                    let inputsHTML = '';
+                    formRef.querySelectorAll('input').forEach(input => {
+                        inputsHTML += input.outerHTML;
+                    });
+                    this.confirmHiddenInputs = inputsHTML;
+                    this.isConfirmModalOpen = true;
                 }
             }
         }
     </script>
+    @endpush
 </x-admin-layout>
+

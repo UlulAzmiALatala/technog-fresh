@@ -114,24 +114,24 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
-                                            <span @class([
-                                                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                                'bg-green-100 text-green-800' => $order->status == 'Selesai',
-                                                'bg-yellow-100 text-yellow-800' => $order->status == 'Diproses',
-                                                'bg-orange-100 text-orange-800' => $order->status == 'Menunggu Konfirmasi',
-                                                'bg-blue-100 text-blue-800' => $order->status == 'Menunggu Pembayaran',
-                                                'bg-red-100 text-red-800' => $order->status == 'Dibatalkan',
-                                            ])>
-                                                @switch($order->status)
-                                                    @case('Selesai') Completed @break
-                                                    @case('Diproses') In Progress @break
-                                                    @case('Menunggu Konfirmasi') Awaiting Confirmation @break
-                                                    @case('Menunggu Pembayaran') Awaiting Payment @break
-                                                    @case('Dibatalkan') Cancelled @break
-                                                    @default {{ $order->status }}
-                                                @endswitch
-                                            </span>
-                                        </td>
+                                    <span @class([
+                                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                                        'bg-green-100 text-green-800' => $order->status == 'Selesai',
+                                        'bg-yellow-100 text-yellow-800' => $order->status == 'Diproses',
+                                        'bg-orange-100 text-orange-800' => $order->status == 'Menunggu Konfirmasi',
+                                        'bg-blue-100 text-blue-800' => $order->status == 'Menunggu Pembayaran',
+                                        'bg-red-100 text-red-800' => $order->status == 'Dibatalkan',
+                                    ])>
+                                        @switch($order->status)
+                                            @case('Selesai') Completed @break
+                                            @case('Diproses') In Progress @break
+                                            @case('Menunggu Konfirmasi') Awaiting Confirmation @break
+                                            @case('Menunggu Pembayaran') Awaiting Payment @break
+                                            @case('Dibatalkan') Cancelled @break
+                                            @default {{ $order->status }}
+                                        @endswitch
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('admin.pemasukan.orders.show', $order->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">Details</a>
                                 </td>

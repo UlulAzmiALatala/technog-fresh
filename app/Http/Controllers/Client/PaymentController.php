@@ -6,46 +6,51 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Models\Discount; // Pastikan model Discount sudah di-import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator; // Pastikan Validator sudah di-import
 use Midtrans\Config;
 use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
+    /**
+     * Menghasilkan opsi durasi dengan logika harga custom dari admin.
+     * Harga diambil dari kolom 'negotiated_price' di tabel order.
+     */
     private function generateDurationOptions(Order $order)
     {
         $service = $order->detailOrders->first()->service;
-
         if (!$service || !$service->estimated_duration) {
             return [];
         }
 
+        $basePrice = $order->detailOrders->sum(fn($detail) => $detail->price * $detail->quantity);
         $options = [];
 
-        // 1. Opsi Standard (selalu ada)
+        // Opsi Standard selalu ada dan menggunakan harga dasar
         $options['standard'] = [
-            'days' => $service->estimated_duration, // Menggunakan kolom Anda
+            'days' => $service->estimated_duration,
             'label' => 'Standard',
-            'multiplier' => 1.0
+            'price' => $basePrice
         ];
 
-        // 2. Opsi Cepat (jika ada multiplier di database)
-        if ($service->price_fast_multiplier && $service->duration_fast_multiplier) {
+        // Opsi Cepat sekarang mengambil harga dari kolom 'negotiated_price_fast' di order
+        if ($service->duration_fast_multiplier) {
             $options['fast'] = [
-                // Bulatkan hari ke atas
                 'days' => ceil($service->estimated_duration * $service->duration_fast_multiplier),
-                'label' => 'Cepat',
-                'multiplier' => $service->price_fast_multiplier
+                'label' => 'Fast',
+                'price' => ($order->negotiated_price_fast !== null) ? $basePrice + $order->negotiated_price_fast : null
             ];
         }
 
-        // 3. Opsi Ekspres (jika ada multiplier di database)
-        if ($service->price_express_multiplier && $service->duration_express_multiplier) {
+        // Opsi Ekspres sekarang mengambil harga dari kolom 'negotiated_price_express'
+        if ($service->duration_express_multiplier) {
             $options['express'] = [
                 'days' => ceil($service->estimated_duration * $service->duration_express_multiplier),
-                'label' => 'Ekspres',
-                'multiplier' => $service->price_express_multiplier
+                'label' => 'Express',
+                'price' => ($order->negotiated_price_express !== null) ? $basePrice + $order->negotiated_price_express : null
             ];
         }
 
@@ -53,69 +58,90 @@ class PaymentController extends Controller
     }
 
     /**
-     * (DIUBAH) Menampilkan halaman pilihan metode pembayaran dengan opsi durasi dinamis.
+     * Menampilkan halaman pilihan pembayaran.
      */
     public function choosePayment(Order $order)
     {
         if ($order->user_id !== Auth::id()) {
-            abort(43);
+            abort(403);
         }
-
-        // Memanggil fungsi baru untuk generate opsi durasi
         $durationOptions = $this->generateDurationOptions($order);
-
-        // Jika tidak ada opsi durasi yang bisa dibuat (misal: service belum di-setup),
-        // bisa ditambahkan logika untuk redirect atau menampilkan error.
-        if (empty($durationOptions)) {
-            // Contoh: abort(500, 'Konfigurasi layanan ini belum lengkap.');
-        }
-
         return view('client.payment.choose', compact('order', 'durationOptions'));
     }
 
     /**
-     * (DIUBAH) Menyimpan pesanan dengan kalkulasi dari data dinamis.
+     * Menyimpan pilihan pembayaran, durasi, dan diskon.
      */
     public function saveNotesAndProceed(Request $request, Order $order)
     {
-        $basePrice = $order->detailOrders->sum(fn($detail) => $detail->price * $detail->quantity);
-
-        // (DIUBAH) Mengambil opsi durasi dinamis untuk validasi
+        // 1. Validasi Awal & Regenerasi Opsi
         $durationOptions = $this->generateDurationOptions($order);
         $durationKeys = array_keys($durationOptions);
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'notes' => 'nullable|string|max:5000',
             'duration' => 'required|in:' . implode(',', $durationKeys),
             'payment_type' => 'required|in:full,dp',
             'payment_method' => 'required|in:midtrans,manual',
             'id_card_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'discount_code' => 'nullable|string',
+            'discount_amount' => 'nullable|numeric|min:0',
         ]);
 
-        // (DIUBAH) Kalkulasi final berdasarkan multiplier dari database
+        // 2. Custom Validation: Cek apakah durasi yang dipilih 'terkunci'
+        $validator->after(function ($validator) use ($request, $durationOptions) {
+            $selectedDurationKey = $request->duration;
+            if (isset($durationOptions[$selectedDurationKey]) && $durationOptions[$selectedDurationKey]['price'] === null) {
+                $validator->errors()->add(
+                    'duration',
+                    'This duration option is locked. Please contact admin for a price quote.'
+                );
+            }
+        });
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // 3. Kalkulasi Harga
         $selectedDurationKey = $request->duration;
         $selectedDurationData = $durationOptions[$selectedDurationKey];
-        $finalPrice = $basePrice * $selectedDurationData['multiplier'];
+        $priceBasedOnDuration = $selectedDurationData['price'];
+
+        // Verifikasi ulang diskon di backend untuk keamanan
+        $discountAmount = 0;
+        if ($request->filled('discount_code')) {
+            $discount = Discount::where('code', $request->discount_code)->where('is_active', true)
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                })->first();
+
+            if ($discount) {
+                $discountAmount = $discount->amount;
+            }
+        }
+
+        $finalPrice = max(0, $priceBasedOnDuration - $discountAmount);
         $dueDate = now()->addDays($selectedDurationData['days']);
 
+        // 4. Validasi DP berdasarkan Final Price
         $minDp = $finalPrice * 0.5;
         $request->validate([
             'dp_amount' => "required_if:payment_type,dp|numeric|min:{$minDp}|max:{$finalPrice}",
         ]);
 
+        // 5. Simpan file KTP jika ada
         if ($request->hasFile('id_card_image')) {
             /** @var \App\Models\User|null $user */
             $user = Auth::user();
             if ($user && !$user->id_card_image) {
                 $path = $request->file('id_card_image')->store('identity_cards', 'public');
-                // (DIPERBAIKI) Menggunakan save() yang lebih robust
                 $user->id_card_image = $path;
                 $user->save();
             }
         }
 
-        $amountToPay = ($request->payment_type === 'dp') ? $request->dp_amount : $finalPrice;
-
+        // 6. Update Order
         $order->update([
             'notes' => $request->notes,
             'total_price' => $finalPrice,
@@ -123,7 +149,12 @@ class PaymentController extends Controller
             'delivery_option' => $selectedDurationKey,
             'payment_type' => $request->payment_type,
             'dp_amount' => ($request->payment_type === 'dp') ? $request->dp_amount : null,
+            'discount_code' => $request->discount_code,
+            'discount_amount' => $discountAmount,
         ]);
+
+        // 7. Lanjutkan ke Pembayaran
+        $amountToPay = ($request->payment_type === 'dp') ? $request->dp_amount : $finalPrice;
 
         if ($request->payment_method === 'midtrans') {
             return $this->payWithMidtrans($request, $order, $amountToPay);
@@ -131,14 +162,43 @@ class PaymentController extends Controller
             return redirect()->route('client.payment.create', ['order' => $order, 'amount' => $amountToPay]);
         }
 
-        return back()->with('error', 'Metode pembayaran tidak valid.');
+        return back()->with('error', 'Invalid payment method.');
     }
 
-    // --- Sisa fungsi-fungsi lainnya (payWithMidtrans, create, store, dll.) tetap sama ---
-    // ... (kode dari controller Anda sebelumnya) ...
     /**
-     * Menghasilkan Snap Token dengan jumlah pembayaran yang dinamis.
+     * Endpoint API untuk validasi kode diskon dari frontend.
      */
+    public function validateDiscountCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string',
+            'order_id' => 'required|exists:orders,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['valid' => false, 'message' => 'Invalid request.'], 400);
+        }
+
+        $discount = Discount::where('code', $request->code)
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })->first();
+
+        if (!$discount) {
+            return response()->json(['valid' => false, 'message' => 'Invalid or expired discount code.']);
+        }
+
+        return response()->json([
+            'valid' => true,
+            'code' => $discount->code,
+            'amount' => $discount->amount,
+        ]);
+    }
+
+
+    // --- FUNGSI-FUNGSI DI BAWAH INI TIDAK ADA PERUBAHAN ---
+
     public function payWithMidtrans(Request $request, Order $order, $amount)
     {
         $isSettlement = ($order->status === 'Diproses' && $order->payment_type === 'dp');
@@ -167,29 +227,20 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * Menampilkan form untuk konfirmasi pembayaran manual.
-     */
     public function create(Request $request, Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
         $amountToPay = $request->query('amount', $order->total_price);
-
         return view('client.payment.manual', compact('order', 'amountToPay'));
     }
 
-    /**
-     * Menyimpan data konfirmasi pembayaran manual dan redirect ke halaman pending.
-     */
     public function store(Request $request, Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
         $request->validate([
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'amount' => 'required|numeric'
@@ -208,111 +259,77 @@ class PaymentController extends Controller
             ]
         );
 
-        // INI BAGIAN PENTINGNYA
         Payment::create([
             'invoice_id' => $invoice->id,
             'amount' => $paymentAmount,
             'payment_proof' => $path,
             'method' => 'Transfer Bank',
-            'payment_date' => null, // Secara eksplisit diatur menjadi null
+            'payment_date' => null,
         ]);
 
         $order->update(['status' => 'Menunggu Konfirmasi']);
-
         return redirect()->route('client.payment.pending', $order->id);
     }
 
-    /**
-     * [PERBAIKAN] Menampilkan halaman menunggu konfirmasi, dengan pengecekan status.
-     */
     public function pending(Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
         }
-
-        // Jika status BUKAN lagi 'Menunggu Konfirmasi' (misal: sudah 'Diproses' oleh admin),
-        // maka otomatis alihkan ke halaman sukses.
         if ($order->status !== 'Menunggu Konfirmasi') {
             return redirect()->route('client.payment.success', $order);
         }
-
-        // Jika status masih 'Menunggu Konfirmasi', tetap tampilkan halaman ini.
         return view('client.payment.pending', compact('order'));
     }
 
-    /**
-     * Menampilkan halaman sukses berdasarkan status order dari admin.
-     */
     public function success(Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
-        // Jika admin belum memproses (masih menunggu), arahkan kembali ke halaman pending.
         if ($order->status === 'Menunggu Konfirmasi') {
             return redirect()->route('client.payment.pending', $order);
         }
-
         if ($order->status === 'Menunggu Pembayaran') {
             return redirect()->route('client.payment.choose', $order);
         }
-
-        // Hanya tampilkan halaman sukses (langkah ke-4) jika statusnya sudah 'Diproses' atau 'Selesai'.
         return view('client.payment.success', compact('order'));
     }
 
-    /**
-     * Menampilkan halaman pelunasan dengan kalkulasi yang benar.
-     */
     public function showSettlementPage(Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
         if ($order->payment_type !== 'dp' || optional($order->invoice)->status !== 'Belum Lunas') {
             return redirect()->route('client.orders.show', $order)->with('error', 'Pesanan ini tidak memerlukan pelunasan.');
         }
-
         $amountPaid = $order->payments()->whereNotNull('payment_date')->sum('payments.amount');
         $remainingAmount = $order->total_price - $amountPaid;
-
         if ($remainingAmount <= 0) {
             $order->invoice->update(['status' => 'Lunas']);
             return redirect()->route('client.orders.show', $order)->with('info', 'Pesanan ini sudah lunas.');
         }
-
         return view('client.payment.settlement', compact('order', 'amountPaid', 'remainingAmount'));
     }
 
-    /**
-     * Memproses pelunasan dengan kalkulasi yang benar.
-     */
     public function processSettlement(Request $request, Order $order)
     {
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
-
         $request->validate(['payment_method' => 'required|in:midtrans,manual']);
-
         $amountPaid = $order->payments()->whereNotNull('payment_date')->sum('payments.amount');
         $remainingAmount = $order->total_price - $amountPaid;
-
         if ($remainingAmount <= 0) {
             return redirect()->route('client.orders.show', $order)->with('error', 'Pesanan ini sudah lunas.');
         }
-
         if ($request->payment_method === 'midtrans') {
             return $this->payWithMidtrans($request, $order, $remainingAmount);
         }
-
         if ($request->payment_method === 'manual') {
             return redirect()->route('client.payment.create', ['order' => $order, 'amount' => $remainingAmount]);
         }
-
         return back()->with('error', 'Metode pembayaran tidak valid.');
     }
 }

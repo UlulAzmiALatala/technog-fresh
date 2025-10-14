@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Pastikan ini ada
+use Illuminate\Support\Facades\Storage;
 
 class OrderManagementController extends Controller
 {
@@ -15,13 +15,11 @@ class OrderManagementController extends Controller
      */
     public function index(Request $request)
     {
-        // [BAGIAN BARU] Menghitung data statistik untuk kartu di atas
         $totalOrders = Order::count();
         $pendingConfirmationCount = Order::where('status', 'Menunggu Konfirmasi')->count();
         $inProgressCount = Order::where('status', 'Diproses')->count();
         $totalRevenue = Order::where('status', 'Selesai')->sum('total_price');
 
-        // Logika query Anda yang sudah ada
         $query = Order::with('user', 'invoice')->latest();
 
         if ($request->filled('search')) {
@@ -39,8 +37,8 @@ class OrderManagementController extends Controller
 
         $orders = $query->paginate(10)->withQueryString();
 
-        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
-        return view('admin.pemasukan.orders', compact(
+        // [MODIFIKASI] Path view diubah ke struktur folder baru
+        return view('admin.pemasukan.orders.index', compact(
             'orders',
             'totalOrders',
             'pendingConfirmationCount',
@@ -48,6 +46,7 @@ class OrderManagementController extends Controller
             'totalRevenue'
         ));
     }
+
     /**
      * Menampilkan halaman detail pesanan dengan ringkasan pembayaran.
      */
@@ -57,12 +56,12 @@ class OrderManagementController extends Controller
 
         $amountPaid = 0;
         if ($order->invoice) {
-            // Menghitung jumlah yang sudah DIVERIFIKASI saja
             $amountPaid = $order->payments()->whereNotNull('payment_date')->sum('payments.amount');
         }
         $remainingAmount = $order->total_price - $amountPaid;
 
-        return view('admin.pemasukan.order-detail', compact('order', 'amountPaid', 'remainingAmount'));
+        // [MODIFIKASI] Path view diubah ke struktur folder baru
+        return view('admin.pemasukan.orders.show', compact('order', 'amountPaid', 'remainingAmount'));
     }
 
     /**
@@ -81,12 +80,27 @@ class OrderManagementController extends Controller
     }
 
     /**
-     * [DIPERBARUI] Verifikasi pembayaran per-item dengan nilai action yang benar.
+     * Memperbarui harga negosiasi untuk opsi pengiriman cepat.
+     */
+    public function updateNegotiatedPrice(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'negotiated_price_fast' => 'nullable|numeric|min:0',
+            'negotiated_price_express' => 'nullable|numeric|min:0',
+        ]);
+
+        $order->update($validated);
+
+        return redirect()->route('admin.pemasukan.orders.show', $order->id)
+            ->with('success', 'Negotiated prices have been successfully updated.');
+    }
+
+    /**
+     * Verifikasi pembayaran per-item dengan nilai action yang benar.
      */
     public function verifyPayment(Request $request, Order $order)
     {
         $request->validate([
-            // [FIX] Mengganti 'approve' menjadi 'accept' agar cocok dengan form
             'action' => 'required|in:accept,reject',
             'payment_id' => 'required|exists:payments,id'
         ]);
@@ -101,7 +115,6 @@ class OrderManagementController extends Controller
         if ($request->action === 'accept') {
             $payment->update(['payment_date' => now()]);
 
-            // [FIX] Menggunakan 'payments.amount' untuk menghindari error ambiguous column
             $totalPaid = $invoice->payments()->whereNotNull('payment_date')->sum('payments.amount');
             $message = "Pembayaran sebesar Rp " . number_format($payment->amount, 0, ',', '.') . " telah disetujui.";
 
@@ -127,5 +140,16 @@ class OrderManagementController extends Controller
 
             return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', 'Bukti pembayaran telah ditolak dan dihapus.');
         }
+    }
+
+    public function updateProgress(Request $request, Order $order)
+    {
+        $request->validate([
+            'progress' => 'required|integer|min:0|max:100',
+        ]);
+
+        $order->update(['progress' => $request->progress]);
+
+        return back()->with('success', 'Order progress has been updated.');
     }
 }

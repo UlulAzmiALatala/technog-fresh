@@ -42,11 +42,29 @@
             @endrole
             
             @hasanyrole('Founder|Pemasukan dan Pengeluaran')
-                <a href="{{ route('admin.pemasukan.services.index') }}" class="sidebar-link flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.pemasukan.services.*') ? 'active' : '' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
-                    <div class="icon-glow"></div>
-                    <i class="fa-solid fa-cube fa-fw w-6 text-center relative z-10"></i>
-                    <span class="ml-4 font-medium transition-all duration-300 whitespace-nowrap relative z-10" x-show="sidebarOpen">Services</span>
-                </a>
+                {{-- New Dropdown for Income --}}
+                <div x-data="{ open: {{ request()->routeIs(['admin.pemasukan.services.*', 'admin.pemasukan.discounts.*']) ? 'true' : 'false' }} }">
+                    <button @click="open = !open" :class="sidebarOpen ? 'justify-between' : 'justify-center'" class="flex items-center w-full px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors duration-200">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-arrow-down-a-z fa-fw w-6 text-center"></i>
+                            {{-- DIUBAH KE BAHASA INGGRIS --}}
+                            <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Income</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
+                    </button>
+                    <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
+                        {{-- Services link inside the dropdown --}}
+                        <a href="{{ route('admin.pemasukan.services.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.services.*') ? 'text-white bg-slate-700' : '' }}">
+                            Services
+                        </a>
+                        {{-- New Discounts link inside the dropdown --}}
+                        <a href="{{ route('admin.pemasukan.discounts.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.discounts.*') ? 'text-white bg-slate-700' : '' }}">
+                            Discounts
+                        </a>
+                    </div>
+                </div>
+                
+                {{-- Expenses link remains separate --}}
                 <a href="{{ route('admin.pengeluaran.expenses.index') }}" class="sidebar-link flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.pengeluaran.expenses.*') ? 'active' : '' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
                     <div class="icon-glow"></div>
                     <i class="fa-solid fa-credit-card fa-fw w-6 text-center relative z-10"></i>

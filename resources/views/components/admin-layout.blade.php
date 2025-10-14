@@ -62,7 +62,7 @@
         </style>
         
     </head>
-    <body class="font-sans antialiased">
+    <body {{ $attributes->merge(['class' => 'font-sans antialiased']) }}>
 
         <div id="preloader">
             <div class="node-network">
@@ -225,7 +225,6 @@
         </div>
 
         @livewireScripts
-        @stack('scripts')
         
         <script>
             // Data "daftar tugas" notifikasi dari Laravel
@@ -286,5 +285,7 @@
                 }));
             });
         </script>
+
+         @stack('scripts')
     </body>
 </html>
