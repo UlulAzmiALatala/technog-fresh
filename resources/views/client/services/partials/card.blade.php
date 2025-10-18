@@ -2,11 +2,10 @@
     $packageName = $service->package_plan ?? '';
     $contentBlockStyle = '';
     $featureListClass = '';
-    $priceTagBgClass = 'bg-black/80'; // Default
+    $priceTagBgClass = 'bg-black/80'; // Default background harga
 
     // ======================================================================
-    // PERUBAHAN 1: Mengadopsi blok logika @php yang sudah sempurna
-    // dari sisi klien untuk gradasi, warna teks, dan background harga.
+    // PERBAIKAN FINAL: Menambahkan variabel dinamis untuk background harga
     // ======================================================================
     switch ($packageName) {
         case 'Silver Plan':
@@ -49,10 +48,7 @@
 <div class="bg-white rounded-2xl shadow-lg flex flex-col group transition-all duration-300 ease-in-out hover:shadow-2xl overflow-hidden">
     
     <div class="relative">
-        {{-- ====================================================== --}}
-        {{-- PERUBAHAN 2: Menambahkan overflow-hidden & group-hover --}}
-        {{-- ====================================================== --}}
-        <a href="{{ route('login') }}" class="block aspect-w-16 aspect-h-9 overflow-hidden"> 
+        <a href="{{ route('client.services.show', $service->id) }}" class="block aspect-w-16 aspect-h-9 overflow-hidden"> 
             <img src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/600x400/CCD3D8/334155?text=TechnoG' }}" 
                  alt="{{ $service->name }}" 
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
@@ -60,20 +56,15 @@
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
         <div class="absolute top-3 right-3">
-            {{-- ====================================================== --}}
-            {{-- PERUBAHAN 3: Menggunakan class dinamis untuk BG harga --}}
-            {{-- ====================================================== --}}
+            {{-- Menggunakan variabel $priceTagBgClass untuk background dinamis --}}
             <span class="{{ $priceTagBgClass }} text-white text-sm font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                $ {{ number_format($service->price, 0, ',', '.') }}
+                Rp {{ number_format($service->price, 0, ',', '.') }}
             </span>
         </div>
 
         <div class="absolute bottom-3 left-4">
-            {{-- ====================================================== --}}
-            {{-- PERUBAHAN 4: Menggunakan drop-shadow dengan filter     --}}
-            {{-- ====================================================== --}}
             <h3 class="text-white font-bold text-lg [filter:drop-shadow(0_1px_1px_rgb(0,0,0))_drop-shadow(0_1px_2px_rgb(0,0,0))]">
-                <a href="{{ route('login') }}" class="text-white hover:text-gray-200">{{ $service->name }}</a>
+                <a href="{{ route('client.services.show', $service->id) }}" class="text-white hover:text-gray-200">{{ $service->name }}</a>
             </h3>
             <p class="text-gray-200 text-xs [filter:drop-shadow(0_1px_1px_rgb(0,0,0))]">
                 Estimasi {{ $service->estimated_duration }} {{ $service->duration_unit }}
@@ -87,9 +78,6 @@
                 @foreach(explode("\n", $service->features) as $index => $feature)
                     @if(trim($feature) && $index < 4)
                         <li class="flex items-start opacity-90">
-                            {{-- ====================================================== --}}
-                            {{-- PERUBAHAN 5: Menggunakan ikon centang modern        --}}
-                            {{-- ====================================================== --}}
                             <svg class="flex-shrink-0 h-5 w-5 @if($packageName === 'Gold Plan') text-yellow-300 @else text-green-400 @endif mt-0.5 mr-2" 
                                  viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -103,19 +91,20 @@
             @endif
         </ul>
 
-        {{-- ====================================================== --}}
-        {{-- PERUBAHAN 6: Menyesuaikan style tombol agar konsisten --}}
-        {{-- ====================================================== --}}
         <div class="mt-auto flex items-center space-x-3">
-            <a href="{{ route('login') }}" 
+            <a href="{{ route('client.services.show', $service->id) }}" 
                class="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold transition border hover:bg-white/10 @if(in_array($packageName, ['Silver Plan'])) text-current border-gray-500/50 @else text-white border-white/50 @endif">
                 Detail
             </a>
             
-            <a href="{{ route('login') }}"
-               class="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold transition border border-transparent bg-blue-500 text-white hover:bg-blue-400">
-                Pesan
-            </a>
+            <form x-data="{ loading: false }" action="{{ route('client.services.order', $service->id) }}" method="POST" class="w-full" @submit="loading = true">
+                @csrf
+                <button type="submit" :disabled="loading" :class="{'opacity-60 cursor-not-allowed': loading}" 
+                        class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg text-sm font-semibold transition bg-blue-500 text-white hover:bg-blue-400">
+                    <span x-show="!loading">Pesan</span>
+                    <span x-show="loading" class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>...</span>
+                </button>
+            </form>
         </div>
     </div>
 </div>

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
 use App\Models\Category;
-use App\Models\Order;
 use App\Models\DetailOrder;
+use App\Models\Order;
+use App\Models\Service;
 use App\Models\User;
 use App\Notifications\NewOrderNotification;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- PASTIKAN USE STATEMENT INI ADA
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -17,28 +17,45 @@ class ServiceListController extends Controller
 {
     /**
      * Menampilkan halaman katalog layanan untuk client.
+     * Halaman ini sekarang mendukung query parameter '?category=slug-kategori'.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // 1. Ambil semua KATEGORI yang tipenya 'service' untuk dijadikan tab
-        $serviceCategories = Category::where('type', 'service')->get();
+        // 1. Ambil slug kategori dari URL, contoh: ?category=it-solution
+        $categorySlug = $request->query('category');
 
-        // 2. Ambil semua LAYANAN dan eager load relasi kategorinya
-        $services = Service::with('category')->latest()->get();
+        // 2. Ambil semua kategori 'service' beserta relasi layanannya (sudah teroptimasi)
+        // Kita juga langsung urutkan service di dalamnya berdasarkan harga termurah
+        $serviceCategories = Category::where('type', 'service')
+            ->with(['services' => function ($query) {
+                $query->orderBy('price', 'asc');
+            }])
+            ->get();
 
-        // 3. Buat struktur data bertingkat: Kelompokkan berdasarkan kategori, lalu di dalamnya kelompokkan lagi berdasarkan paket
-        $groupedServices = [];
-        foreach ($serviceCategories as $category) {
-            $servicesInCategory = $services->where('category_id', $category->id);
-            $groupedServices[$category->id] = $servicesInCategory->groupBy('package_plan');
+        // 3. Tentukan kategori mana yang harus aktif saat halaman pertama kali dibuka
+        $selectedCategory = null;
+        if ($categorySlug) {
+            // Jika ada slug di URL, cari kategori yang cocok dari koleksi yang sudah kita ambil
+            $selectedCategory = $serviceCategories->firstWhere('slug', $categorySlug);
         }
 
-        // 4. Kirim data ke view
-        return view('client.services', compact('serviceCategories', 'groupedServices'));
+        // 4. Kelompokkan layanan berdasarkan 'package_plan' untuk setiap kategori
+        $servicesByCategory = [];
+        foreach ($serviceCategories as $category) {
+            $servicesByCategory[$category->id] = $category->services->groupBy('package_plan');
+        }
+
+        // 5. Kirim semua data yang dibutuhkan ke view dengan path yang BARU
+        return view('client.services.index', compact(
+            'serviceCategories',
+            'servicesByCategory',
+            'selectedCategory' // Variabel ini berisi kategori yang dipilih dari URL atau null
+        ));
     }
 
     /**
      * Memproses pemesanan.
+     * (Tidak ada perubahan di method ini)
      */
     public function order(Service $service)
     {
@@ -64,6 +81,7 @@ class ServiceListController extends Controller
 
     /**
      * Menampilkan halaman detail layanan.
+     * (Tidak ada perubahan di method ini)
      */
     public function show(Service $service)
     {

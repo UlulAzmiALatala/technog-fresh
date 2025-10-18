@@ -39,42 +39,56 @@ use App\Models\CaseStudy;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Di sinilah Anda dapat mendaftarkan rute web untuk aplikasi Anda. Rute
-| ini dimuat oleh RouteServiceProvider dalam sebuah grup yang
-| berisi middleware "web". Sekarang buatlah sesuatu yang luar biasa!
-|
 */
 
 // Rute utama dipisahkan agar memiliki nama 'home'
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
-// --- RUTE HALAMAN PUBLIK LAINNYA ---
+
+// =========================================================================
+// PERUBAHAN 1: URL publik diubah ke Bahasa Inggris.
+// NAMA ROUTE (->name(...)) TETAP SAMA agar tidak merusak link internal.
+// =========================================================================
 Route::name('public.')->group(function () {
-    Route::get('/tentang-kami', [LandingPageController::class, 'about'])->name('about');
-    Route::get('/layanan', [LandingPageController::class, 'services'])->name('services');
-    Route::get('/portfolio', [LandingPageController::class, 'portfolio'])->name('portfolio');
-    Route::get('/portfolio/{caseStudy:slug}', [LandingPageController::class, 'showCaseStudy'])->name('portfolio.show');
+    Route::get('/about-us', [LandingPageController::class, 'about'])->name('about');
+    Route::get('/services', [LandingPageController::class, 'services'])->name('services');
+    Route::get('/success-stories', [LandingPageController::class, 'portfolio'])->name('portfolio');
+    Route::get('/success-stories/{caseStudy:slug}', [LandingPageController::class, 'showCaseStudy'])->name('portfolio.show');
     Route::get('/blog', [LandingPageController::class, 'blog'])->name('blog');
     Route::get('/blog/{post:slug}', [LandingPageController::class, 'showPost'])->name('blog.show');
-    Route::get('/kontak', [LandingPageController::class, 'contact'])->name('contact');
-    Route::post('/kontak', [ContactController::class, 'submit'])->name('contact.submit');
-    Route::get('/mengapa-memilih-kami', [LandingPageController::class, 'whyChooseUs'])->name('why-choose-us');
+    Route::get('/contact', [LandingPageController::class, 'contact'])->name('contact');
+    Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+    Route::get('/why-choose-us', [LandingPageController::class, 'whyChooseUs'])->name('why-choose-us');
 });
 
+
+// =========================================================================
+// PERUBAHAN 2: Menambahkan 301 Redirect untuk SEO.
+// URL lama akan dialihkan secara permanen ke URL baru.
+// =========================================================================
+Route::permanentRedirect('/tentang-kami', '/about-us');
+Route::permanentRedirect('/layanan', '/services');
+Route::permanentRedirect('/portfolio', '/success-stories');
+Route::permanentRedirect('/kontak', '/contact');
+Route::permanentRedirect('/mengapa-memilih-kami', '/why-choose-us');
+
+
 Route::post('/midtrans/notification', [NotificationController::class, 'handle'])->name('midtrans.notification');
+
 
 // [BARU] Rute untuk generate Sitemap secara otomatis
 Route::get('/sitemap.xml', function () {
     $sitemap = Sitemap::create()
-        // Menambahkan URL statis secara manual
+        // =========================================================================
+        // PERUBAHAN 3: URL di sitemap disesuaikan dengan URL Bahasa Inggris.
+        // =========================================================================
         ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
-        ->add(Url::create('/tentang-kami')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
-        ->add(Url::create('/layanan')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
-        ->add(Url::create('/portfolio')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
+        ->add(Url::create('/about-us')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
+        ->add(Url::create('/services')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
+        ->add(Url::create('/success-stories')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
         ->add(Url::create('/blog')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
-        ->add(Url::create('/kontak')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY))
-        ->add(Url::create('/mengapa-memilih-kami')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY));
+        ->add(Url::create('/contact')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY))
+        ->add(Url::create('/why-choose-us')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY));
 
     // Menambahkan semua Post dari database
     Post::all()->each(function (Post $post) use ($sitemap) {
@@ -86,10 +100,10 @@ Route::get('/sitemap.xml', function () {
         );
     });
 
-    // Menambahkan semua Case Study dari database
+    // Menambahkan semua Case Study (Success Stories) dari database
     CaseStudy::all()->each(function (CaseStudy $caseStudy) use ($sitemap) {
         $sitemap->add(
-            Url::create("/portfolio/{$caseStudy->slug}")
+            Url::create("/success-stories/{$caseStudy->slug}") // Disesuaikan
                 ->setLastModificationDate($caseStudy->updated_at)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
                 ->setPriority(0.7)
@@ -99,10 +113,12 @@ Route::get('/sitemap.xml', function () {
     return $sitemap;
 })->name('sitemap');
 
+
 // --- RUTE OTENTIKASI ---
 require __DIR__ . '/auth.php';
 
-// --- RUTE SETELAH LOGIN ---
+
+// --- RUTE SETELAH LOGIN (Tidak ada perubahan di sini) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // --- Logika Redirect Dashboard Utama ---

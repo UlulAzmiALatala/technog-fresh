@@ -154,7 +154,7 @@
                                 <p class="text-sm font-semibold uppercase tracking-widest text-indigo-600">{{ $caseStudy->category->name ?? 'Uncategorized' }}</p>
                                 <h3 class="mt-2 text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">{{ $caseStudy->title }}</h3>
                                 <p class="mt-3 text-base text-gray-500">{{ Str::limit($caseStudy->solution, 120) }}</p>
-                                <span class="mt-4 inline-block font-semibold text-indigo-600 group-hover:text-indigo-800">View case study &rarr;</span>
+                                <span class="mt-4 inline-block font-semibold text-indigo-600 group-hover:text-indigo-800">Read the full story &rarr;</span>
                             </div>
                         </a>
                     </div>

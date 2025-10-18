@@ -34,21 +34,22 @@ class LandingPageController extends Controller
      */
     public function services()
     {
-        // 1. Ambil semua kategori yang tipenya 'service' dan memiliki setidaknya satu layanan.
-        $serviceCategories = Category::where('type', 'service')->whereHas('services')->get();
+        // 1. Ambil semua kategori 'service' dan langsung load relasi 'services' nya.
+        // Ini jauh lebih efisien dan scalable.
+        $serviceCategories = Category::where('type', 'service')
+            ->whereHas('services') // Ini bagus, pertahankan untuk tidak menampilkan kategori kosong
+            ->with(['services' => function ($query) {
+                $query->orderBy('price', 'asc'); // Urutkan layanan dari harga termurah
+            }])
+            ->get();
 
-        // 2. Ambil semua layanan, lalu kelompokkan berdasarkan ID kategori mereka.
-        $services = Service::with('category')->get();
-
-        // 3. Kelompokkan layanan berdasarkan category_id, lalu di dalamnya kelompokkan lagi berdasarkan package_plan
+        // 2. Kelompokkan layanan yang sudah di-load berdasarkan package_plan
         $groupedServices = [];
-        $servicesByCategory = $services->groupBy('category_id');
-
-        foreach ($servicesByCategory as $categoryId => $categoryServices) {
-            $groupedServices[$categoryId] = $categoryServices->groupBy('package_plan');
+        foreach ($serviceCategories as $category) {
+            $groupedServices[$category->id] = $category->services->groupBy('package_plan');
         }
 
-        // 4. Kirim data yang sudah terstruktur ke view.
+        // 3. Kirim data yang sudah terstruktur ke view.
         return view('public.services', compact('serviceCategories', 'groupedServices'));
     }
 

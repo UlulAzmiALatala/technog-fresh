@@ -48,8 +48,11 @@
     </x-slot>
 
     {{-- Wrapper for all content + modal within a single x-data scope --}}
+    {{-- =================================================================== --}}
+    {{-- PERBAIKAN 1: Menggunakan variabel $case_study (dengan underscore) --}}
+    {{-- =================================================================== --}}
     <div class="mt-4"
-         x-data="categoryFormManager({{ $categories->toJson() }}, {{ old('category_id', $caseStudy->category_id) ?? 'null' }})">
+         x-data="categoryFormManager({{ $categories->toJson() }}, {{ old('category_id', $case_study->category_id) ?? 'null' }})">
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 md:p-8 text-gray-900">
@@ -64,7 +67,10 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.founder.case-studies.update', $caseStudy->id) }}" method="POST" enctype="multipart/form-data">
+                {{-- =================================================================== --}}
+                {{-- PERBAIKAN 2: Menggunakan variabel $case_study di action form    --}}
+                {{-- =================================================================== --}}
+                <form action="{{ route('admin.founder.case-studies.update', $case_study->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -75,14 +81,14 @@
                             <div>
                                 <label for="title" class="block font-medium text-sm text-gray-700">Project Title</label>
                                 <input type="text" name="title" id="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                       value="{{ old('title', $caseStudy->title) }}" required>
+                                       value="{{ old('title', $case_study->title) }}" required>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="client_name" class="block font-medium text-sm text-gray-700">Client Name</label>
                                     <input type="text" name="client_name" id="client_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                           value="{{ old('client_name', $caseStudy->client_name) }}" required>
+                                           value="{{ old('client_name', $case_study->client_name) }}" required>
                                 </div>
 
                                 <div>
@@ -103,22 +109,25 @@
 
                             <div>
                                 <label for="problem" class="block font-medium text-sm text-gray-700">Client's Problem</label>
-                                <textarea name="problem" id="problem" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('problem', $caseStudy->problem) }}</textarea>
+                                <textarea name="problem" id="problem" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('problem', $case_study->problem) }}</textarea>
                             </div>
 
                             <div>
                                 <label for="solution" class="block font-medium text-sm text-gray-700">Provided Solution</label>
-                                <textarea name="solution" id="solution" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('solution', $caseStudy->solution) }}</textarea>
+                                <textarea name="solution" id="solution" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('solution', $case_study->solution) }}</textarea>
                             </div>
 
                             <div>
                                 <label for="result" class="block font-medium text-sm text-gray-700">Achieved Results</label>
-                                <textarea name="result" id="result" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('result', $caseStudy->result) }}</textarea>
+                                <textarea name="result" id="result" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('result', $case_study->result) }}</textarea>
                             </div>
                         </div>
 
+                        {{-- =================================================================== --}}
+                        {{-- PERBAIKAN 3: Menggunakan variabel $case_study di image preview --}}
+                        {{-- =================================================================== --}}
                         <div class="space-y-2"
-                             x-data="{ imagePreview: {{ json_encode($caseStudy->image ? asset('storage/' . $caseStudy->image) : null) }} }">
+                             x-data="{ imagePreview: {{ json_encode($case_study->image ? asset('storage/' . $case_study->image) : null) }} }">
                             <label for="image" class="block font-medium text-sm text-gray-700">Project Image</label>
                             <template x-if="imagePreview">
                                 <img :src="imagePreview" class="w-full h-48 object-cover rounded-md border border-gray-200">
@@ -144,7 +153,7 @@
             </div>
         </div>
 
-        {{-- Modal moved into the x-data scope --}}
+        {{-- Modal --}}
         <div x-show="openModal" class="fixed inset-0 z-50 overflow-y-auto"
              @keydown.escape.window="openModal = false" style="display: none;">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

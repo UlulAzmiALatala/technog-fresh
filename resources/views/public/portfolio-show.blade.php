@@ -1,8 +1,10 @@
 <x-public>
 
-    {{-- Memberi judul dinamis sesuai studi kasus yang dibuka --}}
+    {{-- =================================================================== --}}
+    {{-- PERUBAHAN 1: Judul halaman diubah ke Bahasa Inggris & "Success Story" --}}
+    {{-- =================================================================== --}}
     <x-slot name="title">
-        {{ $caseStudy->title }} - TechnoG Case Study
+        {{ $caseStudy->title }} - A TechnoG Success Story
     </x-slot>
 
     {{-- Tidak ada <x-slot name="hero">, semua konten masuk ke slot utama --}}
@@ -16,7 +18,10 @@
                 {{-- Breadcrumb Navigation --}}
                 <div class="mb-8 text-sm text-gray-500">
                     <a href="{{ route('public.portfolio') }}" class="hover:text-indigo-600 transition-colors">
-                        &larr; Kembali ke Semua Studi Kasus
+                        {{-- =================================================================== --}}
+                        {{-- PERUBAHAN 2: Teks breadcrumb diubah ke Bahasa Inggris          --}}
+                        {{-- =================================================================== --}}
+                        &larr; Back to All Success Stories
                     </a>
                 </div>
 
@@ -24,7 +29,10 @@
                 <div class="text-center mb-12">
                     <p class="text-base font-semibold text-indigo-600">{{ $caseStudy->category->name ?? 'Uncategorized' }}</p>
                     <h1 class="mt-2 text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">{{ $caseStudy->title }}</h1>
-                    <p class="mt-4 text-lg text-gray-500">Klien: <span class="font-medium text-gray-900">{{ $caseStudy->client_name }}</span></p>
+                    {{-- =================================================================== --}}
+                    {{-- PERUBAHAN 3: Teks "Klien" diubah ke "Client"                    --}}
+                    {{-- =================================================================== --}}
+                    <p class="mt-4 text-lg text-gray-500">Client: <span class="font-medium text-gray-900">{{ $caseStudy->client_name }}</span></p>
                 </div>
 
                 {{-- Main Image --}}
@@ -38,16 +46,19 @@
 
                 {{-- Article Content --}}
                 <div class="prose prose-lg lg:prose-xl max-w-none text-gray-700 leading-relaxed space-y-12">
+                    {{-- =================================================================== --}}
+                    {{-- PERUBAHAN 4: Judul-judul section diubah ke Bahasa Inggris      --}}
+                    {{-- =================================================================== --}}
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">Tantangan</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">The Challenge</h2>
                         <div class="mt-4">{!! nl2br(e($caseStudy->problem)) !!}</div>
                     </div>
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">Solusi Kami</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">Our Solution</h2>
                         <div class="mt-4">{!! nl2br(e($caseStudy->solution)) !!}</div>
                     </div>
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">Hasil Akhir</h2>
+                        <h2 class="text-3xl font-bold text-gray-900 border-l-4 border-indigo-500 pl-4">The Results</h2>
                         <div class="mt-4">{!! nl2br(e($caseStudy->result)) !!}</div>
                     </div>
                 </div>
