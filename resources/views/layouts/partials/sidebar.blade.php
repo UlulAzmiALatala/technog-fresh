@@ -83,6 +83,11 @@
                     <i class="fa-solid fa-book-open fa-fw w-6 text-center relative z-10"></i>
                     <span class="ml-4 font-medium transition-all duration-300 whitespace-nowrap relative z-10" x-show="sidebarOpen">Case Studies</span>
                 </a>
+                <a href="{{ route('admin.founder.testimonials.index') }}" class="sidebar-link flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.founder.testimonials.*') ? 'active' : '' }}" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
+                    <div class="icon-glow"></div>
+                    <i class="fa-solid fa-comment-dots fa-fw w-6 text-center relative z-10"></i>
+                    <span class="ml-4 font-medium transition-all duration-300 whitespace-nowrap relative z-10" x-show="sidebarOpen">Testimonials</span>
+                </a>
             @endhasanyrole
 
             @role('Founder')

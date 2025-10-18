@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\CaseStudy;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Testimonial; // 1. Import model Testimonial
 
 class LandingPageController extends Controller
 {
@@ -55,7 +56,8 @@ class LandingPageController extends Controller
 
     public function portfolio()
     {
-        $caseStudies = CaseStudy::with('category')->latest()->paginate(10); // Gunakan paginate jika datanya banyak
+        // Sebaiknya tambahkan filter status di sini juga
+        $caseStudies = CaseStudy::where('status', 'PUBLISHED')->with('category')->latest()->paginate(10);
         return view('public.portfolio', compact('caseStudies'));
     }
 
@@ -92,17 +94,24 @@ class LandingPageController extends Controller
     }
 
     /**
-     * [METHOD BARU] Menampilkan halaman "Why Choose Us".
+     * Menampilkan halaman "Why Choose Us" dengan data dinamis.
      */
     public function whyChooseUs()
     {
-        // [PERBAIKAN] Hapus filter status karena kolomnya tidak ada
         $caseStudies = CaseStudy::with('category')
             ->latest()
             ->take(3)
             ->get();
 
-        return view('public.why-choose-us', compact('caseStudies'));
+        // 2. Ambil testimoni yang ditandai sebagai 'featured'
+        $testimonials = Testimonial::where('is_featured', true)
+            ->with('user') // Eager load data user (nama, foto, dll)
+            ->latest()
+            ->take(3) // Ambil 3 testimoni terbaru yang featured
+            ->get();
+
+        // 3. Kirim data caseStudies dan testimonials ke view
+        return view('public.why-choose-us', compact('caseStudies', 'testimonials'));
     }
 
 

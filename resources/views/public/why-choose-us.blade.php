@@ -172,6 +172,7 @@
     </section>
 
     {{-- Client Testimonials --}}
+    @if($testimonials->isNotEmpty())
     <section x-data="{ animate: false }" x-intersect.once="animate = true" class="py-24 bg-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
@@ -179,25 +180,37 @@
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">What Our Clients Say</h2>
                 <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Client trust and satisfaction are our top priorities.</p>
             </div>
-            <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'"
-                 class="relative bg-gray-50 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-200 transition-all duration-700 ease-out">
-                <svg class="absolute top-8 left-8 h-12 w-12 text-indigo-100" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
-                    <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L25.864 4z" />
-                </svg>
-                <p class="relative text-2xl font-medium text-gray-800 italic">"Working with TechnoG was an incredible experience. They truly understood our vision and turned it into a solution that exceeded our expectations."</p>
-                <footer class="mt-8">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img class="h-12 w-12 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Client Photo">
+
+            <div class="space-y-12">
+                @foreach($testimonials as $testimonial)
+                <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'"
+                     class="relative bg-gray-50 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-200 transition-all duration-700 ease-out">
+                    <svg class="absolute top-8 left-8 h-12 w-12 text-indigo-100" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                        <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L25.864 4z" />
+                    </svg>
+                    <p class="relative text-2xl font-medium text-gray-800 italic">"{{ $testimonial->content }}"</p>
+                    <footer class="mt-8">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <img class="h-12 w-12 rounded-full" 
+                                     src="{{ $testimonial->user->avatar ? asset('storage/' . $testimonial->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($testimonial->user->name) . '&color=7F9CF5&background=EBF4FF' }}" 
+                                     alt="Foto {{ $testimonial->user->name }}">
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-base font-medium text-gray-900">{{ $testimonial->user->name }}</div>
+                                {{-- Menampilkan jabatan jika ada --}}
+                                @if($testimonial->user->professional_title)
+                                    <div class="text-base text-gray-500">{{ $testimonial->user->professional_title }}</div>
+                                @endif
+                            </div>
                         </div>
-                        <div class="ml-4">
-                            <div class="text-base font-medium text-gray-900">Sarah L.</div>
-                            <div class="text-base text-gray-500">CEO, Growth Startup</div>
-                        </div>
-                    </div>
-                </footer>
+                    </footer>
+                </div>
+                @endforeach
             </div>
+
         </div>
     </section>
+    @endif
 
 </x-public>

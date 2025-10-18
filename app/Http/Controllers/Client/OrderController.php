@@ -5,49 +5,43 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Illuminate\Http\Request; // Import Request
+use App\Models\Testimonial; // 1. Import model Testimonial
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     /**
-     * [PERUBAHAN] Menampilkan riwayat pesanan dengan filter, pencarian, dan paginasi.
+     * Menampilkan riwayat pesanan dengan filter, pencarian, dan paginasi.
      */
     public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Mulai query dengan data pesanan milik user yang login, diurutkan dari terbaru
         $query = $user->orders()->with('detailOrders.service')->latest();
 
-        // Terapkan filter berdasarkan status jika ada
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Terapkan filter pencarian jika ada
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                // [PERBAIKAN] Ganti pencarian ke kolom primary key 'id'
                 $q->where('id', 'like', "%{$searchTerm}%")
-                    // atau cari di nama layanan melalui relasi
                     ->orWhereHas('detailOrders.service', function ($serviceQuery) use ($searchTerm) {
                         $serviceQuery->where('name', 'like', "%{$searchTerm}%");
                     });
             });
         }
 
-        // Ambil hasil query dengan paginasi (misal: 10 item per halaman)
-        // withQueryString() penting agar filter tetap aktif saat pindah halaman
         $orders = $query->paginate(10)->withQueryString();
 
         return view('client.orders', compact('orders'));
     }
 
     /**
-     * METHOD BARU: Menampilkan halaman detail pesanan.
+     * Menampilkan halaman detail pesanan dan data testimoni.
      */
     public function show(Order $order)
     {
@@ -56,8 +50,45 @@ class OrderController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        // Arahkan ke view detail
-        // Pastikan file view ada di resources/views/client/orders/show.blade.php
+        // 2. Eager load relasi testimoni untuk order ini
+        $order->load('testimonial');
+
+        // 3. Kirim data order ke view. View akan memeriksa apakah $order->testimonial ada atau tidak.
         return view('client.orders.show', compact('order'));
+    }
+
+    /**
+     * METHOD BARU: Menyimpan testimoni dari klien.
+     */
+    public function storeTestimonial(Request $request, Order $order)
+    {
+        // 1. Validasi Keamanan & Otorisasi
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        if ($order->status !== 'Selesai') {
+            return back()->with('error', 'Anda hanya bisa memberikan ulasan untuk proyek yang sudah selesai.');
+        }
+        if ($order->testimonial) {
+            return back()->with('error', 'Anda sudah pernah memberikan ulasan untuk proyek ini.');
+        }
+
+        // 2. Validasi Input Form
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'content' => 'required|string|min:10|max:1000',
+        ]);
+
+        // 3. Buat Testimoni Baru
+        Testimonial::create([
+            'user_id' => Auth::id(),
+            'order_id' => $order->id,
+            'rating' => $validated['rating'],
+            'content' => $validated['content'],
+            'is_featured' => false, // Default tidak featured, admin yang akan menentukan
+        ]);
+
+        // 4. Redirect Kembali dengan Pesan Sukses
+        return back()->with('success', 'Terima kasih! Ulasan Anda telah berhasil dikirim.');
     }
 }

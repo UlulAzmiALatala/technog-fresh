@@ -26,7 +26,6 @@ class Order extends Model
         'notes',
         'payment_type',
         'dp_amount',
-
         'progress',
         'due_date',
         'delivery_option',
@@ -35,6 +34,13 @@ class Order extends Model
         'negotiated_price_fast',
         'negotiated_price_express',
     ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+        'completed_at' => 'datetime',
+        'order_date' => 'datetime',
+    ];
+
     /**
      * Get the user that owns the order.
      */
@@ -66,5 +72,10 @@ class Order extends Model
     public function payments()
     {
         return $this->hasManyThrough(Payment::class, Invoice::class);
+    }
+
+    public function testimonial(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Testimonial::class);
     }
 }
