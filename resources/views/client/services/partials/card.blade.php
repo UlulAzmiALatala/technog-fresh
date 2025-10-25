@@ -58,7 +58,7 @@
         <div class="absolute top-3 right-3">
             {{-- Menggunakan variabel $priceTagBgClass untuk background dinamis --}}
             <span class="{{ $priceTagBgClass }} text-white text-sm font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                Rp {{ number_format($service->price, 0, ',', '.') }}
+                $ {{ number_format($service->price, 0, ',', '.') }}
             </span>
         </div>
 

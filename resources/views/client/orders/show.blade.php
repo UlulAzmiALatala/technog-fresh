@@ -39,13 +39,13 @@
                                 @foreach ($order->detailOrders as $detail)
                                     <div class="flex justify-between items-center">
                                         <dt class="text-gray-600">{{ $detail->service->name }} (x{{ $detail->quantity }})</dt>
-                                        <dd class="font-semibold">Rp {{ number_format($detail->price, 0, ',', '.') }}</dd>
+                                        <dd class="font-semibold">$ {{ number_format($detail->price, 0, ',', '.') }}</dd>
                                     </div>
                                 @endforeach
                                 <div class="border-t border-gray-200 !my-6"></div>
                                 <div class="flex justify-between text-base">
                                     <dt class="text-gray-800 font-bold">Total Payment</dt>
-                                    <dd class="font-bold text-indigo-600">Rp {{ number_format($order->total_price, 0, ',', '.') }}</dd>
+                                    <dd class="font-bold text-indigo-600">$ {{ number_format($order->total_price, 0, ',', '.') }}</dd>
                                 </div>
                             </dl>
                         </div>

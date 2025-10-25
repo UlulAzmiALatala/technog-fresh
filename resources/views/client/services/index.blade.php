@@ -116,7 +116,7 @@
                                             <div class="mt-auto pt-6">
                                                 <p class="text-sm opacity-80">Starting from</p>
                                                 <p class="text-3xl font-extrabold">
-                                                    Rp {{ number_format($servicesInPackage->min('price'), 0, ',', '.') }}
+                                                    $ {{ number_format($servicesInPackage->min('price'), 0, ',', '.') }}
                                                 </p>
                                                 <div class="mt-6 w-full py-3 px-8 text-center font-semibold rounded-lg bg-white/90 @if(in_array($packageName, ['Silver Plan'])) text-gray-800 @else text-blue-900 @endif backdrop-blur-sm">
                                                     View Services
