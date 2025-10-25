@@ -1,11 +1,9 @@
 <x-public>
 
-    {{-- Memberi judul spesifik untuk halaman ini --}}
     <x-slot name="title">
         Why Choose Us - TechnoG Solutions
     </x-slot>
 
-    {{-- KANTONG HERO DIISI DENGAN HERO GAMBAR STATIS --}}
     <x-slot name="hero">
         <section class="relative text-white overflow-hidden">
             <div class="absolute inset-0">
@@ -13,12 +11,11 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/50 to-transparent"></div>
             </div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
-                {{-- Animasi on-load untuk hero --}}
                 <div x-data="{}" x-init="$nextTick(() => {
                     $refs.heading.classList.remove('opacity-0', 'translate-y-4');
                     setTimeout(() => $refs.paragraph.classList.remove('opacity-0', 'translate-y-4'), 200);
                 })">
-                    <h1 x-ref="heading" class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
+                    <h1 x-ref="heading" class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
                         Your Strategic Technology Partner
                     </h1>
                     <p x-ref="paragraph" class="mt-4 text-lg md:text-xl text-gray-200 max-w-3xl mx-auto transition-all duration-700 ease-out opacity-0 translate-y-4">
@@ -29,47 +26,66 @@
         </section>
     </x-slot>
 
-    {{-- Konten utama halaman Why Choose Us --}}
-
     {{-- 2. Key Differentiators --}}
-    <section x-data="{ animate: false }" x-intersect.once="animate = true" class="py-24 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-                 class="text-center mb-16 transition-all duration-700 ease-out">
-                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">The Foundation of Our Excellence</h2>
-                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Three key pillars that make us a trusted partner for your digital transformation.</p>
+    <section class="py-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center mb-20">
+                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">Why Choose TechnoG Solutions?</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Our commitment to excellence is built on five key pillars that ensure your success.</p>
             </div>
 
-            <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'"
-                 x-data="{ active: 0 }" @mouseleave="active = 0"
-                 class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center transition-all duration-700 ease-out">
+            <div class="space-y-24">
+                @php
+                    $features = [
+                        [
+                            'name' => 'Data-Driven Excellence',
+                            'description' => 'Every solution we build is powered by data and intelligent technology, ensuring precision and measurable results. We turn complex data into your most valuable asset.',
+                            'icon' => 'fa-solid fa-chart-line',
+                            'image' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80'
+                        ],
+                        [
+                            'name' => 'Customized Approach',
+                            'description' => 'We design solutions tailored to each client’s unique goals, challenges, and business direction. Your business isn\'t generic, and your technology shouldn\'t be either.',
+                            'icon' => 'fa-solid fa-sliders',
+                            'image' => 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1600&q=80'
+                        ],
+                        [
+                            'name' => 'End-to-End Services',
+                            'description' => 'From initial idea to full implementation and support, we provide complete solutions that cover every step of your digital transformation journey.',
+                            'icon' => 'fa-solid fa-infinity',
+                            'image' => 'https://images.unsplash.com/photo-1587440871875-191322ee64b0?auto=format&fit=crop&w=1600&q=80'
+                        ],
+                        [
+                            'name' => 'Multidisciplinary Expertise',
+                            'description' => 'Our team combines deep knowledge in IT, data science, AI, and business strategy to deliver holistic solutions that address challenges from every angle.',
+                            'icon' => 'fa-solid fa-brain',
+                            'image' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80'
+                        ],
+                        [
+                            'name' => 'Future-Oriented Innovation',
+                            'description' => 'We don’t just solve today’s problems — we build scalable and forward-thinking solutions that prepare your business to stay ahead of tomorrow’s challenges.',
+                            'icon' => 'fa-solid fa-rocket',
+                            'image' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80' // Gambar diperbaiki
+                        ]
+                    ];
+                @endphp
 
-                {{-- Card 1 --}}
-                <div @mouseenter="active = 1" :class="active === 1 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                    <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                @foreach($features as $feature)
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
+                    <div class="fade-in-item {{ $loop->odd ? 'lg:order-1' : 'lg:order-2' }}">
+                        <div class="inline-flex items-center justify-center h-14 w-14 rounded-lg bg-indigo-100 text-indigo-600 mb-6">
+                            <i class="{{ $feature['icon'] }} text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">{{ $feature['name'] }}</h3>
+                        <p class="mt-4 text-lg text-gray-600">{{ $feature['description'] }}</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-gray-900">Structured Approach</h3>
-                    <p class="text-gray-600">No more projects off schedule. With our transparent workflow, you'll always know your project's progress at every stage, from idea to launch.</p>
-                </div>
-
-                {{-- Card 2 --}}
-                <div @mouseenter="active = 2" :class="active === 2 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                    <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    <div class="fade-in-item {{ $loop->odd ? 'lg:order-2' : 'lg:order-1' }}">
+                        <div class="rounded-2xl shadow-xl overflow-hidden group">
+                            <img src="{{ $feature['image'] }}" alt="{{ $feature['name'] }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-gray-900">Proven Results</h3>
-                    <p class="text-gray-600">We don't just make promises; we deliver. Check our case studies to see how we've helped businesses like yours improve efficiency, sales, and growth.</p>
                 </div>
-
-                {{-- Card 3 --}}
-                <div @mouseenter="active = 3" :class="active === 3 || active === 0 ? 'opacity-100' : 'opacity-60'" class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                    <div class="bg-indigo-100 text-indigo-600 rounded-full h-16 w-16 inline-flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2 text-gray-900">Expert & Collaborative Team</h3>
-                    <p class="text-gray-600">You're not working with a vendor; you're gaining a partner. Our team of developers and data scientists becomes an extension of your own, collaborating closely to ensure your vision is realized.</p>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -173,44 +189,106 @@
 
     {{-- Client Testimonials --}}
     @if($testimonials->isNotEmpty())
-    <section x-data="{ animate: false }" x-intersect.once="animate = true" class="py-24 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-                 class="text-center mb-16 transition-all duration-700 ease-out">
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">What Our Clients Say</h2>
                 <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Client trust and satisfaction are our top priorities.</p>
             </div>
 
-            <div class="space-y-12">
-                @foreach($testimonials as $testimonial)
-                <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'"
-                     class="relative bg-gray-50 p-8 md:p-12 rounded-2xl shadow-xl border border-gray-200 transition-all duration-700 ease-out">
-                    <svg class="absolute top-8 left-8 h-12 w-12 text-indigo-100" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
-                        <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L25.864 4z" />
-                    </svg>
-                    <p class="relative text-2xl font-medium text-gray-800 italic">"{{ $testimonial->content }}"</p>
-                    <footer class="mt-8">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <img class="h-12 w-12 rounded-full" 
-                                     src="{{ $testimonial->user->avatar ? asset('storage/' . $testimonial->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($testimonial->user->name) . '&color=7F9CF5&background=EBF4FF' }}" 
-                                     alt="Foto {{ $testimonial->user->name }}">
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-base font-medium text-gray-900">{{ $testimonial->user->name }}</div>
-                                {{-- Menampilkan jabatan jika ada --}}
-                                @if($testimonial->user->professional_title)
-                                    <div class="text-base text-gray-500">{{ $testimonial->user->professional_title }}</div>
-                                @endif
+            <div class="relative" 
+                 x-data="{
+                    slider: null,
+                    init() {
+                        this.slider = this.$refs.slider;
+                    },
+                    next() {
+                        let scrollAmount = this.slider.offsetWidth;
+                        // For larger screens, scroll by one card width instead of the whole container
+                        if (window.innerWidth >= 768) {
+                            scrollAmount = this.slider.firstElementChild.offsetWidth + parseInt(window.getComputedStyle(this.slider).gap);
+                        }
+                        this.slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    },
+                    prev() {
+                         let scrollAmount = this.slider.offsetWidth;
+                        if (window.innerWidth >= 768) {
+                            scrollAmount = this.slider.firstElementChild.offsetWidth + parseInt(window.getComputedStyle(this.slider).gap);
+                        }
+                        this.slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    }
+                 }">
+                
+                {{-- Carousel Container --}}
+                <div x-ref="slider" class="flex snap-x snap-mandatory overflow-x-auto scrollbar-hide space-x-8 pb-6 -mx-4 px-4">
+                    @foreach($testimonials as $testimonial)
+                        <div class="snap-center flex-shrink-0 w-[90%] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.333rem)]">
+                            <div class="h-full bg-gray-50 p-8 rounded-2xl shadow-lg border border-gray-200 flex flex-col">
+                                <svg class="h-10 w-10 text-indigo-100 mb-4" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                                    <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.896 3.456-8.352 9.12-8.352 15.36 0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L25.864 4z" />
+                                </svg>
+                                
+                                {{-- PERBAIKAN 1: Memastikan Rating Bintang Tampil --}}
+                                <div class="flex items-center mb-4">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="fas fa-star text-xl {{ $i <= $testimonial->rating ? 'text-yellow-400' : 'text-gray-300' }}"></i>
+                                    @endfor
+                                </div>
+
+                                <p class="relative text-lg font-medium text-gray-700 italic flex-grow">"{{ $testimonial->content }}"</p>
+                                
+                                <footer class="mt-8 pt-6 border-t border-gray-200">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <img class="h-12 w-12 rounded-full" 
+                                                 src="{{ $testimonial->user->avatar ? asset('storage/' . $testimonial->user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($testimonial->user->name) . '&color=7F9CF5&background=EBF4FF' }}" 
+                                                 alt="Foto {{ $testimonial->user->name }}">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-base font-medium text-gray-900">{{ $testimonial->user->name }}</div>
+                                            @if($testimonial->user->professional_title)
+                                                <div class="text-base text-gray-500">{{ $testimonial->user->professional_title }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </footer>
                             </div>
                         </div>
-                    </footer>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
 
+                {{-- PERBAIKAN 2 & 3: Tombol Navigasi Diperkecil & Didesain Ulang --}}
+                <div class="hidden md:flex justify-center mt-8 space-x-4">
+                    <button @click="prev()"
+                            class="bg-white rounded-full h-12 w-12 flex items-center justify-center shadow-lg border border-gray-200 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="sr-only">Previous</span>
+                        <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button @click="next()"
+                            class="bg-white rounded-full h-12 w-12 flex items-center justify-center shadow-lg border border-gray-200 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="sr-only">Next</span>
+                        <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                </div>
+
+            </div>
         </div>
     </section>
     @endif
+
+    <style>
+        .fade-in-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .is-in-view .fade-in-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .is-in-view .fade-in-item:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+    </style>
 
 </x-public>

@@ -1,11 +1,9 @@
 <x-public>
 
-    {{-- Sets the specific title for this page --}}
     <x-slot name="title">
         Blog - Insights & Latest News from TechnoG
     </x-slot>
 
-    {{-- HERO SLOT FILLED WITH A STATIC IMAGE HERO --}}
     <x-slot name="hero">
         <section class="relative text-white overflow-hidden">
             <div class="absolute inset-0">
@@ -17,10 +15,10 @@
                     $refs.heading.classList.remove('opacity-0', 'translate-y-4');
                     setTimeout(() => $refs.paragraph.classList.remove('opacity-0', 'translate-y-4'), 200);
                 })">
-                    <h1 x-ref="heading" class="text-4xl sm:text-5xl font-extrabold tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
+                    <h1 x-ref="heading" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
                         Insights & Analysis
                     </h1>
-                    <p x-ref="paragraph" class="mt-4 text-lg text-gray-200 max-w-3xl mx-auto transition-all duration-700 ease-out opacity-0 translate-y-4">
+                    <p x-ref="paragraph" class="mt-4 text-lg md:text-xl text-gray-200 max-w-3xl mx-auto transition-all duration-700 ease-out opacity-0 translate-y-4">
                         Explore in-depth articles from our experts at the intersection of technology, data, and business strategy.
                     </p>
                 </div>

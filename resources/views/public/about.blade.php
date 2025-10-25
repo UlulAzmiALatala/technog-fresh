@@ -1,7 +1,7 @@
 <x-public>
 
     <x-slot name="scripts">
-        <script defer src="https://kit.fontawesome.com/c151b27f34.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/c151b27f34.js" crossorigin="anonymous"></script>
     </x-slot>
 
     <x-slot name="title">
@@ -12,33 +12,49 @@
         <section class="relative text-white overflow-hidden">
             <div class="absolute inset-0">
                 <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80" alt="The TechnoG Solutions Team" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gray-900/50"></div>
+                <div class="absolute inset-0 bg-gray-900/60"></div>
             </div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
-                <div x-data="{ animate: false }" x-init="setTimeout(() => animate = true, 100)">
-                    <h1 class="fade-in-item text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight transition-all duration-700" :class="animate ? 'in-view' : ''">The Power Behind Precision</h1>
-                    <p class="fade-in-item mt-4 text-lg text-gray-200 max-w-3xl mx-auto transition-all duration-700 delay-200" :class="animate ? 'in-view' : ''">We are the synergy of statisticians and IT developers, dedicated to creating intelligent, evidence-based technology solutions.</p>
+                <div x-data="{}" x-init="$nextTick(() => { $el.querySelectorAll('.fade-in-item').forEach((item, index) => setTimeout(() => item.classList.add('in-view'), index * 200)) })">
+                    <h1 class="fade-in-item text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
+                        Intelligent Technology, Powered by Data
+                    </h1>
+                    <p class="fade-in-item mt-4 text-lg text-gray-200 max-w-3xl mx-auto">
+                        We are a data-driven technology and innovation company dedicated to helping transform ideas into real-world solutions.
+                    </p>
                 </div>
             </div>
         </section>
     </x-slot>
 
-    {{-- Vision & Mission Section --}}
+    {{-- About Us Content Section --}}
     <section class="py-24 bg-white" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="fade-in-item text-3xl font-extrabold text-gray-900">About TechnoG Solutions</h2>
+            <p class="fade-in-item mt-4 text-lg text-gray-600 leading-relaxed">
+                Guided by the belief that intelligent technology must always serve people, we provide end-to-end services ranging from IT development and data analysis to advanced AI-powered solutions. With our multidisciplinary approach, we bring clarity from complexity, ensuring every client moves confidently into the future.
+            </p>
+        </div>
+    </section>
+
+    {{-- Vision & Mission Section --}}
+    <section class="py-24 bg-gray-50" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div>
+            <div class="fade-in-item">
+                <img class="rounded-2xl shadow-xl" src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80" alt="TechnoG team collaborating">
+            </div>
+            <div class="mt-10 md:mt-0">
                 <h2 class="fade-in-item text-3xl font-extrabold text-gray-900">Our Vision</h2>
-                <p class="fade-in-item mt-4 text-lg text-gray-600 leading-relaxed">To be a pioneer in the technology industry by integrating data analysis and statistics as the core of every innovation, creating solutions with an unparalleled level of precision and reliability.</p>
+                <p class="fade-in-item mt-4 text-lg text-gray-600 italic leading-relaxed">"Leading the world into the future while realizing dreams through intelligent technology powered by data."</p>
+                
                 <h2 class="fade-in-item mt-10 text-3xl font-extrabold text-gray-900">Our Mission</h2>
                 <ul class="mt-6 text-lg text-gray-600 space-y-5">
-                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-microchip text-indigo-500 fa-fw mt-1 mr-4 transition-transform duration-300 group-hover:rotate-12"></i><span>Building software that is intelligent, not just functional.</span></li>
-                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-chart-line text-indigo-500 fa-fw mt-1 mr-4 transition-transform duration-300 group-hover:rotate-12"></i><span>Using data to solve complex business challenges.</span></li>
-                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-bullseye text-indigo-500 fa-fw mt-1 mr-4 transition-transform duration-300 group-hover:rotate-12"></i><span>Empowering clients with data-driven tools for better decision-making.</span></li>
-                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-shield-halved text-indigo-500 fa-fw mt-1 mr-4 transition-transform duration-300 group-hover:rotate-12"></i><span>Upholding integrity and accuracy as the main pillars in every project.</span></li>
+                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-bullseye text-indigo-500 fa-fw mt-1 mr-4"></i><span>Provide customized technology and data solutions to support clients in making smarter, timely decisions.</span></li>
+                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-bridge text-indigo-500 fa-fw mt-1 mr-4"></i><span>Bridge ideas into real-world applications by combining innovation, research, and effective execution.</span></li>
+                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-users-gear text-indigo-500 fa-fw mt-1 mr-4"></i><span>Design intelligent systems tailored to each client’s unique needs, ensuring flexibility and long-term value.</span></li>
+                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-handshake-angle text-indigo-500 fa-fw mt-1 mr-4"></i><span>Build trust through collaboration, transparency, and measurable results to create strong partnerships.</span></li>
+                    <li class="fade-in-item flex items-start group"><i class="fa-solid fa-infinity text-indigo-500 fa-fw mt-1 mr-4"></i><span>Continuously innovate at the intersection of data, technology, and human insight.</span></li>
                 </ul>
-            </div>
-            <div class="fade-in-item mt-10 md:mt-0">
-                <img class="rounded-2xl shadow-xl" src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80" alt="TechnoG team collaborating">
             </div>
         </div>
     </section>
@@ -54,7 +70,6 @@
                 <div aria-hidden="true" class="absolute inset-x-0 top-1/2 -translate-y-1/2 hidden lg:block">
                     <div :class="animate ? 'w-full' : 'w-0'" class="h-0.5 bg-gray-200 transition-all duration-1000 ease-out mx-auto" style="max-width: 60%;"></div>
                 </div>
-                {{-- [PERBAIKAN] Tambahkan style="perspective: 1000px;" di sini --}}
                 <div class="relative grid grid-cols-1 lg:grid-cols-3 gap-8" style="perspective: 1000px;">
                     {{-- Card 1 --}}
                     <div :class="animate ? 'opacity-100' : 'opacity-0'" class="card-3d rounded-2xl p-8 bg-white shadow-xl transition-all duration-700 ease-out" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
@@ -88,47 +103,64 @@
         </div>
     </section>
 
-    {{-- Our Core Values Section --}}
+    {{-- Core Values Section --}}
     <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">Our Core Values</h2>
                 <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">The principles that guide our work and define who we are.</p>
             </div>
-            {{-- [PERBAIKAN] Tambahkan style="perspective: 1000px;" di sini --}}
             <div class="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" style="perspective: 1000px;">
-                {{-- Value 1 --}}
+                {{-- Value 1: Innovation --}}
                 <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
                     <div class="card-3d-glare"></div>
                     <div class="card-3d-content text-center">
-                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600"><i class="fa-solid fa-brain fa-2xl"></i></div>
-                        <h3 class="mt-6 text-xl font-bold text-gray-900">Data-Driven</h3>
-                        <p class="mt-2 text-base text-gray-600">We believe that the best decisions are backed by data. Every solution we build is rooted in rigorous statistical analysis.</p>
-                    </div>
-                </div>
-                {{-- Value 2 --}}
-                <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
-                    <div class="card-3d-glare"></div>
-                    <div class="card-3d-content text-center">
-                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-amber-100 text-amber-600"><i class="fa-solid fa-lightbulb fa-2xl"></i></div>
+                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 text-indigo-600"><i class="fa-solid fa-lightbulb fa-2xl"></i></div>
                         <h3 class="mt-6 text-xl font-bold text-gray-900">Innovation</h3>
-                        <p class="mt-2 text-base text-gray-600">We constantly explore new technologies and methods to deliver cutting-edge solutions that provide a competitive advantage.</p>
+                        <p class="mt-2 text-base text-gray-600">We continuously push boundaries to create smarter, data-driven solutions that bring real impact.</p>
                     </div>
                 </div>
-                {{-- Value 3 --}}
+                {{-- Value 2: Integrity --}}
                 <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
                     <div class="card-3d-glare"></div>
                     <div class="card-3d-content text-center">
-                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 text-rose-600"><i class="fa-solid fa-handshake-angle fa-2xl"></i></div>
-                        <h3 class="mt-6 text-xl font-bold text-gray-900">Partnership</h3>
-                        <p class="mt-2 text-base text-gray-600">We work collaboratively with our clients, treating their challenges as our own to achieve shared success.</p>
+                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-cyan-100 text-cyan-600"><i class="fa-solid fa-shield-halved fa-2xl"></i></div>
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Integrity</h3>
+                        <p class="mt-2 text-base text-gray-600">We uphold transparency, responsibility, and honesty in every collaboration.</p>
+                    </div>
+                </div>
+                {{-- Value 3: Customization --}}
+                <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
+                    <div class="card-3d-glare"></div>
+                    <div class="card-3d-content text-center">
+                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 text-emerald-600"><i class="fa-solid fa-sliders fa-2xl"></i></div>
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Customization</h3>
+                        <p class="mt-2 text-base text-gray-600">We believe every client is unique, so we design tailored solutions that truly match their goals and needs.</p>
+                    </div>
+                </div>
+                {{-- Value 4: Collaboration --}}
+                <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
+                    <div class="card-3d-glare"></div>
+                    <div class="card-3d-content text-center">
+                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-amber-100 text-amber-600"><i class="fa-solid fa-users fa-2xl"></i></div>
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Collaboration</h3>
+                        <p class="mt-2 text-base text-gray-600">We grow together with our clients and partners through teamwork and shared success.</p>
+                    </div>
+                </div>
+                {{-- Value 5: Excellence --}}
+                <div class="card-3d bg-white rounded-2xl p-8 shadow-xl" x-data="{ rotateX: 0, rotateY: 0, glareX: -100, glareY: -100 }" @mousemove=" const rect = $el.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; const { width, height } = rect; rotateY = (x / width - 0.5) * -20; rotateX = (y / height - 0.5) * 20; glareX = (x / width) * 100; glareY = (y / height) * 100; " @mouseleave="rotateX = 0; rotateY = 0; glareX = -100; glareY = -100" :style="{ transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`, '--glare-x': `${glareX}%`, '--glare-y': `${glareY}%` }">
+                    <div class="card-3d-glare"></div>
+                    <div class="card-3d-content text-center">
+                        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 text-rose-600"><i class="fa-solid fa-award fa-2xl"></i></div>
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Excellence</h3>
+                        <p class="mt-2 text-base text-gray-600">We are committed to delivering high-quality results, turning complex challenges into clear, actionable solutions.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Team Section --}}
+    {{-- Meet Our Founders Section --}}
     <section class="py-24 bg-gray-50" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
@@ -206,8 +238,9 @@
         .is-in-view ul > li.fade-in-item:nth-child(2) { transition-delay: 0.5s; }
         .is-in-view ul > li.fade-in-item:nth-child(3) { transition-delay: 0.6s; }
         .is-in-view ul > li.fade-in-item:nth-child(4) { transition-delay: 0.7s; }
+        .is-in-view ul > li.fade-in-item:nth-child(5) { transition-delay: 0.8s; }
         .is-in-view .grid > .fade-in-item:nth-child(2) { transition-delay: 0.3s; }
-        .is-in-view .grid > .fade-in-item:nth-child(3) { transition-delay: 0.45s; }
     </style>
 
 </x-public>
+

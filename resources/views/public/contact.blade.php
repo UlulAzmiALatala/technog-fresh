@@ -17,10 +17,10 @@
                     $refs.heading.classList.remove('opacity-0', 'translate-y-4');
                     setTimeout(() => $refs.paragraph.classList.remove('opacity-0', 'translate-y-4'), 200);
                 })">
-                    <h1 x-ref="heading" class="text-4xl sm:text-5xl font-extrabold tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
+                    <h1 x-ref="heading" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight transition-all duration-700 ease-out opacity-0 translate-y-4">
                         Contact Us
                     </h1>
-                    <p x-ref="paragraph" class="mt-4 text-lg text-gray-200 max-w-3xl mx-auto transition-all duration-700 ease-out opacity-0 translate-y-4">
+                    <p x-ref="paragraph" class="mt-4 text-lg md:text-xl text-gray-200 max-w-3xl mx-auto transition-all duration-700 ease-out opacity-0 translate-y-4">
                         Have a question or want to discuss your project? We're here to help.
                     </p>
                 </div>
