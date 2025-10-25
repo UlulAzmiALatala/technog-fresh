@@ -85,7 +85,7 @@
 
             {{-- Komponen Interaktif "Your Projects" (Desain Terang) --}}
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm" 
-                 x-data="{ selectedProjectId: {{ $activeProjects->first()->id ?? 'null' }} }">
+                 x-data="{ selectedProjectId: {{ $activeProjects->first()?->id ?? 'null' }} }">
                 
                 <div class="p-6 md:p-8">
                     <h3 class="text-lg font-semibold text-gray-900">Your Active Projects</h3>
@@ -97,10 +97,14 @@
                         <div class="px-6 md:px-8 border-b border-gray-200">
                             <nav class="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
                                 @foreach($activeProjects as $project)
+                                    {{-- PERBAIKAN DI SINI: Menambahkan nullsafe operator '?->' --}}
+                                    @php
+                                        $serviceName = $project->detailOrders->first()?->service?->name ?? 'Custom Service';
+                                    @endphp
                                     <button @click="selectedProjectId = {{ $project->id }}"
                                             :class="selectedProjectId === {{ $project->id }} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                                             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                                        {{ Str::limit($project->detailOrders->first()->service->name ?? 'Custom Service', 20) }}
+                                        {{ Str::limit($serviceName, 20) }}
                                     </button>
                                 @endforeach
                             </nav>
@@ -111,12 +115,22 @@
                             @foreach($activeProjects as $project)
                                 <div x-show="selectedProjectId === {{ $project->id }}" x-transition.opacity style="display: none;">
                                     
+                                    {{-- PERBAIKAN DI SINI: Menambahkan nullsafe operator '?->' --}}
+                                    @php
+                                        $firstDetail = $project->detailOrders->first();
+                                        $service = $firstDetail?->service;
+                                        $serviceName = $service?->name ?? 'Custom Service';
+                                        $serviceImage = $service?->image 
+                                            ? asset('storage/' . $service->image) 
+                                            : 'https://placehold.co/600x400/e2e8f0/94a3b8?text=TechnoG';
+                                    @endphp
+                                    
                                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                                         
                                         <div class="lg:col-span-1">
                                             <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden border border-gray-200">
-                                                <img src="{{ $project->detailOrders->first()->service->image ? asset('storage/' . $project->detailOrders->first()->service->image) : 'https://placehold.co/600x400/e2e8f0/94a3b8?text=TechnoG' }}" 
-                                                     alt="{{ $project->detailOrders->first()->service->name ?? 'Project Image' }}"
+                                                <img src="{{ $serviceImage }}" 
+                                                     alt="{{ $serviceName }}"
                                                      class="w-full h-full object-cover">
                                             </div>
                                         </div>
@@ -125,7 +139,7 @@
                                             <div class="flex justify-between items-start flex-wrap gap-2">
                                                 <div>
                                                     <p class="text-sm font-medium text-gray-500">{{ $project->order_id }}</p>
-                                                    <h4 class="text-xl font-bold text-gray-900 mt-1">{{ $project->detailOrders->first()->service->name ?? 'Custom Service' }}</h4>
+                                                    <h4 class="text-xl font-bold text-gray-900 mt-1">{{ $serviceName }}</h4>
                                                 </div>
                                                 <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                                     {{ $project->status }}
@@ -171,4 +185,3 @@
 
     @include('layouts.partials.app-footer')
 </x-app-layout>
-
