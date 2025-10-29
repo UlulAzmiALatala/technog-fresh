@@ -114,7 +114,7 @@
 
                 </div>
 
-                {{-- Right Column: Status & Info (tidak berubah) --}}
+                {{-- Right Column: Status & Info --}}
                 <div class="lg:col-span-1 space-y-8">
                     {{-- Payment Info Card --}}
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
@@ -138,6 +138,24 @@
                                     </dd>
                                 </div>
                             </dl>
+
+                            {{-- =================================== --}}
+                            {{-- ===    KODE BARU DITAMBAHKAN    === --}}
+                            {{-- =================================== --}}
+                            @if (optional($order->invoice)->status == 'Lunas')
+                            <div class="mt-6">
+                                <a href="{{ route('client.orders.download_invoice', $order->id) }}" 
+                                   target="_blank" 
+                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 transition ease-in-out duration-150">
+                                    <i class="fas fa-file-download mr-2"></i>
+                                    Download Bukti Bayar (PDF)
+                                </a>
+                            </div>
+                            @endif
+                            {{-- =================================== --}}
+                            {{-- ===     BATAS KODE BARU       === --}}
+                            {{-- =================================== --}}
+                                
                         </div>
                     </div>
 

@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Testimonial; // 1. Import model Testimonial
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -90,5 +91,31 @@ class OrderController extends Controller
 
         // 4. Redirect Kembali dengan Pesan Sukses
         return back()->with('success', 'Terima kasih! Ulasan Anda telah berhasil dikirim.');
+    }
+
+    public function downloadInvoice(Order $order)
+    {
+        // 1. Otorisasi: Pastikan client hanya bisa melihat order miliknya
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // 2. Validasi: Pastikan invoice sudah 'Lunas'
+        // Kita gunakan optional() agar aman jika relasi invoice belum ada
+        if (optional($order->invoice)->status !== 'Lunas') {
+            return back()->with('error', 'Bukti pembayaran hanya tersedia untuk order yang sudah lunas.');
+        }
+
+        // 3. Eager Load semua relasi yang dibutuhkan untuk PDF
+        $order->load('user', 'invoice.payments', 'detailOrders.service');
+
+        // 4. Buat nama file yang dinamis
+        $filename = 'invoice-' . $order->invoice->invoice_number . '.pdf';
+
+        // 5. Render view Blade ke PDF
+        $pdf = Pdf::loadView('client.payment.invoice_pdf', compact('order'));
+
+        // 6. Kembalikan sebagai download
+        return $pdf->download($filename);
     }
 }

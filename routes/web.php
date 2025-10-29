@@ -130,6 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders', [ClientOrderController::class, 'index'])->name('orders');
         Route::get('/orders/{order}', [ClientOrderController::class, 'show'])->name('orders.show');
+        Route::get('/orders/{order}/download-invoice', [ClientOrderController::class, 'downloadInvoice'])->name('orders.download_invoice');
         Route::post('/orders/{order}/testimonial', [ClientOrderController::class, 'storeTestimonial'])->name('orders.testimonial.store');
         Route::get('/services', [ServiceListController::class, 'index'])->name('services.list');
         Route::post('/services/{service}/order', [ServiceListController::class, 'order'])->name('services.order');
