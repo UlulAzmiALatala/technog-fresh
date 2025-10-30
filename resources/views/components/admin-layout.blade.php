@@ -71,27 +71,33 @@
             <p class="preloader-text">Processing Data...</p>
         </div>
 
+        {{-- ========================================================================= --}}
+        {{-- === INILAH PERBAIKANNYA: Logika sidebarWidth diperbarui === --}}
+        {{-- ========================================================================= --}}
         <div x-data="{ 
-                         sidebarOpen: localStorage.getItem('sidebarOpen') === null ? true : localStorage.getItem('sidebarOpen') === 'true',
-                         sidebarWidth: parseInt(localStorage.getItem('sidebarWidth')) || 288, 
-                         isResizing: false 
-                     }" 
-             x-init="$watch('sidebarOpen', value => {
-                 localStorage.setItem('sidebarOpen', value);
-                 if (!value) {
-                     sidebarWidth = 80;
-                 } else {
-                     sidebarWidth = parseInt(localStorage.getItem('sidebarWidth')) || 288;
-                 }
-             })"
+                     sidebarOpen: localStorage.getItem('sidebarOpen') === null ? true : localStorage.getItem('sidebarOpen') === 'true',
+                     sidebarWidth: (localStorage.getItem('sidebarOpen') === 'false') ? 80 : (parseInt(localStorage.getItem('sidebarWidth')) || 288), 
+                     isResizing: false,
+                     isLoaded: false
+                 }" 
+             x-init="setTimeout(() => { isLoaded = true }, 50);
+                 $watch('sidebarOpen', value => {
+                     localStorage.setItem('sidebarOpen', value);
+                     if (!value) {
+                         sidebarWidth = 80;
+                     } else {
+                         sidebarWidth = parseInt(localStorage.getItem('sidebarWidth')) || 288;
+                     }
+                 })"
              @mousemove.window="if (isResizing) { sidebarWidth = Math.max(240, Math.min(400, $event.clientX)); }"
              @mouseup.window="isResizing = false; if(sidebarOpen) { localStorage.setItem('sidebarWidth', sidebarWidth); }"
              class="relative min-h-screen bg-slate-50 dark:bg-slate-900">
             
             @include('layouts.partials.sidebar')
 
-            <div class="transition-all duration-300 ease-in-out" 
-                 :style="sidebarOpen ? `margin-left: ${sidebarWidth}px` : 'margin-left: 80px'">
+            <div :class="{ 'transition-all duration-300 ease-in-out': isLoaded }" 
+                 {{-- === INI PERBAIKAN BUG "BOLONG" === --}}
+                 :style="sidebarOpen ? `margin-left: ${sidebarWidth}px` : 'margin-left: 0px'">
                 
                 <header class="sticky top-0 z-20 flex justify-between items-center py-3 px-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700 shadow-sm h-20">
                     <div class="flex items-center gap-x-4">
@@ -210,10 +216,10 @@
                      x-transition:leave-end="transform translate-x-full opacity-0"
                      class="relative w-full rounded-lg shadow-lg flex items-start p-4"
                      :class="{
-                        'bg-green-500 text-white': toast.type === 'success',
-                        'bg-red-500 text-white': toast.type === 'error',
-                        'bg-blue-500 text-white': toast.type === 'info',
-                        'bg-yellow-500 text-white': toast.type === 'warning',
+                         'bg-green-500 text-white': toast.type === 'success',
+                         'bg-red-500 text-white': toast.type === 'error',
+                         'bg-blue-500 text-white': toast.type === 'info',
+                         'bg-yellow-500 text-white': toast.type === 'warning',
                      }">
                     <div class="flex-shrink-0 text-xl mr-3">
                         <i class="fas" :class="{ 'fa-check-circle': toast.type === 'success', 'fa-times-circle': toast.type === 'error', 'fa-info-circle': toast.type === 'info', 'fa-exclamation-triangle': toast.type === 'warning' }"></i>
@@ -289,3 +295,5 @@
          @stack('scripts')
     </body>
 </html>
+
+
