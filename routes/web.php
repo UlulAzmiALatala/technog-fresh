@@ -179,9 +179,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             });
             // Founder & Konten
             Route::middleware(['role:Founder|Konten'])->group(function () {
-                Route::resource('posts', PostController::class);
+                Route::resource('posts', PostController::class)->except(['create', 'edit']);
                 Route::post('posts/categories/ajax', [CategoryController::class, 'storeAjax'])->name('posts.categories.storeAjax');
-                Route::resource('case-studies', CaseStudyController::class);
+                Route::resource('case-studies', CaseStudyController::class)->except(['show', 'create', 'edit']);
                 Route::post('case-studies/categories/ajax', [CategoryController::class, 'storeCaseStudyAjax'])->name('case-studies.categories.storeAjax');
             });
         });
