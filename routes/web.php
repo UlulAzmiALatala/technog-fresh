@@ -30,7 +30,6 @@ use App\Http\Controllers\Admin\Pemasukan\ServiceController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseCategoryController;
 
-// [BARU] Import class yang dibutuhkan untuk Sitemap
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use App\Models\Post;
@@ -42,6 +41,7 @@ use App\Models\CaseStudy;
 |--------------------------------------------------------------------------
 */
 
+// --- RUTE PUBLIK (Tidak Berubah) ---
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
 Route::name('public.')->group(function () {
@@ -64,6 +64,7 @@ Route::permanentRedirect('/mengapa-memilih-kami', '/why-choose-us');
 
 Route::post('/midtrans/notification', [NotificationController::class, 'handle'])->name('midtrans.notification');
 
+// --- SITEMAP (Tidak Berubah) ---
 Route::get('/sitemap.xml', function () {
     $sitemap = Sitemap::create()
         ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
@@ -124,7 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('notifications.markAsRead');
 
     // ====================
-    // == AREA CLIENT    ==
+    // == AREA CLIENT    == (Tidak Berubah)
     // ====================
     Route::middleware(['role:Client'])->prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
@@ -169,18 +170,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('founder')->name('founder.')->group(function () {
             // Khusus Founder
             Route::middleware(['role:Founder'])->group(function () {
-                // [MODIFIKASI] Rute 'show' sekarang diizinkan untuk UserController
                 Route::resource('users', UserController::class)->except(['create', 'store']);
                 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
                 Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
                 Route::get('/management-fee', [ManagementFeeController::class, 'index'])->name('management-fee.index');
                 Route::get('/management-fee/export', [ManagementFeeController::class, 'export'])->name('management-fee.export');
-                Route::resource('testimonials', TestimonialController::class)->only(['index', 'update']);
             });
+
             // Founder & Konten
             Route::middleware(['role:Founder|Konten'])->group(function () {
+
+                // [REFACTOR MODAL] Rute 'create' dan 'edit' dihapus
                 Route::resource('posts', PostController::class)->except(['create', 'edit']);
                 Route::post('posts/categories/ajax', [CategoryController::class, 'storeAjax'])->name('posts.categories.storeAjax');
+
+                // [REFACTOR MODAL] Rute 'create' dan 'edit' dihapus
                 Route::resource('case-studies', CaseStudyController::class)->except(['show', 'create', 'edit']);
                 Route::post('case-studies/categories/ajax', [CategoryController::class, 'storeCaseStudyAjax'])->name('case-studies.categories.storeAjax');
             });
@@ -188,6 +192,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // (DIRAPIKAN) --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
         Route::middleware(['role:Founder|Pemasukan dan Pengeluaran'])->group(function () {
+            // Testimonials
+            Route::resource('testimonials', \App\Http\Controllers\Admin\Founder\TestimonialController::class);
+
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {
                 Route::resource('services', ServiceController::class)->except(['show']);

@@ -41,7 +41,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <p class="text-sm font-medium text-gray-500">Net Profit (Selected Period)</p>
-                        <p class="mt-1 text-4xl font-bold text-indigo-600">Rp {{ number_format($labaBersih, 0, ',', '.') }}</p>
+                        <p class="mt-1 text-4xl font-bold text-indigo-600">$ {{ number_format($labaBersih, 0, ',', '.') }}</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,9 +49,9 @@
                         <div class="p-6">
                             <h4 class="font-semibold text-gray-900 border-b pb-3">Fixed Profit Sharing</h4>
                             <ul class="mt-4 space-y-3">
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Founder (15%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Founder'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Co-Founder (5%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Co Founder'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Charitable Contribution (7.5%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Allah'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Founder (15%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Founder'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Co-Founder (5%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Co Founder'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Charitable Contribution (7.5%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Allah'], 0, ',', '.') }}</span></li>
                             </ul>
                         </div>
                     </div>
@@ -59,11 +59,11 @@
                         <div class="p-6">
                             <h4 class="font-semibold text-gray-900 border-b pb-3">Operational Fund Allocation</h4>
                             <ul class="mt-4 space-y-3">
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Founder's Return (2.5%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Return Founder'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Co-Founder's Return (7.5%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Return Co Founder'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Admin (15%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Admin'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Development (7.5%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Pengembangan'], 0, ',', '.') }}</span></li>
-                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Project Executor (40%)</span><span class="font-medium">Rp {{ number_format($hasilDistribusi['Pelaksana Project'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Founder's Return (2.5%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Return Founder'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Co-Founder's Return (7.5%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Return Co Founder'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Admin (15%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Admin'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Development (7.5%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Pengembangan'], 0, ',', '.') }}</span></li>
+                                <li class="flex justify-between items-center text-sm"><span class="text-gray-600">Project Executor (40%)</span><span class="font-medium">$ {{ number_format($hasilDistribusi['Pelaksana Project'], 0, ',', '.') }}</span></li>
                             </ul>
                         </div>
                     </div>

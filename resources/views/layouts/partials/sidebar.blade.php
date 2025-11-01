@@ -5,8 +5,8 @@ yang didefinisikan di 'admin-layout.blade.php'
 <div :style="`width: ${sidebarWidth}px`" 
      class="fixed inset-y-0 left-0 bg-slate-800 text-white flex flex-col z-30 transform"
      :class="{ 
-        '-translate-x-full': !sidebarOpen, 
-        'transition-all duration-300 ease-in-out': isLoaded 
+         '-translate-x-full': !sidebarOpen, 
+         'transition-all duration-300 ease-in-out': isLoaded 
      }">
     
     <div class="flex-grow flex flex-col overflow-hidden">
@@ -36,8 +36,14 @@ yang didefinisikan di 'admin-layout.blade.php'
                         <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
                     </button>
                     <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.pemasukan.orders.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.orders.*') ? 'text-white bg-slate-700' : '' }}">Orders</a>
-                        <a href="{{ route('admin.founder.reports.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.reports.*') ? 'text-white bg-slate-700' : '' }}">Reports</a>
+                        <a href="{{ route('admin.pemasukan.orders.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.orders.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-receipt fa-fw w-5 mr-3 text-center"></i>
+                            <span>Orders</span>
+                        </a>
+                        <a href="{{ route('admin.founder.reports.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.reports.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-chart-pie fa-fw w-5 mr-3 text-center"></i>
+                            <span>Reports</span>
+                        </a>
                     </div>
                 </div>
             @endrole
@@ -61,27 +67,33 @@ yang didefinisikan di 'admin-layout.blade.php'
                         <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
                     </button>
                     <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.pemasukan.services.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.services.*') ? 'text-white bg-slate-700' : '' }}">
-                            Services (Income)
+                        <a href="{{ route('admin.pemasukan.services.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.services.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-layer-group fa-fw w-5 mr-3 text-center"></i>
+                            <span>Services (Income)</span>
                         </a>
-                        <a href="{{ route('admin.pemasukan.discounts.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.discounts.*') ? 'text-white bg-slate-700' : '' }}">
-                            Discounts (Income)
+                        <a href="{{ route('admin.pemasukan.discounts.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.discounts.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-percent fa-fw w-5 mr-3 text-center"></i>
+                            <span>Discounts (Income)</span>
                         </a>
-                        <a href="{{ route('admin.pengeluaran.expenses.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pengeluaran.expenses.*') ? 'text-white bg-slate-700' : '' }}">
-                            Expenses
+                        <a href="{{ route('admin.pengeluaran.expenses.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pengeluaran.expenses.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-arrow-right-from-bracket fa-fw w-5 mr-3 text-center"></i>
+                            <span>Expenses</span>
                         </a>
                         @role('Founder')
-                        <a href="{{ route('admin.founder.management-fee.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.management-fee.*') ? 'text-white bg-slate-700' : '' }}">
-                            Management Fee
+                        <a href="{{ route('admin.founder.management-fee.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.management-fee.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-shield-halved fa-fw w-5 mr-3 text-center"></i>
+                            <span>Management Fee</span>
                         </a>
                         @endrole
                     </div>
                 </div>
             @endhasanyrole
             
-            @hasanyrole('Founder|Konten')
+            <!-- === PERBAIKAN LOGIKA ROLE DIMULAI DI SINI === -->
+            @hasanyrole('Founder|Konten|Pemasukan dan Pengeluaran')
                 {{-- 3. DROPDOWN KONTEN (BARU) --}}
-                <div x-data="{ open: {{ request()->routeIs(['admin.founder.posts.*', 'admin.founder.case-studies.*', 'admin.founder.testimonials.*']) ? 'true' : 'false' }} }">
+                <!-- Logika open diperbarui untuk menyertakan rute 'admin.testimonials.*' -->
+                <div x-data="{ open: {{ request()->routeIs(['admin.founder.posts.*', 'admin.founder.case-studies.*', 'admin.testimonials.*']) ? 'true' : 'false' }} }">
                     <button @click="open = !open" :class="sidebarOpen ? 'justify-between' : 'justify-center'" class="flex items-center w-full px-4 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors duration-200">
                         <div class="flex items-center">
                             <i class="fa-solid fa-pen-to-square fa-fw w-6 text-center"></i>
@@ -90,18 +102,29 @@ yang didefinisikan di 'admin-layout.blade.php'
                         <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
                     </button>
                     <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.founder.posts.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.posts.*') ? 'text-white bg-slate-700' : '' }}">
-                            Blog
-                        </a>
-                        <a href="{{ route('admin.founder.case-studies.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.case-studies.*') ? 'text-white bg-slate-700' : '' }}">
-                            Portfolio
-                        </a>
-                        <a href="{{ route('admin.founder.testimonials.index') }}" @click.stop class="block px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.testimonials.*') ? 'text-white bg-slate-700' : '' }}">
-                            Testimonials
+                        
+                        <!-- Blog & Portfolio hanya untuk Founder & Konten -->
+                        @hasanyrole('Founder|Konten')
+                            <a href="{{ route('admin.founder.posts.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.posts.*') ? 'text-white bg-slate-700' : '' }}">
+                                <i class="fa-solid fa-pen-ruler fa-fw w-5 mr-3 text-center"></i>
+                                <span>Blog</span>
+                            </a>
+                            <a href="{{ route('admin.founder.case-studies.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.case-studies.*') ? 'text-white bg-slate-700' : '' }}">
+                                <i class="fa-solid fa-image-portrait fa-fw w-5 mr-3 text-center"></i>
+                                <span>Portfolio</span>
+                            </a>
+                        @endhasanyrole
+
+                        <!-- Testimonials untuk Founder, Konten, DAN Pemasukan -->
+                        <!-- === PERBAIKAN NAMA RUTE DI SINI === -->
+                        <a href="{{ route('admin.testimonials.index') }}" @click.stop class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.testimonials.*') ? 'text-white bg-slate-700' : '' }}">
+                            <i class="fa-solid fa-comment-dots fa-fw w-5 mr-3 text-center"></i>
+                            <span>Testimonials</span>
                         </a>
                     </div>
                 </div>
             @endhasanyrole
+            <!-- === PERBAIKAN LOGIKA ROLE SELESAI === -->
 
             @role('Founder')
                 {{-- 4. LINK ADMIN (SENDIRI) --}}
@@ -119,4 +142,3 @@ yang didefinisikan di 'admin-layout.blade.php'
          x-show="sidebarOpen">
     </div>
 </div>
-
