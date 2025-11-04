@@ -116,7 +116,7 @@ class OrderManagementController extends Controller
             $payment->update(['payment_date' => now()]);
 
             $totalPaid = $invoice->payments()->whereNotNull('payment_date')->sum('payments.amount');
-            $message = "Pembayaran sebesar Rp " . number_format($payment->amount, 0, ',', '.') . " telah disetujui.";
+            $message = "Pembayaran sebesar $ " . number_format($payment->amount, 0, ',', '.') . " telah disetujui.";
 
             if ($totalPaid >= $order->total_price) {
                 $invoice->update(['status' => 'Lunas']);

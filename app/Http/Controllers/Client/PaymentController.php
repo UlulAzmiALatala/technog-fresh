@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Service;
-use App\Models\Discount; // Pastikan model Discount sudah di-import
+use App\Models\Discount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator; // Pastikan Validator sudah di-import
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB; // <-- PENTING: Import DB facade
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -108,17 +109,27 @@ class PaymentController extends Controller
         $selectedDurationData = $durationOptions[$selectedDurationKey];
         $priceBasedOnDuration = $selectedDurationData['price'];
 
-        // Verifikasi ulang diskon di backend untuk keamanan
+        // --- PERUBAHAN 2.1: Verifikasi diskon dan stok di backend ---
         $discountAmount = 0;
+        $discountToApply = null; // Kita simpan objek diskonnya
+
         if ($request->filled('discount_code')) {
             $discount = Discount::where('code', $request->discount_code)->where('is_active', true)
                 ->where(function ($query) {
-                    $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                    $query->whereNull('expires_at')
+                        ->orWhereDate('expires_at', '>=', now());
                 })->first();
 
             if ($discount) {
+                // Cek stok sekali lagi (keamanan)
+                if (!is_null($discount->max_uses) && $discount->current_uses >= $discount->max_uses) {
+                    return back()->withInput()->withErrors(['discount_code' => 'This discount code has just run out of stock. Please try again.']);
+                }
+
                 $discountAmount = $discount->amount;
+                $discountToApply = $discount; // Simpan objek untuk di-increment nanti
             }
+            // Jika diskon tidak valid, $discountAmount tetap 0, order tetap lanjut.
         }
 
         $finalPrice = max(0, $priceBasedOnDuration - $discountAmount);
@@ -141,19 +152,35 @@ class PaymentController extends Controller
             }
         }
 
-        // 6. Update Order
-        $order->update([
-            'notes' => $request->notes,
-            'total_price' => $finalPrice,
-            'due_date' => $dueDate,
-            'delivery_option' => $selectedDurationKey,
-            'payment_type' => $request->payment_type,
-            'dp_amount' => ($request->payment_type === 'dp') ? $request->dp_amount : null,
-            'discount_code' => $request->discount_code,
-            'discount_amount' => $discountAmount,
-        ]);
+        // --- PERUBAHAN 2.2: Gunakan DB Transaction ---
+        try {
+            DB::beginTransaction();
 
-        // 7. Lanjutkan ke Pembayaran
+            // 6. Update Order
+            $order->update([
+                'notes' => $request->notes,
+                'total_price' => $finalPrice,
+                'due_date' => $dueDate,
+                'delivery_option' => $selectedDurationKey,
+                'payment_type' => $request->payment_type,
+                'dp_amount' => ($request->payment_type === 'dp') ? $request->dp_amount : null,
+                'discount_code' => $discountToApply ? $discountToApply->code : null, // Ambil dari objek
+                'discount_amount' => $discountAmount,
+            ]);
+
+            // 7. Update Stok Diskon (HANYA JIKA DISKON DIGUNAKAN)
+            if ($discountToApply) {
+                $discountToApply->increment('current_uses'); // Tambah 1 ke penghitung
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // \Log::error('Discount application failed: ' . $e->getMessage()); // Opsional: logging
+            return back()->with('error', 'An error occurred while saving your order. Please try again.');
+        }
+
+        // 8. Lanjutkan ke Pembayaran
         $amountToPay = ($request->payment_type === 'dp') ? $request->dp_amount : $finalPrice;
 
         if ($request->payment_method === 'midtrans') {
@@ -182,12 +209,19 @@ class PaymentController extends Controller
         $discount = Discount::where('code', $request->code)
             ->where('is_active', true)
             ->where(function ($query) {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                $query->whereNull('expires_at')
+                    ->orWhereDate('expires_at', '>=', now());
             })->first();
 
         if (!$discount) {
             return response()->json(['valid' => false, 'message' => 'Invalid or expired discount code.']);
         }
+
+        // --- PERUBAHAN 1.1: Cek Stok Diskon ---
+        if (!is_null($discount->max_uses) && $discount->current_uses >= $discount->max_uses) {
+            return response()->json(['valid' => false, 'message' => 'This discount code has reached its usage limit.']);
+        }
+        // --- Akhir Perubahan ---
 
         return response()->json([
             'valid' => true,
@@ -287,14 +321,18 @@ class PaymentController extends Controller
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
+
         if ($order->status === 'Menunggu Konfirmasi') {
             return redirect()->route('client.payment.pending', $order);
         }
+
         if ($order->status === 'Menunggu Pembayaran') {
             return redirect()->route('client.payment.choose', $order);
         }
+
         return view('client.payment.success', compact('order'));
     }
+
 
     public function showSettlementPage(Order $order)
     {

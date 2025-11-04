@@ -130,7 +130,7 @@ class ReportController extends Controller
             $file = fopen('php://output', 'w');
 
             // Header CSV
-            fputcsv($file, ['Tanggal', 'Tipe', 'Deskripsi', 'Kategori/Klien', 'Jumlah (Rp)']);
+            fputcsv($file, ['Tanggal', 'Tipe', 'Deskripsi', 'Kategori/Klien', 'Jumlah ($)']);
 
             // Data Pendapatan
             foreach ($pendapatanDetails as $order) {

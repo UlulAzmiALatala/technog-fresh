@@ -87,7 +87,7 @@ class ManagementFeeController extends Controller
 
         $callback = function () use ($labaBersih, $distribusi) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Pos Distribusi', 'Persentase', 'Jumlah (Rp)']);
+            fputcsv($file, ['Pos Distribusi', 'Persentase', 'Jumlah ($)']);
 
             foreach ($distribusi as $pos => $persentase) {
                 $jumlah = $labaBersih > 0 ? $labaBersih * $persentase : 0;

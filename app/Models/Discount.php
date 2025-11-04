@@ -19,6 +19,8 @@ class Discount extends Model
         'amount',
         'expires_at',
         'is_active',
+        'max_uses',     // <-- TAMBAHKAN INI
+        'current_uses', // <-- TAMBAKAN INI
     ];
 
     /**
@@ -29,5 +31,7 @@ class Discount extends Model
     protected $casts = [
         'expires_at' => 'datetime',
         'is_active' => 'boolean',
+        'max_uses' => 'integer',     // <-- TAMBAHAN BAGUS
+        'current_uses' => 'integer', // <-- TAMBAHAN BAGUS
     ];
 }

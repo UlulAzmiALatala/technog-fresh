@@ -115,6 +115,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('client.dashboard');
         }
 
+        // --- PERBAIKAN DI SINI ---
+        // Jika user HANYA punya role 'Konten' (dan bukan Founder/Pemasukan),
+        // arahkan ke halaman pertama yang bisa mereka akses.
+        if ($user->hasRole('Konten') && !$user->hasAnyRole(['Founder', 'Pemasukan dan Pengeluaran'])) {
+            // Berdasarkan sidebar, halaman Blog (posts.index) adalah halaman default mereka.
+            return redirect()->route('admin.founder.posts.index');
+        }
+
+        // Untuk Founder & Pemasukan (atau admin lain), 'Orders' adalah default
         return redirect()->route('admin.pemasukan.orders.index');
     })->name('dashboard');
 
@@ -157,6 +166,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ======================
     // == AREA ADMIN PUSAT ==
     // ======================
+    // Middleware utama ini sudah benar: Founder|Konten|Pemasukan dan Pengeluaran
     Route::middleware(['role:Founder|Konten|Pemasukan dan Pengeluaran'])->prefix('admin')->name('admin.')->group(function () {
 
         // --- Dashboard, Profile, & Chat (Umum untuk semua Admin) ---
@@ -190,10 +200,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             });
         });
 
+        // --- PERBAIKAN DI SINI ---
+        // Testimonials dipindahkan ke sini.
+        // Rute ini sekarang akan mewarisi middleware grup admin utama (Founder|Konten|Pemasukan dan Pengeluaran)
+        // Ini adalah izin yang benar, sesuai dengan sidebar.
+        Route::resource('testimonials', \App\Http\Controllers\Admin\Founder\TestimonialController::class);
+
         // (DIRAPIKAN) --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
+        // Middleware di sini HANYA untuk Founder & Pemasukan
         Route::middleware(['role:Founder|Pemasukan dan Pengeluaran'])->group(function () {
-            // Testimonials
-            Route::resource('testimonials', \App\Http\Controllers\Admin\Founder\TestimonialController::class);
+
+            // Testimonials DIHAPUS DARI SINI
 
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {

@@ -161,7 +161,7 @@
                       <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-12">You Might Also Be Interested In</h2>
                       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                           @foreach($relatedServices as $relatedService)
-                              @include('client.partials.service-card', ['service' => $relatedService])
+                              @include('client.services.partials.card', ['service' => $relatedService])
                           @endforeach
                       </div>
                   </div>
