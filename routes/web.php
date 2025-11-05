@@ -30,6 +30,13 @@ use App\Http\Controllers\Admin\Pemasukan\ServiceController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseCategoryController;
 
+// --- TAMBAHAN KITA UNTUK PENGATURAN SITUS ---
+use App\Http\Controllers\Admin\Founder\SettingsController;
+use App\Http\Controllers\Admin\Founder\SocialLinkController;
+use App\Http\Controllers\Admin\Founder\LogoController;
+// --- AKHIR TAMBAHAN ---
+
+
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 use App\Models\Post;
@@ -181,6 +188,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Khusus Founder
             Route::middleware(['role:Founder'])->group(function () {
                 Route::resource('users', UserController::class)->except(['create', 'store']);
+
+                // --- PENGATURAN SITUS (BARU) ---
+                Route::prefix('settings')->name('settings.')->group(function () {
+                    // 1. Info Kontak (Form Tunggal)
+                    Route::get('/contact', [SettingsController::class, 'contactIndex'])->name('contact.index');
+                    Route::patch('/contact', [SettingsController::class, 'contactUpdate'])->name('contact.update');
+
+                    // 2. Sosmed (CRUD Resource)
+                    Route::resource('social-links', SocialLinkController::class)->except(['show']);
+
+                    // 3. Logo (CRUD Resource)
+                    Route::resource('logos', LogoController::class)->except(['show']);
+                });
+                // --- AKHIR PENGATURAN SITUS ---
+
                 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
                 Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
                 Route::get('/management-fee', [ManagementFeeController::class, 'index'])->name('management-fee.index');
