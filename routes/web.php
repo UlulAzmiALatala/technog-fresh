@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Midtrans\NotificationController;
+use App\Http\Controllers\SubscriberController; // DITAMBAHKAN
 
 // --- Controller Klien ---
 use App\Http\Controllers\Client\ClientDashboardController;
@@ -29,13 +30,9 @@ use App\Http\Controllers\Admin\Pemasukan\OrderManagementController;
 use App\Http\Controllers\Admin\Pemasukan\ServiceController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseController;
 use App\Http\Controllers\Admin\Pengeluaran\ExpenseCategoryController;
-
-// --- TAMBAHAN KITA UNTUK PENGATURAN SITUS ---
 use App\Http\Controllers\Admin\Founder\SettingsController;
 use App\Http\Controllers\Admin\Founder\SocialLinkController;
 use App\Http\Controllers\Admin\Founder\LogoController;
-// --- AKHIR TAMBAHAN ---
-
 
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -48,7 +45,11 @@ use App\Models\CaseStudy;
 |--------------------------------------------------------------------------
 */
 
-// --- RUTE PUBLIK (Tidak Berubah) ---
+// --- RUTE FITUR SUBSCRIBE (BARU) ---
+Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+
+
+// --- RUTE PUBLIK ---
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
 Route::name('public.')->group(function () {
@@ -71,7 +72,7 @@ Route::permanentRedirect('/mengapa-memilih-kami', '/why-choose-us');
 
 Route::post('/midtrans/notification', [NotificationController::class, 'handle'])->name('midtrans.notification');
 
-// --- SITEMAP (Tidak Berubah) ---
+// --- SITEMAP ---
 Route::get('/sitemap.xml', function () {
     $sitemap = Sitemap::create()
         ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY))
@@ -82,7 +83,6 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/contact')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY))
         ->add(Url::create('/why-choose-us')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY));
 
-    // Menambahkan semua Post dari database
     Post::all()->each(function (Post $post) use ($sitemap) {
         $sitemap->add(
             Url::create("/blog/{$post->slug}")
@@ -92,10 +92,9 @@ Route::get('/sitemap.xml', function () {
         );
     });
 
-    // Menambahkan semua Case Study (Success Stories) dari database
     CaseStudy::all()->each(function (CaseStudy $caseStudy) use ($sitemap) {
         $sitemap->add(
-            Url::create("/success-stories/{$caseStudy->slug}") // Disesuaikan
+            Url::create("/success-stories/{$caseStudy->slug}")
                 ->setLastModificationDate($caseStudy->updated_at)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
                 ->setPriority(0.7)
@@ -106,14 +105,11 @@ Route::get('/sitemap.xml', function () {
 })->name('sitemap');
 
 
-// --- RUTE OTENTIKASI ---
 require __DIR__ . '/auth.php';
 
 
-// --- RUTE SETELAH LOGIN (Tidak ada perubahan di sini) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // --- Logika Redirect Dashboard Utama ---
     Route::get('/dashboard', function () {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -122,26 +118,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('client.dashboard');
         }
 
-        // --- PERBAIKAN DI SINI ---
-        // Jika user HANYA punya role 'Konten' (dan bukan Founder/Pemasukan),
-        // arahkan ke halaman pertama yang bisa mereka akses.
         if ($user->hasRole('Konten') && !$user->hasAnyRole(['Founder', 'Pemasukan dan Pengeluaran'])) {
-            // Berdasarkan sidebar, halaman Blog (posts.index) adalah halaman default mereka.
             return redirect()->route('admin.founder.posts.index');
         }
 
-        // Untuk Founder & Pemasukan (atau admin lain), 'Orders' adalah default
         return redirect()->route('admin.pemasukan.orders.index');
     })->name('dashboard');
 
-    // --- Notifikasi ---
     Route::post('/notifications/mark-as-read', function () {
         Auth::user()->unreadNotifications->markAsRead();
         return back();
     })->name('notifications.markAsRead');
 
     // ====================
-    // == AREA CLIENT    == (Tidak Berubah)
+    // == AREA CLIENT    ==
     // ====================
     Route::middleware(['role:Client'])->prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
@@ -156,7 +146,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ClientProfileController::class, 'destroy'])->name('profile.destroy');
         Route::post('/validate-discount', [PaymentController::class, 'validateDiscountCode'])->name('payment.validate_discount');
-        // Rute Pembayaran (Lengkap)
+
         Route::prefix('orders/{order}')->name('payment.')->group(function () {
             Route::get('/choose-payment', [PaymentController::class, 'choosePayment'])->name('choose');
             Route::post('/proceed-to-payment', [PaymentController::class, 'saveNotesAndProceed'])->name('save_notes_and_proceed');
@@ -173,35 +163,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ======================
     // == AREA ADMIN PUSAT ==
     // ======================
-    // Middleware utama ini sudah benar: Founder|Konten|Pemasukan dan Pengeluaran
     Route::middleware(['role:Founder|Konten|Pemasukan dan Pengeluaran'])->prefix('admin')->name('admin.')->group(function () {
 
-        // --- Dashboard, Profile, & Chat (Umum untuk semua Admin) ---
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/chat', fn() => view('admin.chat.index'))->name('chat.index');
 
-        // (DIRAPIKAN) --- Fitur Founder & Konten ---
+        // --- Fitur Founder & Konten ---
         Route::prefix('founder')->name('founder.')->group(function () {
+
             // Khusus Founder
             Route::middleware(['role:Founder'])->group(function () {
                 Route::resource('users', UserController::class)->except(['create', 'store']);
 
-                // --- PENGATURAN SITUS (BARU) ---
                 Route::prefix('settings')->name('settings.')->group(function () {
-                    // 1. Info Kontak (Form Tunggal)
                     Route::get('/contact', [SettingsController::class, 'contactIndex'])->name('contact.index');
                     Route::patch('/contact', [SettingsController::class, 'contactUpdate'])->name('contact.update');
-
-                    // 2. Sosmed (CRUD Resource)
                     Route::resource('social-links', SocialLinkController::class)->except(['show']);
-
-                    // 3. Logo (CRUD Resource)
                     Route::resource('logos', LogoController::class)->except(['show']);
                 });
-                // --- AKHIR PENGATURAN SITUS ---
 
                 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
                 Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
@@ -211,28 +193,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // Founder & Konten
             Route::middleware(['role:Founder|Konten'])->group(function () {
-
-                // [REFACTOR MODAL] Rute 'create' dan 'edit' dihapus
                 Route::resource('posts', PostController::class)->except(['create', 'edit']);
                 Route::post('posts/categories/ajax', [CategoryController::class, 'storeAjax'])->name('posts.categories.storeAjax');
 
-                // [REFACTOR MODAL] Rute 'create' dan 'edit' dihapus
                 Route::resource('case-studies', CaseStudyController::class)->except(['show', 'create', 'edit']);
                 Route::post('case-studies/categories/ajax', [CategoryController::class, 'storeCaseStudyAjax'])->name('case-studies.categories.storeAjax');
             });
         });
 
-        // --- PERBAIKAN DI SINI ---
-        // Testimonials dipindahkan ke sini.
-        // Rute ini sekarang akan mewarisi middleware grup admin utama (Founder|Konten|Pemasukan dan Pengeluaran)
-        // Ini adalah izin yang benar, sesuai dengan sidebar.
         Route::resource('testimonials', \App\Http\Controllers\Admin\Founder\TestimonialController::class);
 
-        // (DIRAPIKAN) --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
+        // --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
         // Middleware di sini HANYA untuk Founder & Pemasukan
         Route::middleware(['role:Founder|Pemasukan dan Pengeluaran'])->group(function () {
-
-            // Testimonials DIHAPUS DARI SINI
 
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {

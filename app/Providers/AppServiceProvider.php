@@ -4,8 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\View; // <-- IMPORT BARU
-use App\Http\View\Composers\AdminLayoutComposer; // <-- IMPORT BARU
+use Illuminate\Support\Facades\View;
+use App\Http\View\Composers\AdminLayoutComposer;
+use App\Http\View\Composers\PublicLayoutComposer; // <-- 1. TAMBAHKAN INI (dengan path 'Http')
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,12 +23,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Router $router): void
     {
-        // Daftarkan alias middleware secara manual
+        // Daftarkan alias middleware (Sudah benar)
         $router->aliasMiddleware('role', \Spatie\Permission\Middleware\RoleMiddleware::class);
         $router->aliasMiddleware('permission', \Spatie\Permission\Middleware\PermissionMiddleware::class);
 
-        // --- TAMBAHKAN BARIS INI ---
-        // Daftarkan View Composer untuk layout admin agar bisa mengambil notifikasi
+        // Daftarkan View Composer untuk layout admin (Sudah benar)
         View::composer('components.admin-layout', AdminLayoutComposer::class);
+
+        // --- 2. TAMBAHKAN BARIS INI ---
+        // Daftarkan View Composer untuk footer publik
+        View::composer('layouts.public-footer', PublicLayoutComposer::class);
+        // --- AKHIR TAMBAHAN ---
     }
 }

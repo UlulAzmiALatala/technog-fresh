@@ -31,10 +31,14 @@
                 <div class="space-y-6">
                     <div>
                         <label for="edit_name" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Logo Name</label>
-                        {{-- --- PERBAIKAN: x-model ke 'editingLogo' --- --}}
-                        <input type="text" name="name" id="edit_name" x-model="editingLogo.name" required
-                               placeholder="e.g. Header Light, Favicon"
+                        {{-- --- PERBAIKAN: Ganti input text menjadi dropdown --- --}}
+                        <select name="name" id="edit_name" x-model="editingLogo.name" required
                                class="block w-full mt-1 border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:text-white">
+                            <option value="">Pilih Tipe Logo</option>
+                            <option value="Header Light">Header Light (public header)</option>
+                            <option value="Footer Light">Footer Light (public footer)</option>
+                            <option value="Favicon">Favicon (browser tab)</option>
+                        </select>
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
