@@ -5,7 +5,7 @@
         Contact Us - TechnoG Solutions
     </x-slot>
 
-    {{-- KANTONG HERO DIISI DENGAN HERO GAMBAR STATIS --}}
+    {{-- KANTONG HERO (TIDAK BERUBAH) --}}
     <x-slot name="hero">
         <section class="relative text-white overflow-hidden">
             <div class="absolute inset-0">
@@ -33,19 +33,17 @@
         <div x-data="{ animate: false }" x-intersect.once="animate = true" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden lg:grid lg:grid-cols-3 lg:gap-8">
                 
-                {{-- Left Column: Contact Form --}}
+                {{-- Left Column: Contact Form (TIDAK BERUBAH) --}}
                 <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
                      class="lg:col-span-2 py-10 px-6 sm:px-10 lg:px-12 transition-all duration-700 ease-out">
                     <h2 class="text-2xl font-bold text-gray-900">Send a Message</h2>
                     
-                    {{-- Pesan sukses setelah email terkirim --}}
                     @if(session('success'))
                         <div class="mt-4 px-4 py-3 rounded-md bg-green-100 text-green-700 font-medium">
                             {{ session('success') }}
                         </div>
                     @endif
 
-                    {{-- Formulir Kontak --}}
                     <form action="{{ route('public.contact.submit') }}" method="POST" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
                         @csrf
                         <div>
@@ -84,30 +82,43 @@
                     </form>
                 </div>
                 
-                {{-- Right Column: Contact Information --}}
+                {{-- Right Column: Contact Information (INI YANG KITA UBAH) --}}
                 <div :class="animate ? 'opacity-100 translate-y-0 delay-200' : 'opacity-0 translate-y-8'"
                      class="bg-gray-50 p-6 sm:p-10 transition-all duration-700 ease-out">
                     <h3 class="text-xl font-semibold text-gray-900">Contact Information</h3>
                     <p class="mt-2 text-base text-gray-500">We're always happy to hear new ideas.</p>
                     <dl class="mt-8 space-y-6">
+                        
+                        {{-- 1. ALAMAT DINAMIS --}}
                         <dd class="flex items-start">
                             <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
                             </div>
-                            <span class="ml-3 text-base text-gray-500">Jakarta, Indonesia</span>
+                            <span class="ml-3 text-base text-gray-500">
+                                {{ $settings->address ?? 'Jakarta, Indonesia' }}
+                            </span>
                         </dd>
+
+                        {{-- 2. TELEPON DINAMIS --}}
                         <dd class="flex items-start">
                             <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
                             </div>
-                            <span class="ml-3 text-base text-gray-500">+62 823-3144-5884</span>
+                            <span class="ml-3 text-base text-gray-500">
+                                {{ $settings->phone ?? '+62 823-3144-5884' }}
+                            </span>
                         </dd>
+
+                        {{-- 3. EMAIL DINAMIS --}}
                         <dd class="flex items-start">
                             <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center">
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
                             </div>
-                            <span class="ml-3 text-base text-gray-500">technog_solutions@outlook.co.id</span>
+                            <span class="ml-3 text-base text-gray-500">
+                                {{ $settings->email ?? 'technog_solutions@outlook.co.id' }}
+                            </span>
                         </dd>
+
                     </dl>
                 </div>
             </div>

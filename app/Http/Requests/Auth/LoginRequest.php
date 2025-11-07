@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Rules\Recaptcha; // 1. Impor Rule yang sudah kita buat
+use App\Rules\Recaptcha;
 
 class LoginRequest extends FormRequest
 {
@@ -28,9 +28,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email:rfc,dns,filter'],
             'password' => ['required', 'string'],
-            // 2. Tambahkan aturan validasi untuk reCAPTCHA
             'g-recaptcha-response' => ['required', new Recaptcha],
         ];
     }

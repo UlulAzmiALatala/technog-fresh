@@ -28,10 +28,16 @@
                 </div>
 
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
-                    {{-- Tombol Notifikasi (jika diperlukan untuk client) --}}
-                    <button class="relative p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none">
-                        <i class="fas fa-bell"></i>
-                    </button>
+                    
+                    {{-- --- PERBAIKAN TOTAL DI SINI: GANTI DENGAN LIVEWIRE --- --}}
+                    {{-- 
+                        Ini memanggil komponen Livewire baru kita.
+                        Komponen ini akan otomatis me-refresh dirinya sendiri
+                        berkat wire:poll.10s yang ada di dalam file-nya.
+                    --}}
+                    <livewire:client-notification-bell />
+                    {{-- --- AKHIR PERBAIKAN --- --}}
+
 
                     <div class="ms-3 relative">
                         <x-dropdown align="right" width="60">
@@ -68,6 +74,7 @@
                     </div>
                 </div>
 
+                <!-- Hamburger -->
                 <div class="-me-2 flex items-center sm:hidden">
                     <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -79,6 +86,7 @@
             </div>
         </div>
 
+        <!-- Responsive Navigation Menu -->
         <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
             <div class="pt-2 pb-3 space-y-1">
                 @role('Client')
@@ -94,18 +102,25 @@
                 @endrole
             </div>
 
+            <!-- Responsive Settings Options -->
             <div class="pt-4 pb-1 border-t border-gray-200">
                 <div class="px-4">
                     <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
+
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('client.profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
+
+                    <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+
+                        <x-responsive-nav-link :href="route('logout')"
+                                onclick="event.preventDefault();
+                                            this.closest('form').submit();">
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>

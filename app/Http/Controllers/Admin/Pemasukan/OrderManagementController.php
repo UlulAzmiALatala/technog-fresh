@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\ClientNotification;
+use Illuminate\Support\Facades\Notification;
 
 class OrderManagementController extends Controller
 {
@@ -15,6 +17,7 @@ class OrderManagementController extends Controller
      */
     public function index(Request $request)
     {
+        // ... (Logika index tidak berubah) ...
         $totalOrders = Order::count();
         $pendingConfirmationCount = Order::where('status', 'Menunggu Konfirmasi')->count();
         $inProgressCount = Order::where('status', 'Diproses')->count();
@@ -37,7 +40,6 @@ class OrderManagementController extends Controller
 
         $orders = $query->paginate(10)->withQueryString();
 
-        // [MODIFIKASI] Path view diubah ke struktur folder baru
         return view('admin.pemasukan.orders.index', compact(
             'orders',
             'totalOrders',
@@ -52,6 +54,7 @@ class OrderManagementController extends Controller
      */
     public function show(Order $order)
     {
+        // ... (Logika show tidak berubah) ...
         $order->load('user', 'detailOrders.service', 'invoice.payments');
 
         $amountPaid = 0;
@@ -60,7 +63,6 @@ class OrderManagementController extends Controller
         }
         $remainingAmount = $order->total_price - $amountPaid;
 
-        // [MODIFIKASI] Path view diubah ke struktur folder baru
         return view('admin.pemasukan.orders.show', compact('order', 'amountPaid', 'remainingAmount'));
     }
 
@@ -75,8 +77,29 @@ class OrderManagementController extends Controller
 
         $order->update(['status' => $request->status]);
 
+        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
+        $client = $order->user;
+        $url = route('client.orders.show', $order->id);
+        $message = "Your order status has been updated to: " . $request->status;
+        $icon = 'fas fa-sync-alt';
+
+        // Tentukan pesan yang lebih spesifik berdasarkan status
+        if ($request->status === 'Diproses') {
+            $message = "Your order #" . $order->id . " is now being processed.";
+            $icon = 'fas fa-cogs';
+        } elseif ($request->status === 'Selesai') {
+            $message = "Great news! Your order #" . $order->id . " is now complete.";
+            $icon = 'fas fa-check-double';
+        } elseif ($request->status === 'Dibatalkan') {
+            $message = "Your order #" . $order->id . " has been cancelled.";
+            $icon = 'fas fa-ban';
+        }
+
+        Notification::send($client, new ClientNotification($message, $url, $icon));
+        // --- AKHIR NOTIFIKASI ---
+
         return redirect()->route('admin.pemasukan.orders.show', $order->id)
-            ->with('success', 'Status pesanan berhasil diperbarui.');
+            ->with('success', 'Order status has been updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
     }
 
     /**
@@ -91,8 +114,15 @@ class OrderManagementController extends Controller
 
         $order->update($validated);
 
+        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
+        $client = $order->user;
+        $message = "A new negotiated price has been set for your order #" . $order->id . ".";
+        $url = route('client.orders.show', $order->id);
+        Notification::send($client, new ClientNotification($message, $url, 'fas fa-dollar-sign'));
+        // --- AKHIR NOTIFIKASI ---
+
         return redirect()->route('admin.pemasukan.orders.show', $order->id)
-            ->with('success', 'Negotiated prices have been successfully updated.');
+            ->with('success', 'Negotiated prices have been successfully updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
     }
 
     /**
@@ -107,25 +137,38 @@ class OrderManagementController extends Controller
 
         $payment = Payment::findOrFail($request->payment_id);
         $invoice = $order->invoice;
+        $client = $order->user; // <-- 3. Ambil Klien
+        $url = route('client.orders.show', $order->id); // <-- 3. Siapkan URL
 
         if (!$invoice || $payment->invoice_id !== $invoice->id) {
-            return back()->with('error', 'Aksi tidak valid.');
+            return back()->with('error', 'Invalid action.'); // <-- 4. Terjemahan
         }
 
         if ($request->action === 'accept') {
             $payment->update(['payment_date' => now()]);
 
             $totalPaid = $invoice->payments()->whereNotNull('payment_date')->sum('payments.amount');
-            $message = "Pembayaran sebesar $ " . number_format($payment->amount, 0, ',', '.') . " telah disetujui.";
+
+            // 4. Terjemahan pesan
+            $message = "Payment of $ " . number_format($payment->amount, 0) . " has been approved.";
+
+            // --- 3. KIRIM NOTIFIKASI (DISETUJUI) ---
+            Notification::send($client, new ClientNotification($message, $url, 'fas fa-check-circle'));
+            // --- AKHIR NOTIFIKASI ---
 
             if ($totalPaid >= $order->total_price) {
                 $invoice->update(['status' => 'Lunas']);
-                $message .= ' Pesanan ini sekarang sudah LUNAS.';
+                $message .= ' This order is now fully PAID.'; // 4. Terjemahan
             }
 
             $hasOtherPendingPayments = $invoice->payments()->whereNull('payment_date')->exists();
             if (!$hasOtherPendingPayments && $order->status === 'Menunggu Konfirmasi') {
                 $order->update(['status' => 'Diproses']);
+
+                // --- 3. KIRIM NOTIFIKASI (DIPROSES) ---
+                $statusMessage = "Your order #" . $order->id . " is now being processed.";
+                Notification::send($client, new ClientNotification($statusMessage, $url, 'fas fa-cogs'));
+                // --- AKHIR NOTIFIKASI ---
             }
 
             return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', $message);
@@ -133,12 +176,18 @@ class OrderManagementController extends Controller
             Storage::disk('public')->delete($payment->payment_proof);
             $payment->delete();
 
+            // --- 3. KIRIM NOTIFIKASI (DITOLAK) ---
+            $rejectMessage = "Your payment proof for order #" . $order->id . " has been rejected.";
+            Notification::send($client, new ClientNotification($rejectMessage, $url, 'fas fa-times-circle'));
+            // --- AKHIR NOTIFIKASI ---
+
             if ($invoice->payments()->count() === 0) {
                 $order->update(['status' => 'Menunggu Pembayaran']);
                 $invoice->delete();
             }
 
-            return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', 'Bukti pembayaran telah ditolak dan dihapus.');
+            // 4. Terjemahan
+            return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', 'Payment proof has been rejected and deleted.');
         }
     }
 
@@ -150,6 +199,13 @@ class OrderManagementController extends Controller
 
         $order->update(['progress' => $request->progress]);
 
-        return back()->with('success', 'Order progress has been updated.');
+        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
+        $client = $order->user;
+        $message = "Your order progress for #" . $order->id . " is now " . $request->progress . "%.";
+        $url = route('client.orders.show', $order->id);
+        Notification::send($client, new ClientNotification($message, $url, 'fas fa-tasks'));
+        // --- AKHIR NOTIFIKASI ---
+
+        return back()->with('success', 'Order progress has been updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
     }
 }

@@ -15,6 +15,7 @@ use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController as ClientProfileController;
 use App\Http\Controllers\Client\ServiceListController;
+use App\Livewire\ClientPaymentPending; // <-- 1. IMPORT LIVEWIRE COMPONENT
 
 // --- Controller Admin (Struktur Baru) ---
 use App\Http\Controllers\Admin\ProfileController;
@@ -153,7 +154,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/pay-midtrans', [PaymentController::class, 'payWithMidtrans'])->name('pay_midtrans');
             Route::get('/payment-manual', [PaymentController::class, 'create'])->name('create');
             Route::post('/payment-manual', [PaymentController::class, 'store'])->name('store');
-            Route::get('/payment-pending', [PaymentController::class, 'pending'])->name('pending');
+
+            // --- 2. PERUBAHAN DI SINI ---
+            // Arahkan rute 'pending' ke Komponen Livewire, bukan Controller lama
+            Route::get('/payment-pending', ClientPaymentPending::class)->name('pending');
+            // --- AKHIR PERUBAHAN ---
+
             Route::get('/payment-success', [PaymentController::class, 'success'])->name('success');
             Route::get('/settlement', [PaymentController::class, 'showSettlementPage'])->name('settlement');
             Route::post('/settlement', [PaymentController::class, 'processSettlement'])->name('process_settlement');

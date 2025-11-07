@@ -7,29 +7,31 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        {{-- Favicons --}}
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
         
+        {{-- Fonts & Icons --}}
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+        {{-- INI KUNCINYA --}}
         @livewireStyles
 
+        {{-- Scripts --}}
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         {{-- CSS untuk Preloader --}}
         <style>
             #preloader {
                 position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                /* [PERUBAHAN] Ganti background solid menjadi semi-transparan dengan blur */
                 background-color: rgba(249, 250, 251, 0.8); /* bg-gray-50 dengan 80% opacity */
                 backdrop-filter: blur(8px);
                 -webkit-backdrop-filter: blur(8px); /* Untuk support browser Safari */
-                
                 z-index: 9999; display: flex;
                 justify-content: center; align-items: center; flex-direction: column;
                 gap: 1.5rem; opacity: 1; transition: opacity 0.75s ease, visibility 0.75s ease;
@@ -37,7 +39,6 @@
             #preloader.hidden { opacity: 0; visibility: hidden; }
             @media (prefers-color-scheme: dark) {
                 #preloader {
-                    /* [PERUBAHAN] Ganti background solid menjadi semi-transparan dengan blur untuk mode gelap */
                     background-color: rgba(17, 24, 39, 0.8); /* bg-gray-900 dengan 80% opacity */
                 }
                 #preloader .preloader-text { color: #9ca3af; }
@@ -124,17 +125,28 @@
 
         @stack('scripts')
 
+        {{-- --- PERBAIKAN TOTAL PRELOADER SCRIPT --- --}}
         <script>
-            // Preloader script
-            window.addEventListener('load', function() {
+            // 1. Definisikan fungsi untuk menyembunyikan preloader
+            function hidePreloader() {
                 const preloader = document.getElementById('preloader');
                 if (preloader) {
                     preloader.classList.add('hidden');
+                    // Kita tunggu transisi CSS (0.75s) selesai sebelum menghapusnya
                     setTimeout(() => { preloader.style.display = 'none'; }, 800);
                 }
-            });
-        </script>
+            }
 
+            // 2. Panggil fungsi saat 'load' (untuk refresh manual)
+            window.addEventListener('load', hidePreloader);
+
+            // 3. Panggil fungsi saat 'livewire:navigated' (untuk redirect SPA)
+            // Ini akan memperbaiki bug "loading nyangkut"
+            document.addEventListener('livewire:navigated', hidePreloader);
+        </script>
+        {{-- --- AKHIR PERBAIKAN --- --}}
+
+        {{-- INI KUNCINYA --}}
         @livewireScripts
     </body>
 </html>

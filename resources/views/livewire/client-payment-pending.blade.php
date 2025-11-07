@@ -1,18 +1,12 @@
-{{-- Lokasi: resources/views/client/payment/pending.blade.php (English Version) --}}
-
-@php
-    // Get the last payment submission for this order
-    $lastPayment = $order->payments()->latest()->first();
-@endphp
-
-<x-app-layout>
+<div>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Waiting for Payment Confirmation
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    {{-- INI KUNCINYA: Auto-refresh halaman ini setiap 5 detik --}}
+    <div class="py-12" wire:poll.5s>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             <x-payment-steps :step="3" />
@@ -38,6 +32,7 @@
                              <div class="flex justify-between">
                                 <dt class="text-gray-600">Submission Date</dt>
                                 <dd class="font-semibold">
+                                    {{-- Variabel $lastPayment sekarang datang dari controller --}}
                                     @if($lastPayment)
                                         {{ $lastPayment->created_at->format('d M Y, H:i') }}
                                     @else
@@ -71,6 +66,4 @@
             </div>
         </div>
     </div>
-
-    @include('layouts.partials.app-footer')
-</x-app-layout>
+</div>
