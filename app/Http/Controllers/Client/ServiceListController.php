@@ -7,81 +7,110 @@ use App\Models\Category;
 use App\Models\DetailOrder;
 use App\Models\Order;
 use App\Models\Service;
+use App\Models\Discount; // Untuk fitur diskon
 use App\Models\User;
 use App\Notifications\NewOrderNotification;
-use Illuminate\Http\Request; // <-- PASTIKAN USE STATEMENT INI ADA
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB; // Untuk keamanan database transaction
 
 class ServiceListController extends Controller
 {
     /**
      * Menampilkan halaman katalog layanan untuk client.
-     * Halaman ini sekarang mendukung query parameter '?category=slug-kategori'.
      */
     public function index(Request $request)
     {
-        // 1. Ambil slug kategori dari URL, contoh: ?category=it-solution
         $categorySlug = $request->query('category');
 
-        // 2. Ambil semua kategori 'service' beserta relasi layanannya (sudah teroptimasi)
-        // Kita juga langsung urutkan service di dalamnya berdasarkan harga termurah
         $serviceCategories = Category::where('type', 'service')
             ->with(['services' => function ($query) {
                 $query->orderBy('price', 'asc');
             }])
             ->get();
 
-        // 3. Tentukan kategori mana yang harus aktif saat halaman pertama kali dibuka
         $selectedCategory = null;
         if ($categorySlug) {
-            // Jika ada slug di URL, cari kategori yang cocok dari koleksi yang sudah kita ambil
             $selectedCategory = $serviceCategories->firstWhere('slug', $categorySlug);
         }
 
-        // 4. Kelompokkan layanan berdasarkan 'package_plan' untuk setiap kategori
         $servicesByCategory = [];
         foreach ($serviceCategories as $category) {
             $servicesByCategory[$category->id] = $category->services->groupBy('package_plan');
         }
 
-        // 5. Kirim semua data yang dibutuhkan ke view dengan path yang BARU
         return view('client.services.index', compact(
             'serviceCategories',
             'servicesByCategory',
-            'selectedCategory' // Variabel ini berisi kategori yang dipilih dari URL atau null
+            'selectedCategory'
         ));
     }
 
     /**
-     * Memproses pemesanan.
-     * (Tidak ada perubahan di method ini)
+     * Memproses pemesanan dengan dukungan Diskon & Keamanan Transaksi.
      */
-    public function order(Service $service)
+    public function order(Request $request, Service $service)
     {
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'order_date' => now(),
-            'total_price' => $service->price,
-            'status' => 'Menunggu Pembayaran',
-        ]);
+        $originalPrice = (float) $service->price;
+        $discountAmount = 0.00;
+        $discountCode = null;
 
-        DetailOrder::create([
-            'order_id' => $order->id,
-            'service_id' => $service->id,
-            'quantity' => 1,
-            'price' => $service->price,
-        ]);
+        // Logika Validasi Diskon (Case Insensitive)
+        if ($request->filled('discount_code')) {
+            $inputCode = strtoupper($request->discount_code);
 
-        $usersToNotify = User::role(['Founder', 'Pemasukan dan Pengeluaran'])->get();
-        Notification::send($usersToNotify, new NewOrderNotification($order));
+            $discount = Discount::where('code', $inputCode)
+                ->where('is_active', true)
+                ->where(function ($query) {
+                    $query->whereNull('expires_at')
+                        ->orWhere('expires_at', '>=', now()->startOfDay());
+                })
+                ->first();
 
-        return redirect()->route('client.payment.choose', $order->id);
+            if ($discount && (is_null($discount->max_uses) || $discount->current_uses < $discount->max_uses)) {
+                $discountAmount = (float) $discount->amount;
+                $discountCode = $discount->code;
+            } else {
+                return back()->with('error', 'Invalid or expired discount code.');
+            }
+        }
+
+        $totalPrice = max(0, $originalPrice - $discountAmount);
+
+        // Database Transaction agar data konsisten (Anti-Ghost Bug)
+        return DB::transaction(function () use ($service, $totalPrice, $discountCode, $discountAmount) {
+
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'order_date' => now(),
+                'total_price' => $totalPrice,
+                'status' => 'Menunggu Pembayaran',
+                'discount_code' => $discountCode,
+                'discount_amount' => $discountAmount,
+            ]);
+
+            DetailOrder::create([
+                'order_id' => $order->id,
+                'service_id' => $service->id,
+                'quantity' => 1,
+                'price' => $service->price,
+            ]);
+
+            if ($discountCode) {
+                Discount::where('code', $discountCode)->increment('current_uses');
+            }
+
+            $usersToNotify = User::role(['Founder', 'Pemasukan dan Pengeluaran'])->get();
+            Notification::send($usersToNotify, new NewOrderNotification($order));
+
+            return redirect()->route('client.payment.choose', $order->id)
+                ->with('success', 'Order created successfully!');
+        });
     }
 
     /**
      * Menampilkan halaman detail layanan.
-     * (Tidak ada perubahan di method ini)
      */
     public function show(Service $service)
     {

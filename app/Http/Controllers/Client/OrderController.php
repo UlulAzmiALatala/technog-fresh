@@ -1,11 +1,11 @@
 <?php
-// Lokasi: app/Http/Controllers/Client/OrderController.php
+// Location: app/Http/Controllers/Client/OrderController.php
 
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\Testimonial; // 1. Import model Testimonial
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -13,7 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class OrderController extends Controller
 {
     /**
-     * Menampilkan riwayat pesanan dengan filter, pencarian, dan paginasi.
+     * Display order history with filters, search, and pagination.
      */
     public function index(Request $request)
     {
@@ -42,80 +42,84 @@ class OrderController extends Controller
     }
 
     /**
-     * Menampilkan halaman detail pesanan dan data testimoni.
+     * Display order details and associated testimonial data.
      */
     public function show(Order $order)
     {
-        // Pastikan client hanya bisa melihat order miliknya sendiri
+        // Ensure the client can only view their own orders
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // 2. Eager load relasi testimoni untuk order ini
+        // Eager load testimonial relation for this order
         $order->load('testimonial');
 
-        // 3. Kirim data order ke view. View akan memeriksa apakah $order->testimonial ada atau tidak.
         return view('client.orders.show', compact('order'));
     }
 
     /**
-     * METHOD BARU: Menyimpan testimoni dari klien.
+     * Store a new project review/testimonial from the client.
      */
     public function storeTestimonial(Request $request, Order $order)
     {
-        // 1. Validasi Keamanan & Otorisasi
+        // 1. Security & Authorization Validation
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
-        if ($order->status !== 'Selesai') {
-            return back()->with('error', 'Anda hanya bisa memberikan ulasan untuk proyek yang sudah selesai.');
-        }
-        if ($order->testimonial) {
-            return back()->with('error', 'Anda sudah pernah memberikan ulasan untuk proyek ini.');
+
+        // Check if the order status is 'Completed' (Selesai)
+        if ($order->status !== 'Completed' && $order->status !== 'Selesai') {
+            return back()->with('error', 'Reviews can only be submitted for completed projects.');
         }
 
-        // 2. Validasi Input Form
+        if ($order->testimonial) {
+            return back()->with('error', 'You have already submitted a review for this project.');
+        }
+
+        // 2. Input Validation
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string|min:10|max:1000',
         ]);
 
-        // 3. Buat Testimoni Baru
+        // 3. Create New Testimonial
         Testimonial::create([
             'user_id' => Auth::id(),
             'order_id' => $order->id,
             'rating' => $validated['rating'],
             'content' => $validated['content'],
-            'is_featured' => false, // Default tidak featured, admin yang akan menentukan
+            'is_featured' => false, // Default to not featured, pending admin approval
         ]);
 
-        // 4. Redirect Kembali dengan Pesan Sukses
-        return back()->with('success', 'Terima kasih! Ulasan Anda telah berhasil dikirim.');
+        // 4. Redirect with Success Message
+        return back()->with('success', 'Thank you! Your review has been successfully submitted.');
     }
 
+    /**
+     * Generate and download the official receipt/invoice PDF.
+     */
     public function downloadInvoice(Order $order)
     {
-        // 1. Otorisasi: Pastikan client hanya bisa melihat order miliknya
+        // 1. Authorization Check
         if ($order->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // 2. Validasi: Pastikan invoice sudah 'Lunas'
-        // Kita gunakan optional() agar aman jika relasi invoice belum ada
-        if (optional($order->invoice)->status !== 'Lunas') {
-            return back()->with('error', 'Bukti pembayaran hanya tersedia untuk order yang sudah lunas.');
+        // 2. Validation: Ensure invoice is 'Paid' (Lunas)
+        if (optional($order->invoice)->status !== 'Paid' && optional($order->invoice)->status !== 'Lunas') {
+            return back()->with('error', 'Payment proof is only available for fully paid orders.');
         }
 
-        // 3. Eager Load semua relasi yang dibutuhkan untuk PDF
-        $order->load('user', 'invoice.payments', 'detailOrders.service');
+        // 3. Eager Load required relations for PDF generation
+        $order->load(['user', 'invoice.payments', 'detailOrders.service']);
 
-        // 4. Buat nama file yang dinamis
-        $filename = 'invoice-' . $order->invoice->invoice_number . '.pdf';
+        // 4. Generate dynamic filename
+        $filename = 'Invoice-' . $order->invoice->invoice_number . '.pdf';
 
-        // 5. Render view Blade ke PDF
+        // 5. Render Blade view to PDF
         $pdf = Pdf::loadView('client.payment.invoice_pdf', compact('order'));
 
-        // 6. Kembalikan sebagai download
+        // 6. Return as stream or download
         return $pdf->download($filename);
     }
 }

@@ -19,7 +19,7 @@
                             <h1 class="text-3xl font-bold text-white">{{ $greeting }}, {{ Auth::user()->name }}!</h1>
                             <p class="mt-2 text-indigo-200">All your project progress is right here.</p>
                         </div>
-                        <a href="{{ route('client.services.list') }}" class="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap">
+                        <a href="{{ route('client.services.index') }}" class="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-transform transform hover:scale-105 whitespace-nowrap">
                             <i class="fas fa-plus mr-2"></i>
                             Order New Service
                         </a>
@@ -53,7 +53,7 @@
                 </div>
 
                 {{-- Card 3: Call-to-Action --}}
-                <a href="{{ route('client.services.list') }}" class="group block p-6 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <a href="{{ route('client.services.index') }}" class="group block p-6 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                     <div class="flex items-center justify-between h-full">
                         <div class="flex-grow">
                             <p class="text-lg font-bold text-white">Ready for your next project?</p>

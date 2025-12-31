@@ -5,31 +5,34 @@ namespace App\Http\Controllers\Admin\Pemasukan;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Worker;
+use App\Models\ExpenseCategory; // Tambahkan ini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\ClientNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\DB;
 
 class OrderManagementController extends Controller
 {
     /**
-     * Menampilkan daftar pesanan dengan fungsionalitas filter dan pencarian.
+     * Menampilkan daftar pesanan dengan fitur filter dan pencarian.
      */
     public function index(Request $request)
     {
-        // ... (Logika index tidak berubah) ...
         $totalOrders = Order::count();
-        $pendingConfirmationCount = Order::where('status', 'Menunggu Konfirmasi')->count();
-        $inProgressCount = Order::where('status', 'Diproses')->count();
-        $totalRevenue = Order::where('status', 'Selesai')->sum('total_price');
+        $pendingConfirmationCount = Order::where('status', 'Awaiting Confirmation')->count();
+        $inProgressCount = Order::where('status', 'Processing')->count();
+        $totalRevenue = Order::where('status', 'Completed')->sum('total_price');
 
         $query = Order::with('user', 'invoice')->latest();
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('id', 'like', '%' . $request->search . '%')
-                    ->orWhereHas('user', function ($subQ) use ($request) {
-                        $subQ->where('name', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('id', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('user', function ($subQ) use ($searchTerm) {
+                        $subQ->where('name', 'like', '%' . $searchTerm . '%');
                     });
             });
         }
@@ -50,83 +53,78 @@ class OrderManagementController extends Controller
     }
 
     /**
-     * Menampilkan halaman detail pesanan dengan ringkasan pembayaran.
+     * Menampilkan detail pesanan lengkap dengan riwayat pembayaran.
      */
     public function show(Order $order)
     {
-        // ... (Logika show tidak berubah) ...
-        $order->load('user', 'detailOrders.service', 'invoice.payments');
+        $order->load('user', 'detailOrders.service', 'invoice.payments', 'expenses.worker');
 
         $amountPaid = 0;
         if ($order->invoice) {
             $amountPaid = $order->payments()->whereNotNull('payment_date')->sum('payments.amount');
         }
-        $remainingAmount = $order->total_price - $amountPaid;
+        $remainingAmount = max(0, $order->total_price - $amountPaid);
 
         return view('admin.pemasukan.orders.show', compact('order', 'amountPaid', 'remainingAmount'));
     }
 
     /**
-     * Memperbarui status pesanan.
+     * Memperbarui status pesanan secara manual.
      */
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:Menunggu Pembayaran,Menunggu Konfirmasi,Diproses,Selesai,Dibatalkan',
+            'status' => 'required|in:Pending Payment,Awaiting Confirmation,Processing,Completed,Cancelled',
         ]);
 
-        $order->update(['status' => $request->status]);
+        DB::transaction(function () use ($request, $order) {
+            $order->update(['status' => $request->status]);
 
-        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
-        $client = $order->user;
-        $url = route('client.orders.show', $order->id);
-        $message = "Your order status has been updated to: " . $request->status;
-        $icon = 'fas fa-sync-alt';
+            $client = $order->user;
+            $url = route('client.orders.show', $order->id);
+            $icon = 'fas fa-sync-alt';
+            $message = "Order status updated to: " . $request->status;
 
-        // Tentukan pesan yang lebih spesifik berdasarkan status
-        if ($request->status === 'Diproses') {
-            $message = "Your order #" . $order->id . " is now being processed.";
-            $icon = 'fas fa-cogs';
-        } elseif ($request->status === 'Selesai') {
-            $message = "Great news! Your order #" . $order->id . " is now complete.";
-            $icon = 'fas fa-check-double';
-        } elseif ($request->status === 'Dibatalkan') {
-            $message = "Your order #" . $order->id . " has been cancelled.";
-            $icon = 'fas fa-ban';
-        }
+            if ($request->status === 'Processing') {
+                $message = "Your order #{$order->id} is now being processed.";
+                $icon = 'fas fa-cogs';
+            } elseif ($request->status === 'Completed') {
+                $message = "Order #{$order->id} is now complete. Thank you!";
+                $icon = 'fas fa-check-double';
+            } elseif ($request->status === 'Cancelled') {
+                $message = "Order #{$order->id} has been cancelled.";
+                $icon = 'fas fa-ban';
+            }
 
-        Notification::send($client, new ClientNotification($message, $url, $icon));
-        // --- AKHIR NOTIFIKASI ---
+            Notification::send($client, new ClientNotification($message, $url, $icon));
+        });
 
         return redirect()->route('admin.pemasukan.orders.show', $order->id)
-            ->with('success', 'Order status has been updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
+            ->with('success', 'Order status updated successfully.');
     }
 
     /**
-     * Memperbarui harga negosiasi untuk opsi pengiriman cepat.
+     * Memperbarui biaya negosiasi pengiriman.
      */
     public function updateNegotiatedPrice(Request $request, Order $order)
     {
-        $validated = $request->validate([
+        $request->validate([
             'negotiated_price_fast' => 'nullable|numeric|min:0',
             'negotiated_price_express' => 'nullable|numeric|min:0',
+            'negotiated_price_custom' => 'nullable|numeric|min:0',
         ]);
 
-        $order->update($validated);
+        $order->update([
+            'negotiated_price_fast' => $request->negotiated_price_fast,
+            'negotiated_price_express' => $request->negotiated_price_express,
+            'negotiated_price_custom' => $request->negotiated_price_custom,
+        ]);
 
-        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
-        $client = $order->user;
-        $message = "A new negotiated price has been set for your order #" . $order->id . ".";
-        $url = route('client.orders.show', $order->id);
-        Notification::send($client, new ClientNotification($message, $url, 'fas fa-dollar-sign'));
-        // --- AKHIR NOTIFIKASI ---
-
-        return redirect()->route('admin.pemasukan.orders.show', $order->id)
-            ->with('success', 'Negotiated prices have been successfully updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
+        return back()->with('success', 'Negotiated pricing has been updated.');
     }
 
     /**
-     * Verifikasi pembayaran per-item dengan nilai action yang benar.
+     * Verifikasi bukti pembayaran manual dari klien.
      */
     public function verifyPayment(Request $request, Order $order)
     {
@@ -135,77 +133,109 @@ class OrderManagementController extends Controller
             'payment_id' => 'required|exists:payments,id'
         ]);
 
-        $payment = Payment::findOrFail($request->payment_id);
-        $invoice = $order->invoice;
-        $client = $order->user; // <-- 3. Ambil Klien
-        $url = route('client.orders.show', $order->id); // <-- 3. Siapkan URL
+        return DB::transaction(function () use ($request, $order) {
+            $payment = Payment::findOrFail($request->payment_id);
+            $invoice = $order->invoice;
+            $client = $order->user;
+            $url = route('client.orders.show', $order->id);
 
-        if (!$invoice || $payment->invoice_id !== $invoice->id) {
-            return back()->with('error', 'Invalid action.'); // <-- 4. Terjemahan
-        }
-
-        if ($request->action === 'accept') {
-            $payment->update(['payment_date' => now()]);
-
-            $totalPaid = $invoice->payments()->whereNotNull('payment_date')->sum('payments.amount');
-
-            // 4. Terjemahan pesan
-            $message = "Payment of $ " . number_format($payment->amount, 0) . " has been approved.";
-
-            // --- 3. KIRIM NOTIFIKASI (DISETUJUI) ---
-            Notification::send($client, new ClientNotification($message, $url, 'fas fa-check-circle'));
-            // --- AKHIR NOTIFIKASI ---
-
-            if ($totalPaid >= $order->total_price) {
-                $invoice->update(['status' => 'Lunas']);
-                $message .= ' This order is now fully PAID.'; // 4. Terjemahan
+            if (!$invoice || $payment->invoice_id !== $invoice->id) {
+                return back()->with('error', 'Mismatch error: Invoice not found.');
             }
 
-            $hasOtherPendingPayments = $invoice->payments()->whereNull('payment_date')->exists();
-            if (!$hasOtherPendingPayments && $order->status === 'Menunggu Konfirmasi') {
-                $order->update(['status' => 'Diproses']);
+            if ($request->action === 'accept') {
+                $payment->update(['payment_date' => now()]);
+                $totalPaid = $invoice->payments()->whereNotNull('payment_date')->sum('amount');
+                $message = "Payment of $ " . number_format($payment->amount, 2) . " approved.";
 
-                // --- 3. KIRIM NOTIFIKASI (DIPROSES) ---
-                $statusMessage = "Your order #" . $order->id . " is now being processed.";
-                Notification::send($client, new ClientNotification($statusMessage, $url, 'fas fa-cogs'));
-                // --- AKHIR NOTIFIKASI ---
+                if ($totalPaid >= $order->total_price) {
+                    $invoice->update(['status' => 'Paid']);
+                    $message .= ' Order is now fully PAID.';
+                }
+
+                if ($order->status === 'Awaiting Confirmation') {
+                    $order->update(['status' => 'Processing']);
+                }
+
+                Notification::send($client, new ClientNotification($message, $url, 'fas fa-check-circle'));
+                return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', $message);
+            } else {
+                $proofPath = $payment->payment_proof;
+                $payment->delete();
+                if ($proofPath) Storage::disk('public')->delete($proofPath);
+
+                if ($invoice->payments()->whereNotNull('payment_date')->count() === 0) {
+                    $order->update(['status' => 'Pending Payment']);
+                }
+
+                $rejectMessage = "Payment proof for order #{$order->id} rejected. Please re-upload.";
+                Notification::send($client, new ClientNotification($rejectMessage, $url, 'fas fa-times-circle'));
+
+                return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', 'Payment proof rejected.');
             }
-
-            return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', $message);
-        } else { // action === 'reject'
-            Storage::disk('public')->delete($payment->payment_proof);
-            $payment->delete();
-
-            // --- 3. KIRIM NOTIFIKASI (DITOLAK) ---
-            $rejectMessage = "Your payment proof for order #" . $order->id . " has been rejected.";
-            Notification::send($client, new ClientNotification($rejectMessage, $url, 'fas fa-times-circle'));
-            // --- AKHIR NOTIFIKASI ---
-
-            if ($invoice->payments()->count() === 0) {
-                $order->update(['status' => 'Menunggu Pembayaran']);
-                $invoice->delete();
-            }
-
-            // 4. Terjemahan
-            return redirect()->route('admin.pemasukan.orders.show', $order->id)->with('success', 'Payment proof has been rejected and deleted.');
-        }
+        });
     }
 
+    /**
+     * Memperbarui progress pengerjaan proyek.
+     */
     public function updateProgress(Request $request, Order $order)
     {
-        $request->validate([
-            'progress' => 'required|integer|min:0|max:100',
-        ]);
-
+        $request->validate(['progress' => 'required|integer|min:0|max:100']);
         $order->update(['progress' => $request->progress]);
 
-        // --- 3. KIRIM NOTIFIKASI KE KLIEN ---
         $client = $order->user;
-        $message = "Your order progress for #" . $order->id . " is now " . $request->progress . "%.";
+        $message = "Project progress for #{$order->id} is now at {$request->progress}%.";
         $url = route('client.orders.show', $order->id);
         Notification::send($client, new ClientNotification($message, $url, 'fas fa-tasks'));
-        // --- AKHIR NOTIFIKASI ---
 
-        return back()->with('success', 'Order progress has been updated.'); // <-- 4. Terjemahan (Sudah B.Inggris)
+        return back()->with('success', 'Progress updated.');
+    }
+
+    /**
+     * Menyimpan data pembayaran fee ke Worker (Pengeluaran Project).
+     */
+    public function storeWorkerPayout(Request $request, Order $order)
+    {
+        $request->validate([
+            'worker_name' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+        ]);
+
+        return DB::transaction(function () use ($request, $order) {
+            // 1. Dapatkan atau buat Worker
+            $worker = Worker::firstOrCreate(['name' => $request->worker_name]);
+
+            // 2. PERBAIKAN: Buat kategori tanpa kolom 'description'
+            // Kita hanya mengirim 'name' karena database kamu belum punya kolom description
+            $category = ExpenseCategory::firstOrCreate(
+                ['name' => 'Project Cost']
+            );
+
+            // 3. Simpan sebagai Expense (Project Type)
+            $expense = $order->expenses()->create([
+                'user_id' => auth()->id(),
+                'worker_id' => $worker->id,
+                'category_id' => $category->id,
+                'amount' => $request->amount,
+                'description' => $request->description ?? "Payout for Project #{$order->id} to {$worker->name}",
+                'expense_date' => now(),
+                'type' => 'project',
+                'status' => 'Pending',
+            ]);
+
+            // 4. Catat otomatis ke Arus Kas (Transactions)
+            if (method_exists($expense, 'transaction')) {
+                $expense->transaction()->create([
+                    'user_id' => auth()->id(),
+                    'type' => 'Pengeluaran',
+                    'amount' => $request->amount,
+                    'description' => "Worker Payout: {$worker->name} for Order #{$order->id}",
+                ]);
+            }
+
+            return back()->with('success', 'Worker payout recorded successfully.');
+        });
     }
 }

@@ -12,11 +12,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'order_date',
@@ -39,43 +34,36 @@ class Order extends Model
         'due_date' => 'datetime',
         'completed_at' => 'datetime',
         'order_date' => 'datetime',
+        // PERBAIKAN: Cast keuangan ke decimal agar mendukung koma
+        'total_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'dp_amount' => 'decimal:2',
+        'negotiated_price_fast' => 'decimal:2',
+        'negotiated_price_express' => 'decimal:2',
     ];
 
-    /**
-     * Get the user that owns the order.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * Get the detail orders for the order.
-     */
     public function detailOrders(): HasMany
     {
         return $this->hasMany(DetailOrder::class);
     }
-
-    /**
-     * Get the invoice associated with the order.
-     */
     public function invoice(): HasOne
     {
         return $this->hasOne(Invoice::class);
     }
-
-    /**
-     * [TAMBAHAN] Relasi ke model Payment melalui Invoice
-     * Memudahkan untuk menghitung total pembayaran
-     */
     public function payments()
     {
         return $this->hasManyThrough(Payment::class, Invoice::class);
     }
-
-    public function testimonial(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function testimonial(): HasOne
     {
         return $this->hasOne(Testimonial::class);
+    }
+    public function expenses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Expense::class);
     }
 }

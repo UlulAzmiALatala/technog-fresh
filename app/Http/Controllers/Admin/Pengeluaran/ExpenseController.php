@@ -15,29 +15,32 @@ class ExpenseController extends Controller
      */
     public function index(Request $request)
     {
-        // [BAGIAN BARU] Menghitung total pengeluaran bulan ini
-        $totalThisMonth = Expense::whereBetween('expense_date', [now()->startOfMonth(), now()->endOfMonth()])->sum('amount');
+        $categories = Category::where('type', 'expense')->orderBy('name', 'asc')->get();
 
-        // Kode Anda yang sudah ada
-        $categories = Category::where('type', 'expense')->get();
-        $query = Expense::with(['category', 'user'])->latest('expense_date'); // Diurutkan berdasarkan tanggal pengeluaran
+        // Query dasar: Ambil operasional (bukan project)
+        $query = Expense::with(['category', 'user'])
+            ->where('type', '!=', 'project')
+            ->latest('expense_date');
 
+        // Fitur Search (berdasarkan deskripsi)
         if ($request->filled('search')) {
             $query->where('description', 'like', '%' . $request->search . '%');
         }
 
+        // Fitur Filter (berdasarkan kategori)
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
+        // Paginasi 10 data per halaman
         $expenses = $query->paginate(10)->withQueryString();
 
-        // [MODIFIKASI] Mengirim variabel baru ke view
-        return view('admin.pengeluaran.index', compact(
-            'expenses',
-            'categories',
-            'totalThisMonth'
-        ));
+        // Hitung total hanya untuk hasil yang difilter bulan ini (opsional, tapi variabelnya tetap dikirim agar tidak error)
+        $totalThisMonth = Expense::where('type', '!=', 'project')
+            ->whereBetween('expense_date', [now()->startOfMonth(), now()->endOfMonth()])
+            ->sum('amount');
+
+        return view('admin.pengeluaran.operational.index', compact('expenses', 'categories', 'totalThisMonth'));
     }
 
     /**

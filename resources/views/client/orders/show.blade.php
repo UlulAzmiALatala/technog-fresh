@@ -1,107 +1,146 @@
+{{-- Location: resources/views/client/orders/show.blade.php (SOVEREIGN EDITION) --}}
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
-            <a href="{{ route('client.orders') }}" class="text-gray-400 hover:text-gray-700 transition-colors duration-200 mr-2 p-1 rounded-full hover:bg-gray-200">
+            <a href="{{ route('client.orders.index') }}" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200 mr-4 p-2 rounded-xl hover:bg-indigo-50">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Order Details #{{ $order->id }}
-            </h2>
+            <div>
+                <span class="block text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em] leading-none mb-1">Administrative Registry</span>
+                <h2 class="font-black text-xl text-gray-900 leading-tight uppercase tracking-tight">
+                    Order Details #{{ $order->id }}
+                </h2>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-12 bg-[#FDFDFF] min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Menampilkan pesan sukses atau error dari session --}}
+            {{-- Flash Messages --}}
             @if (session('success'))
-                <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
-                    <p>{{ session('success') }}</p>
+                <div class="mb-8 bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl flex items-center shadow-sm" role="alert">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <p class="text-[11px] font-black uppercase tracking-widest">{{ session('success') }}</p>
                 </div>
             @endif
+            
             @if (session('error'))
-                <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
-                    <p>{{ session('error') }}</p>
+                <div class="mb-8 bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl flex items-center shadow-sm" role="alert">
+                    <i class="fas fa-exclamation-circle mr-3"></i>
+                    <p class="text-[11px] font-black uppercase tracking-widest">{{ session('error') }}</p>
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
             
-                {{-- Left Column: Details & Documents --}}
-                <div class="lg:col-span-2 space-y-8">
-                    {{-- Order Details Card --}}
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-900">Order Summary</h3>
+                {{-- Left Column: Summary & Review --}}
+                <div class="lg:col-span-2 space-y-10">
+                    
+                    {{-- Order Summary Card --}}
+                    <div class="bg-white overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 rounded-[2.5rem]">
+                        <div class="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Summary</h3>
                         </div>
-                        <div class="p-6 text-gray-900">
-                            <dl class="space-y-4 text-sm">
+                        <div class="p-10 text-gray-900">
+                            <dl class="space-y-6">
                                 @foreach ($order->detailOrders as $detail)
-                                    <div class="flex justify-between items-center">
-                                        <dt class="text-gray-600">{{ $detail->service->name }} (x{{ $detail->quantity }})</dt>
-                                        <dd class="font-semibold">$ {{ number_format($detail->price, 0, ',', '.') }}</dd>
+                                    <div class="flex justify-between items-center group">
+                                        <div>
+                                            <dt class="text-sm font-black text-gray-800 uppercase tracking-tight">
+                                                {{ $detail->service->name }}
+                                            </dt>
+                                            <dd class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Quantity: {{ $detail->quantity }} Units</dd>
+                                        </div>
+                                        <dd class="text-sm font-black text-gray-900">
+                                            $ {{ number_format($detail->price, 2) }}
+                                        </dd>
                                     </div>
                                 @endforeach
-                                <div class="border-t border-gray-200 !my-6"></div>
-                                <div class="flex justify-between text-base">
-                                    <dt class="text-gray-800 font-bold">Total Payment</dt>
-                                    <dd class="font-bold text-indigo-600">$ {{ number_format($order->total_price, 0, ',', '.') }}</dd>
+
+                                <div class="pt-8 border-t border-slate-50">
+                                    @if($order->discount_amount > 0)
+                                        <div class="flex justify-between items-center mb-4">
+                                            <dt class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Promotional Credit</dt>
+                                            <dd class="text-sm font-black text-red-500">- $ {{ number_format($order->discount_amount, 2) }}</dd>
+                                        </div>
+                                    @endif
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <dt class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Valuation</dt>
+                                            <dd class="text-3xl font-black text-indigo-600 tracking-tighter">
+                                                $ {{ number_format($order->total_price, 2) }}
+                                            </dd>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="inline-block px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest 
+                                                @if($order->status == 'Selesai') bg-emerald-50 text-emerald-600 border border-emerald-100 
+                                                @else bg-indigo-50 text-indigo-600 border border-indigo-100 @endif">
+                                                {{-- Status Mapping --}}
+                                                @switch($order->status)
+                                                    @case('Menunggu Pembayaran') Pending Payment @break
+                                                    @case('Awaiting Confirmation') Awaiting Confirmation @break
+                                                    @case('Diproses') Processing @break
+                                                    @case('Selesai') Completed @break
+                                                    @case('Dibatalkan') Cancelled @break
+                                                    @default {{ $order->status }}
+                                                @endswitch
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </dl>
                         </div>
                     </div>
 
-                    {{-- =================================================================== --}}
-                    {{-- BAGIAN BARU: Form Testimoni atau Tampilan Testimoni yang Sudah Ada --}}
-                    {{-- =================================================================== --}}
+                    {{-- Review Section (Only for Completed Orders) --}}
                     @if ($order->status == 'Selesai')
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
-                            <div class="p-6 border-b border-gray-200">
-                                <h3 class="text-lg font-bold text-gray-900">Project Review</h3>
+                        <div class="bg-white overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 rounded-[2.5rem]">
+                            <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Rate Our Service</h3>
                             </div>
-                            <div class="p-6 text-gray-900">
+                            <div class="p-10">
                                 @if ($order->testimonial)
-                                    {{-- Tampilan jika testimoni sudah ada --}}
-                                    <div>
-                                        <p class="text-sm text-gray-600 mb-2">Thank you for your feedback!</p>
-                                        <div class="flex items-center mb-4">
+                                    <div class="bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100">
+                                        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-4">Review Submitted</p>
+                                        <div class="flex items-center mb-6 space-x-1">
                                             @for ($i = 1; $i <= 5; $i++)
-                                                <i class="fas fa-star {{ $i <= $order->testimonial->rating ? 'text-yellow-400' : 'text-gray-300' }}"></i>
+                                                <i class="fas fa-star text-xs {{ $i <= $order->testimonial->rating ? 'text-amber-400' : 'text-slate-200' }}"></i>
                                             @endfor
                                         </div>
-                                        <blockquote class="border-l-4 border-gray-200 pl-4 italic text-gray-700">
+                                        <blockquote class="text-sm font-bold text-slate-600 leading-relaxed uppercase tracking-tight">
                                             "{{ $order->testimonial->content }}"
                                         </blockquote>
                                     </div>
                                 @else
-                                    {{-- Tampilan form jika testimoni belum ada --}}
                                     <form action="{{ route('client.orders.testimonial.store', $order->id) }}" method="POST" x-data="{ rating: 0, hoverRating: 0 }">
                                         @csrf
-                                        <div class="space-y-4">
+                                        <div class="space-y-8">
                                             <div>
-                                                <label class="block font-medium text-sm text-gray-700 mb-1">Your Rating</label>
-                                                <div class="flex items-center space-x-1">
+                                                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Select Rating</label>
+                                                <div class="flex items-center space-x-2">
                                                     <template x-for="star in 5" :key="star">
                                                         <button type="button" @click="rating = star" @mouseenter="hoverRating = star" @mouseleave="hoverRating = 0"
-                                                                class="text-2xl transition-colors"
-                                                                :class="(hoverRating >= star || rating >= star) ? 'text-yellow-400' : 'text-gray-300'">
+                                                                class="text-3xl transition-all duration-300 transform focus:outline-none"
+                                                                :class="(hoverRating >= star || rating >= star) ? 'text-amber-400 scale-110' : 'text-slate-200 scale-100'">
                                                             <i class="fas fa-star"></i>
                                                         </button>
                                                     </template>
                                                 </div>
                                                 <input type="hidden" name="rating" x-model="rating">
-                                                @error('rating') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                                                @error('rating') <span class="text-red-500 text-[10px] font-bold uppercase mt-2 block">{{ $message }}</span> @enderror
                                             </div>
 
                                             <div>
-                                                <label for="content" class="block font-medium text-sm text-gray-700">Your Review</label>
-                                                <textarea name="content" id="content" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" 
-                                                          placeholder="Tell us about your experience with our service..." required>{{ old('content') }}</textarea>
-                                                @error('content') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                                                <label for="content" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Your Feedback</label>
+                                                <textarea name="content" id="content" rows="4" class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 text-sm font-bold placeholder-slate-300 focus:border-indigo-500 focus:ring-0 transition-all" 
+                                                          placeholder="SHARE YOUR EXPERIENCE..." required>{{ old('content') }}</textarea>
+                                                @error('content') <span class="text-red-500 text-[10px] font-bold uppercase mt-2 block">{{ $message }}</span> @enderror
                                             </div>
 
                                             <div class="flex justify-end">
-                                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 transition ease-in-out duration-150">
+                                                <button type="submit" class="px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-indigo-600 transition-all active:scale-95 shadow-xl shadow-slate-200">
                                                     Submit Review
                                                 </button>
                                             </div>
@@ -111,97 +150,89 @@
                             </div>
                         </div>
                     @endif
-
                 </div>
 
                 {{-- Right Column: Status & Info --}}
-                <div class="lg:col-span-1 space-y-8">
+                <div class="lg:col-span-1 space-y-10">
+                    
                     {{-- Payment Info Card --}}
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-900">Payment Information</h3>
+                    <div class="bg-white overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 rounded-[2.5rem]">
+                        <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payment Information</h3>
                         </div>
-                        <div class="p-6">
-                            <dl class="space-y-3 text-sm">
-                                <div class="flex justify-between">
-                                    <dt class="text-gray-600">Method</dt>
-                                    <dd class="font-semibold">{{ optional($order->invoice)->payment_method ?? 'Not Selected' }}</dd>
+                        <div class="p-8">
+                            <dl class="space-y-6">
+                                <div class="flex justify-between items-center">
+                                    <dt class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Method</dt>
+                                    <dd class="text-[10px] font-black text-gray-900 uppercase">{{ optional($order->invoice)->payment_method ?? 'Not Selected' }}</dd>
                                 </div>
-                                <div class="flex justify-between">
-                                    <dt class="text-gray-600">Status</dt>
+                                <div class="flex justify-between items-center">
+                                    <dt class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</dt>
                                     <dd>
-                                        <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            {{ optional($order->invoice)->status == 'Lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}
-                                        ">
+                                        <span class="px-3 py-1 text-[9px] font-black uppercase rounded-lg border {{ optional($order->invoice)->status == 'Lunas' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100' }}">
                                             {{ optional($order->invoice)->status == 'Lunas' ? 'Paid' : 'Unpaid' }}
                                         </span>
                                     </dd>
                                 </div>
                             </dl>
 
-                            {{-- =================================== --}}
-                            {{-- ===    KODE BARU DITAMBAHKAN    === --}}
-                            {{-- =================================== --}}
+                            {{-- CORRECT ROUTE DOWNLOAD --}}
                             @if (optional($order->invoice)->status == 'Lunas')
-                            <div class="mt-6">
-                                <a href="{{ route('client.orders.download_invoice', $order->id) }}" 
-                                   target="_blank" 
-                                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 transition ease-in-out duration-150">
-                                    <i class="fas fa-file-download mr-2"></i>
-                                    Download Bukti Bayar (PDF)
-                                </a>
-                            </div>
+                                <div class="mt-8">
+                                    <a href="{{ route('client.payment.invoice_pdf', $order->id) }}" 
+                                       target="_blank" 
+                                       class="w-full inline-flex items-center justify-center px-6 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.15em] rounded-2xl hover:bg-slate-900 shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                                        <i class="fas fa-file-download mr-2"></i>
+                                        Download Invoice (PDF)
+                                    </a>
+                                </div>
                             @endif
-                            {{-- =================================== --}}
-                            {{-- ===     BATAS KODE BARU       === --}}
-                            {{-- =================================== --}}
-                                
                         </div>
                     </div>
 
-                    {{-- Order Progress Card (Dynamic Timeline) --}}
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-900">Order Progress</h3>
+                    {{-- Order Status Timeline --}}
+                    <div class="bg-white overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.02)] border border-slate-100 rounded-[2.5rem]">
+                        <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                            <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Status</h3>
                         </div>
-                        <div class="p-6">
+                        <div class="p-8">
                             @php
                                 $statuses = ['Menunggu Pembayaran', 'Diproses', 'Selesai'];
                                 $currentStatusIndex = array_search($order->status, $statuses);
                             @endphp
-                            <ol class="relative border-l border-gray-200">                  
+                            <ol class="relative border-l-2 border-slate-100 ml-4">                  
                                 @foreach ($statuses as $index => $status)
-                                    <li class="mb-10 ml-6">            
+                                    <li class="mb-10 ml-8">            
                                         <span @class([
-                                            'absolute flex items-center justify-center w-6 h-6 rounded-full -left-3 ring-8 ring-white',
-                                            'bg-green-200' => $index < $currentStatusIndex || $order->status == 'Selesai',
-                                            'bg-indigo-200' => $index == $currentStatusIndex && $order->status != 'Selesai',
-                                            'bg-gray-200' => $index > $currentStatusIndex,
+                                            'absolute flex items-center justify-center w-6 h-6 rounded-lg -left-[13px] ring-4 ring-white shadow-sm',
+                                            'bg-emerald-500 text-white' => $index < $currentStatusIndex || $order->status == 'Selesai',
+                                            'bg-indigo-600 text-white animate-pulse' => $index == $currentStatusIndex && $order->status != 'Selesai',
+                                            'bg-slate-100 text-slate-300' => $index > $currentStatusIndex,
                                         ])>
                                             @if ($index < $currentStatusIndex || $order->status == 'Selesai')
-                                                <i class="fas fa-check text-green-600 text-xs"></i>
+                                                <i class="fas fa-check text-[10px]"></i>
                                             @elseif ($index == $currentStatusIndex)
-                                                <i class="fas fa-spinner fa-spin text-indigo-600 text-xs"></i>
+                                                <i class="fas fa-sync-alt fa-spin text-[10px]"></i>
                                             @else
-                                                <i class="fas fa-clock text-gray-500 text-xs"></i>
+                                                <i class="fas fa-clock text-[10px]"></i>
                                             @endif
                                         </span>
                                         <h4 @class([
-                                            'mb-1 text-base font-semibold',
+                                            'text-[11px] font-black uppercase tracking-widest',
                                             'text-gray-900' => $index <= $currentStatusIndex,
-                                            'text-gray-400' => $index > $currentStatusIndex,
+                                            'text-slate-300' => $index > $currentStatusIndex,
                                         ])>
                                             @switch($status)
-                                                @case('Menunggu Pembayaran') Waiting for Payment @break
+                                                @case('Menunggu Pembayaran') Pending Payment @break
                                                 @case('Diproses') In Progress @break
                                                 @case('Selesai') Completed @break
                                                 @default {{ $status }}
                                             @endswitch
                                         </h4>
-                                        @if ($index == 0 && $order->status == 'Menunggu Pembayaran')
-                                            <p class="text-sm text-gray-500">Awaiting your payment.</p>
+                                        @if ($index == 0 && ($order->status == 'Menunggu Pembayaran' || $order->status == 'Awaiting Confirmation'))
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">Awaiting settlement confirmation.</p>
                                         @elseif($index == 1 && $order->status == 'Diproses')
-                                            <p class="text-sm text-gray-500">Our team is working on your order.</p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">Our team is working on your project.</p>
                                         @endif
                                     </li>
                                 @endforeach

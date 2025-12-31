@@ -1,14 +1,11 @@
-{{-- Lokasi: resources/views/layouts/partials/sidebar.blade.php (FINAL DENGAN SETTINGS) --}}
-
+{{-- Lokasi: resources/views/layouts/partials/sidebar.blade.php --}}
 <div :style="`width: ${sidebarWidth}px`" 
-     class="fixed inset-y-0 left-0 bg-slate-800 text-white flex flex-col z-30 transform"
-     :class="{ 
-         '-translate-x-full': !sidebarOpen, 
-         'transition-all duration-300 ease-in-out': isLoaded 
-     }">
+     class="fixed inset-y-0 left-0 bg-slate-900 text-white flex flex-col z-30 shadow-2xl transition-all"
+     :class="{ '-translate-x-full': !sidebarOpen, 'transition-all duration-300 ease-in-out': isLoaded }">
     
     <div class="flex-grow flex flex-col overflow-hidden">
-        <div class="flex items-center justify-center h-20 px-4 border-b border-slate-700 relative flex-shrink-0">
+        {{-- AREA LOGO (DIPERTAHANKAN SESUAI INSTRUKSI) --}}
+        <div class="flex items-center justify-center h-20 px-4 border-b border-slate-800 relative flex-shrink-0 bg-slate-900 sticky top-0 z-10">
             <a href="{{ route('admin.pemasukan.orders.index') }}" 
                class="transition-opacity duration-300 whitespace-nowrap flex justify-center w-full"
                :title="sidebarOpen ? 'TechnoG Solutions Dashboard' : 'Dashboard'">
@@ -24,179 +21,190 @@
             </a>
         </div>
 
-        <nav class="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-hide pb-20">
 
-            {{-- === MENU REFACTOR BERDASARKAN INSTRUKSI BARU === --}}
-
+            {{-- SECTION: REVENUE --}}
             @hasanyrole('Founder|Pemasukan dan Pengeluaran')
-                {{-- 1. LINK UTAMA: Orders --}}
+                <div class="px-4 mt-6 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Main Revenue
+                </div>
+                {{-- Orders --}}
                 <a href="{{ route('admin.pemasukan.orders.index') }}" 
-                   class="flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.pemasukan.orders.*') ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 hover:text-white' }}" 
+                   class="flex items-center gap-3 px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                   {{ request()->routeIs('admin.pemasukan.orders.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                    :class="sidebarOpen ? 'justify-start' : 'justify-center'"
-                   :title="!sidebarOpen ? 'Orders' : ''">
-                    <i class="fa-solid fa-receipt fa-fw w-6 text-center"></i>
-                    <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Orders</span>
+                   title="Orders">
+                    <i class="fa-solid fa-receipt fa-fw w-5 text-center"></i>
+                    <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Orders</span>
                 </a>
             @endhasanyrole
 
+            {{-- SECTION: FINANCE (Operational & Project Expenses) --}}
             @hasanyrole('Founder|Pemasukan dan Pengeluaran')
-                {{-- 2. LINK UTAMA: Expenses --}}
+                <div class="px-4 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Finance & Costs
+                </div>
+                {{-- Operational Expenses --}}
                 <a href="{{ route('admin.pengeluaran.expenses.index') }}" 
-                   class="flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.pengeluaran.expenses.*') ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 hover:text-white' }}" 
+                   class="flex items-center gap-3 px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                   {{ request()->routeIs('admin.pengeluaran.expenses.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                    :class="sidebarOpen ? 'justify-start' : 'justify-center'"
-                   :title="!sidebarOpen ? 'Expenses' : ''">
-                    <i class="fa-solid fa-arrow-right-from-bracket fa-fw w-6 text-center"></i>
-                    <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Expenses</span>
+                   title="Expenses">
+                    <i class="fa-solid fa-wallet fa-fw w-5 text-center"></i>
+                    <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Expenses</span>
+                </a>
+
+                {{-- Project Expenses (MENU BARU) --}}
+                <a href="{{ route('admin.pengeluaran.project-expenses.index') }}" 
+                   class="flex items-center gap-3 px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                   {{ request()->routeIs('admin.pengeluaran.project-expenses.*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'justify-start' : 'justify-center'"
+                   title="Project Expenses">
+                    <i class="fa-solid fa-diagram-project fa-fw w-5 text-center"></i>
+                    <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Project Expenses</span>
                 </a>
             @endhasanyrole
 
+            {{-- SECTION: CATALOG --}}
             @hasanyrole('Founder|Pemasukan dan Pengeluaran')
-                {{-- 3. DROPDOWN: Catalog (Services & Discounts) --}}
+                <div class="px-4 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Service Catalog
+                </div>
                 @php $catalogActive = request()->routeIs(['admin.pemasukan.services.*', 'admin.pemasukan.discounts.*']); @endphp
-                <div x-data="{ open: {{ $catalogActive ? 'true' : 'false' }}, active: {{ $catalogActive ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ $catalogActive ? 'true' : 'false' }} }">
                     <button @click="open = !open" 
-                            :class="[
-                                sidebarOpen ? 'justify-between' : 'justify-center',
-                                active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-                            ]"
-                            class="flex items-center w-full px-4 py-2.5 rounded-lg transition-colors duration-200"
-                            :title="!sidebarOpen ? 'Catalog' : ''">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-tags fa-fw w-6 text-center"></i>
-                            <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Catalog</span>
+                            class="flex items-center w-full px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                            {{ $catalogActive ? 'text-white bg-slate-800' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-tags fa-fw w-5 text-center {{ $catalogActive ? 'text-indigo-400' : '' }}"></i>
+                            <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Catalog</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
+                        <i class="fa-solid fa-chevron-right text-[10px] transform transition-transform duration-200" :class="{'rotate-90': open}" x-show="sidebarOpen"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.pemasukan.services.index') }}" @click.stop :title="!sidebarOpen ? 'Services' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.services.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-layer-group fa-fw w-5 mr-3 text-center"></i>
-                            <span>Services</span>
+                    <div x-show="open && sidebarOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" class="mt-1 space-y-1">
+                        <a href="{{ route('admin.pemasukan.services.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.pemasukan.services.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">
+                            Services
                         </a>
-                        <a href="{{ route('admin.pemasukan.discounts.index') }}" @click.stop :title="!sidebarOpen ? 'Discounts' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.pemasukan.discounts.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-percent fa-fw w-5 mr-3 text-center"></i>
-                            <span>Discounts</span>
+                        <a href="{{ route('admin.pemasukan.discounts.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.pemasukan.discounts.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">
+                            Discounts
                         </a>
                     </div>
                 </div>
             @endhasanyrole
-            
+
+            {{-- SECTION: CONTENT --}}
             @hasanyrole('Founder|Konten|Pemasukan dan Pengeluaran')
-                {{-- 4. DROPDOWN KONTEN (SAMA) --}}
+                <div class="px-4 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Digital Assets
+                </div>
                 @php $contentActive = request()->routeIs(['admin.founder.posts.*', 'admin.founder.case-studies.*', 'admin.testimonials.*']); @endphp
-                <div x-data="{ open: {{ $contentActive ? 'true' : 'false' }}, active: {{ $contentActive ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ $contentActive ? 'true' : 'false' }} }">
                     <button @click="open = !open" 
-                            :class="[
-                                sidebarOpen ? 'justify-between' : 'justify-center',
-                                active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-                            ]"
-                            class="flex items-center w-full px-4 py-2.5 rounded-lg transition-colors duration-200"
-                            :title="!sidebarOpen ? 'Content' : ''">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-pen-to-square fa-fw w-6 text-center"></i>
-                            <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Content</span>
+                            class="flex items-center w-full px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                            {{ $contentActive ? 'text-white bg-slate-800' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-pen-to-square fa-fw w-5 text-center {{ $contentActive ? 'text-indigo-400' : '' }}"></i>
+                            <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Content</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
+                        <i class="fa-solid fa-chevron-right text-[10px] transform transition-transform duration-200" :class="{'rotate-90': open}" x-show="sidebarOpen"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        
+                    <div x-show="open && sidebarOpen" x-transition class="mt-1 space-y-1">
                         @hasanyrole('Founder|Konten')
-                            <a href="{{ route('admin.founder.posts.index') }}" @click.stop :title="!sidebarOpen ? 'Blog' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.posts.*') ? 'text-white bg-slate-700' : '' }}">
-                                <i class="fa-solid fa-pen-ruler fa-fw w-5 mr-3 text-center"></i>
-                                <span>Blog</span>
-                            </a>
-                            <a href="{{ route('admin.founder.case-studies.index') }}" @click.stop :title="!sidebarOpen ? 'Portfolio' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.case-studies.*') ? 'text-white bg-slate-700' : '' }}">
-                                <i class="fa-solid fa-image-portrait fa-fw w-5 mr-3 text-center"></i>
-                                <span>Portfolio</span>
-                            </a>
+                        <a href="{{ route('admin.founder.posts.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.posts.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Blog</a>
+                        <a href="{{ route('admin.founder.case-studies.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.case-studies.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Portfolio</a>
                         @endhasanyrole
-
-                        <a href="{{ route('admin.testimonials.index') }}" @click.stop :title="!sidebarOpen ? 'Testimonials' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.testimonials.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-comment-dots fa-fw w-5 mr-3 text-center"></i>
-                            <span>Testimonials</span>
-                        </a>
+                        <a href="{{ route('admin.testimonials.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.testimonials.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Testimonials</a>
                     </div>
                 </div>
             @endhasanyrole
-            
+
+            {{-- SECTION: SETTINGS (FOUNDER ONLY) --}}
             @role('Founder')
-                {{-- 5. DROPDOWN: Site Settings (Founder Only) --}}
+                <div class="px-4 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Configurations
+                </div>
+                {{-- Dropdown Settings --}}
                 @php $settingsActive = request()->routeIs('admin.founder.settings.*'); @endphp
-                <div x-data="{ open: {{ $settingsActive ? 'true' : 'false' }}, active: {{ $settingsActive ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ $settingsActive ? 'true' : 'false' }} }">
                     <button @click="open = !open" 
-                            :class="[
-                                sidebarOpen ? 'justify-between' : 'justify-center',
-                                active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-                            ]"
-                            class="flex items-center w-full px-4 py-2.5 rounded-lg transition-colors duration-200"
-                            :title="!sidebarOpen ? 'Site Settings' : ''">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-cogs fa-fw w-6 text-center"></i>
-                            <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Site Settings</span>
+                            class="flex items-center w-full px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                            {{ $settingsActive ? 'text-white bg-slate-800' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-sliders fa-fw w-5 text-center {{ $settingsActive ? 'text-indigo-400' : '' }}"></i>
+                            <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Settings</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
+                        <i class="fa-solid fa-chevron-right text-[10px] transform transition-transform duration-200" :class="{'rotate-90': open}" x-show="sidebarOpen"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.founder.settings.contact.index') }}" @click.stop :title="!sidebarOpen ? 'Contact Info' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.settings.contact.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-address-book fa-fw w-5 mr-3 text-center"></i>
-                            <span>Contact Info</span>
-                        </a>
-                        <a href="{{ route('admin.founder.settings.social-links.index') }}" @click.stop :title="!sidebarOpen ? 'Social Links' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.settings.social-links.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-share-nodes fa-fw w-5 mr-3 text-center"></i>
-                            <span>Social Links</span>
-                        </a>
-                        <a href="{{ route('admin.founder.settings.logos.index') }}" @click.stop :title="!sidebarOpen ? 'Logos' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.settings.logos.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-image fa-fw w-5 mr-3 text-center"></i>
-                            <span>Logos</span>
-                        </a>
+                    <div x-show="open && sidebarOpen" x-transition class="mt-1 space-y-1">
+                        <a href="{{ route('admin.founder.settings.contact.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.settings.contact.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Contact Info</a>
+                        <a href="{{ route('admin.founder.settings.social-links.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.settings.social-links.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Social Links</a>
+                        <a href="{{ route('admin.founder.settings.logos.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.settings.logos.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Logos</a>
                     </div>
                 </div>
 
-                {{-- 6. DROPDOWN: Administration (Founder Only) --}}
+                {{-- SECTION: ADMINISTRATION --}}
+                <div class="px-4 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]" x-show="sidebarOpen">
+                    Administration
+                </div>
                 @php $adminActive = request()->routeIs(['admin.founder.reports.*', 'admin.founder.management-fee.*']); @endphp
-                <div x-data="{ open: {{ $adminActive ? 'true' : 'false' }}, active: {{ $adminActive ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ $adminActive ? 'true' : 'false' }} }">
                     <button @click="open = !open" 
-                            :class="[
-                                sidebarOpen ? 'justify-between' : 'justify-center',
-                                active ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-                            ]"
-                            class="flex items-center w-full px-4 py-2.5 rounded-lg transition-colors duration-200"
-                            :title="!sidebarOpen ? 'Administration' : ''">
-                        <div class="flex items-center">
-                            {{-- Mengganti ikon ke 'shield' sbg ikon utama --}}
-                            <i class="fa-solid fa-shield-halved fa-fw w-6 text-center"></i>
-                            <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Administration</span>
+                            class="flex items-center w-full px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                            {{ $adminActive ? 'text-white bg-slate-800' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                            :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-shield-halved fa-fw w-5 text-center {{ $adminActive ? 'text-indigo-400' : '' }}"></i>
+                            <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Backoffice</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down h-5 w-5 transform transition-transform duration-200" :class="{'rotate-180': open}" x-show="sidebarOpen"></i>
+                        <i class="fa-solid fa-chevron-right text-[10px] transform transition-transform duration-200" :class="{'rotate-90': open}" x-show="sidebarOpen"></i>
                     </button>
-                    <div x-show="open && sidebarOpen" x-transition class="mt-2 space-y-2 pl-8">
-                        <a href="{{ route('admin.founder.reports.index') }}" @click.stop :title="!sidebarOpen ? 'Reports' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.reports.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-chart-pie fa-fw w-5 mr-3 text-center"></i>
-                            <span>Reports</span>
-                        </a>
-                        <a href="{{ route('admin.founder.management-fee.index') }}" @click.stop :title="!sidebarOpen ? 'Management Fee' : ''" class="flex items-center px-4 py-2 text-sm rounded-lg text-slate-400 hover:bg-slate-700 hover:text-white {{ request()->routeIs('admin.founder.management-fee.*') ? 'text-white bg-slate-700' : '' }}">
-                            <i class="fa-solid fa-file-invoice-dollar fa-fw w-5 mr-3 text-center"></i>
-                            <span>Management Fee</span>
-                        </a>
+                    <div x-show="open && sidebarOpen" x-transition class="mt-1 space-y-1">
+                        <a href="{{ route('admin.founder.reports.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.reports.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Reports</a>
+                        <a href="{{ route('admin.founder.management-fee.index') }}" class="flex items-center pl-12 py-2 text-xs font-bold rounded-lg {{ request()->routeIs('admin.founder.management-fee.*') ? 'text-indigo-400' : 'text-slate-500 hover:text-white hover:bg-slate-800' }}">Management Fee</a>
                     </div>
                 </div>
-                
-                {{-- 7. LINK UTAMA: Users (Founder Only) --}}
+
+                {{-- Users --}}
                 <a href="{{ route('admin.founder.users.index') }}" 
-                   class="flex items-center px-4 py-2.5 rounded-lg text-slate-300 {{ request()->routeIs('admin.founder.users.*') ? 'bg-slate-700 text-white' : 'hover:bg-slate-700/50 hover:text-white' }}" 
+                   class="flex items-center gap-3 px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                   {{ request()->routeIs('admin.founder.users.*') ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
                    :class="sidebarOpen ? 'justify-start' : 'justify-center'"
-                   :title="!sidebarOpen ? 'Users' : ''">
-                    <i class="fa-solid fa-users fa-fw w-6 text-center"></i>
-                    <span class="ml-4 font-medium transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">Users</span>
+                   title="Users">
+                    <i class="fa-solid fa-users-gear fa-fw w-5 text-center"></i>
+                    <span class="transition-opacity duration-200 whitespace-nowrap" x-show="sidebarOpen">User Data</span>
+                </a>
+
+                <a href="{{ route('admin.founder.workers.index') }}" 
+                    class="flex items-center gap-3 px-4 py-2.5 mx-1 rounded-xl text-sm font-bold transition-all duration-200 
+                    {{ request()->routeIs('admin.founder.workers.*') ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}"
+                    :class="sidebarOpen ? 'justify-start' : 'justify-center'">
+                    <i class="fa-solid fa-user-tie fa-fw w-5 text-center"></i>
+                    <span x-show="sidebarOpen">Worker Database</span>
                 </a>
             @endrole
 
         </nav>
     </div>
 
+    {{-- BOTTOM AREA: LOGOUT (Meniru gaya React Sidebar) --}}
+    <div class="p-4 border-t border-slate-800 bg-slate-900 sticky bottom-0 z-20">
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" 
+                    class="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 font-bold group"
+                    :class="sidebarOpen ? 'justify-start' : 'justify-center'">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-sm" x-show="sidebarOpen">Sign Out</span>
+            </button>
+        </form>
+    </div>
+
     {{-- Resize Handle --}}
     <div @mousedown="isResizing = true" 
-         class="absolute top-0 right-0 w-2 h-full cursor-col-resize"
+         class="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-indigo-500/50 transition-colors"
          x-show="sidebarOpen">
     </div>
 </div>
-

@@ -14,16 +14,24 @@ class Expense extends Model
     protected $fillable = [
         'category_id',
         'user_id',
+        'order_id', // Tambahkan ini
+        'worker_id', // Tambahkan ini
         'description',
         'amount',
         'expense_date',
         'type',
     ];
 
-    /**
-     * Sebuah Expense milik satu Kategori.
-     * PERBAIKAN: Mengarahkan relasi ke model Category yang terpusat.
-     */
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function worker(): BelongsTo
+    {
+        return $this->belongsTo(Worker::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
