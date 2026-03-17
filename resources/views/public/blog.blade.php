@@ -95,31 +95,37 @@
                 </div>
 
                 {{-- ========================================== --}}
-                {{-- MOBILE POP-UP & DESKTOP SIDEBAR LOGIC --}}
+                {{-- MOBILE POP-UP (BOTTOM SHEET) & DESKTOP LOGIC --}}
                 {{-- ========================================== --}}
 
-                {{-- Tombol Floating Action Button (Hanya Muncul di Mobile) --}}
-                <button @click="sidebarOpen = true" 
-                        class="lg:hidden fixed bottom-6 right-6 z-[90] bg-indigo-600 text-white w-14 h-14 rounded-full shadow-[0_10px_25px_rgba(79,70,229,0.5)] flex items-center justify-center hover:bg-indigo-700 hover:scale-105 transition-all duration-300">
-                    <i class="fa-solid fa-bars-staggered fa-lg"></i>
-                </button>
+                {{-- Tombol Floating Action Button (Berubah jadi Pill di Tengah Bawah) --}}
+                <div class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90]">
+                    <button @click="sidebarOpen = true" 
+                            class="bg-gray-900 text-white px-6 py-3.5 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex items-center justify-center gap-3 hover:bg-gray-800 hover:scale-105 transition-all duration-300 border border-white/10 backdrop-blur-md">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span class="font-bold tracking-wide">Explore Topics</span>
+                    </button>
+                </div>
 
-                {{-- Physical Backdrop untuk Mobile Slide-over --}}
+                {{-- Physical Backdrop untuk Mobile Slide-up --}}
                 <div x-show="sidebarOpen" 
-                     x-transition.opacity 
+                     x-transition.opacity.duration.400ms 
                      @click="sidebarOpen = false" 
                      class="fixed inset-0 bg-gray-900/60 z-[100] lg:hidden backdrop-blur-sm" style="display: none;"></div>
 
-                {{-- Area Sidebar --}}
-                <aside :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
-                       class="fixed inset-y-0 right-0 z-[110] w-[85%] sm:w-96 bg-gray-50 lg:bg-transparent p-6 overflow-y-auto lg:overflow-visible transition-transform duration-300 ease-in-out lg:static lg:w-auto lg:p-0 lg:col-span-4 lg:sticky lg:top-28 space-y-8 shadow-2xl lg:shadow-none">
+                {{-- Area Sidebar (Desktop: Kanan / Mobile: Muncul dari Bawah) --}}
+                <aside :class="sidebarOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'"
+                       class="fixed inset-x-0 bottom-0 z-[110] max-h-[85vh] bg-white rounded-t-[2.5rem] p-6 sm:p-8 overflow-y-auto transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] lg:static lg:w-auto lg:h-auto lg:max-h-none lg:rounded-none lg:bg-transparent lg:p-0 lg:col-span-4 lg:sticky lg:top-28 space-y-8 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none order-first lg:order-last">
                     
-                    {{-- Header Mobile Sidebar dengan Tombol Close --}}
-                    <div class="flex items-center justify-between mb-8 lg:hidden border-b border-gray-200 pb-4">
-                        <h2 class="text-2xl font-extrabold text-gray-900">Explore</h2>
-                        <button @click="sidebarOpen = false" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-500 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-xmark fa-lg"></i>
-                        </button>
+                    {{-- Header Mobile Sidebar dengan Indikator Drag --}}
+                    <div class="lg:hidden mb-6 flex flex-col items-center">
+                        <div class="w-12 h-1.5 bg-gray-300 rounded-full mb-6"></div>
+                        <div class="w-full flex items-center justify-between">
+                            <h2 class="text-2xl font-extrabold text-gray-900">Explore Topics</h2>
+                            <button @click="sidebarOpen = false" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">
+                                <i class="fa-solid fa-xmark fa-lg"></i>
+                            </button>
+                        </div>
                     </div>
 
                     {{-- Widget: Categories --}}

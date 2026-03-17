@@ -348,9 +348,9 @@
                         shortBio: "The brain behind every data analysis and statistical model.",
                         fullBio: "Andri ensures that every solution we build is grounded in solid statistical models and accurate data analysis. With a deep passion for unlocking patterns, he forms the strategic foundation of TechnoG Solutions.",
                         socials: {
-                            linkedin: "https://linkedin.com/in/andririzki",
-                            github: "https://github.com/andririzki",
-                            instagram: "#"
+                            linkedin: "https://www.linkedin.com/in/muhamad-andri-rizki-s-stat-a7a394296",
+                            github: "#",
+                            instagram: "https://www.instagram.com/andririzki11?igsh=YzBlemI4OHZ2cnZm"
                         }
                     },
                     {
@@ -361,8 +361,8 @@
                         shortBio: "The technology architect who translates data insights into robust systems.",
                         fullBio: "Ulul is the technical powerhouse responsible for turning complex data strategies into seamless, scalable, and modern applications. He masters the art of bridging frontend aesthetics with backend performance.",
                         socials: {
-                            linkedin: "https://linkedin.com/in/ululazmia",
-                            github: "https://github.com/ululazmia",
+                            linkedin: "www.linkedin.com/in/ulul-azmi-a-latala-b2a15a269",
+                            github: "https://github.com/UlulAzmiALatala",
                             instagram: "#"
                         }
                     }
