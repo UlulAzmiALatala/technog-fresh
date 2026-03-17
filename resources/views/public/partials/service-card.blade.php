@@ -5,8 +5,7 @@
     $priceTagBgClass = 'bg-black/80'; // Default
 
     // ======================================================================
-    // PERUBAHAN 1: Mengadopsi blok logika @php yang sudah sempurna
-    // dari sisi klien untuk gradasi, warna teks, dan background harga.
+    // LOGIKA ASLI DIPERTAHANKAN 100% (Warna, Gradasi, Text Color)
     // ======================================================================
     switch ($packageName) {
         case 'Silver Plan':
@@ -46,75 +45,76 @@
     }
 @endphp
 
-<div class="bg-white rounded-2xl shadow-lg flex flex-col group transition-all duration-300 ease-in-out hover:shadow-2xl overflow-hidden">
+<div class="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex flex-col group transition-all duration-500 ease-out hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] overflow-hidden hover:-translate-y-2 border border-gray-100 h-full">
     
-    <div class="relative">
-        {{-- ====================================================== --}}
-        {{-- PERUBAHAN 2: Menambahkan overflow-hidden & group-hover --}}
-        {{-- ====================================================== --}}
-        <a href="{{ route('login') }}" class="block aspect-w-16 aspect-h-9 overflow-hidden"> 
+    {{-- Header Gambar & Info Ringkas --}}
+    <div class="relative h-56 overflow-hidden shrink-0">
+        <a href="{{ route('login') }}" class="block w-full h-full"> 
             <img src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/600x400/CCD3D8/334155?text=TechnoG' }}" 
                  alt="{{ $service->name }}" 
-                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                 class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
         </a>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
-        <div class="absolute top-3 right-3">
-            {{-- ====================================================== --}}
-            {{-- PERUBAHAN 3: Menggunakan class dinamis untuk BG harga --}}
-            {{-- ====================================================== --}}
-            <span class="{{ $priceTagBgClass }} text-white text-sm font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                $ {{ number_format($service->price, 0, ',', '.') }}
+        {{-- Gradient Overlay Halus untuk Teks Bawah --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent pointer-events-none"></div>
+        
+        {{-- Price Badge (Format Dollar & English) --}}
+        <div class="absolute top-4 right-4 z-20">
+            <span class="flex items-center gap-1 {{ $priceTagBgClass }} text-white font-bold px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/10 shadow-lg transition-transform duration-300 group-hover:scale-105">
+                <span class="text-sm opacity-80">$</span>
+                <span class="text-lg tracking-tight">{{ number_format($service->price, 0, '.', ',') }}</span>
             </span>
         </div>
 
-        <div class="absolute bottom-3 left-4">
-            {{-- ====================================================== --}}
-            {{-- PERUBAHAN 4: Menggunakan drop-shadow dengan filter     --}}
-            {{-- ====================================================== --}}
-            <h3 class="text-white font-bold text-lg [filter:drop-shadow(0_1px_1px_rgb(0,0,0))_drop-shadow(0_1px_2px_rgb(0,0,0))]">
-                <a href="{{ route('login') }}" class="text-white hover:text-gray-200">{{ $service->name }}</a>
+        {{-- Service Name & Duration --}}
+        <div class="absolute bottom-4 left-5 right-4 z-20">
+            <h3 class="text-white font-extrabold text-xl leading-tight mb-1.5 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.5))]">
+                <a href="{{ route('login') }}" class="hover:text-indigo-300 transition-colors">{{ $service->name }}</a>
             </h3>
-            <p class="text-gray-200 text-xs [filter:drop-shadow(0_1px_1px_rgb(0,0,0))]">
-                Estimasi {{ $service->estimated_duration }} {{ $service->duration_unit }}
-            </p>
+            <div class="flex items-center gap-2 text-gray-200 text-xs font-medium [filter:drop-shadow(0_1px_2px_rgba(0,0,0,0.8))]">
+                <i class="fa-regular fa-clock opacity-80"></i>
+                <span>Est. {{ $service->estimated_duration }} {{ $service->duration_unit }}</span>
+            </div>
         </div>
     </div>
     
-    <div style="{{ $contentBlockStyle }}" class="p-6 flex-grow flex flex-col">
-        <ul class="space-y-2 text-sm leading-relaxed flex-grow mb-6 {{ $featureListClass }}">
+    {{-- Content Block (Gradasi Asli) --}}
+    <div style="{{ $contentBlockStyle }}" class="p-6 sm:p-8 flex-grow flex flex-col relative z-10">
+        
+        {{-- Features List --}}
+        <ul class="space-y-3 text-sm leading-relaxed flex-grow mb-8 {{ $featureListClass }}">
             @if($service->features)
                 @foreach(explode("\n", $service->features) as $index => $feature)
                     @if(trim($feature) && $index < 4)
-                        <li class="flex items-start opacity-90">
-                            {{-- ====================================================== --}}
-                            {{-- PERUBAHAN 5: Menggunakan ikon centang modern        --}}
-                            {{-- ====================================================== --}}
-                            <svg class="flex-shrink-0 h-5 w-5 @if($packageName === 'Gold Plan') text-yellow-300 @else text-green-400 @endif mt-0.5 mr-2" 
+                        <li class="flex items-start opacity-95 group/item">
+                            {{-- Ikon Centang yang bereaksi saat di-hover --}}
+                            <svg class="flex-shrink-0 h-5 w-5 @if($packageName === 'Gold Plan' || $packageName === 'Custom Engagement') text-yellow-400 @else text-emerald-400 @endif mt-0.5 mr-3 transform group-hover/item:scale-110 transition-transform" 
                                  viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
-                            <span>{{ trim(str_replace('-', '', $feature)) }}</span>
+                            <span class="font-medium">{{ trim(str_replace('-', '', $feature)) }}</span>
                         </li>
                     @endif
                 @endforeach
             @else
-                <li class="italic opacity-60">Detail fitur belum tersedia.</li>
+                <li class="italic opacity-70 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info"></i> Feature details not available yet.
+                </li>
             @endif
         </ul>
 
-        {{-- ====================================================== --}}
-        {{-- PERUBAHAN 6: Menyesuaikan style tombol agar konsisten --}}
-        {{-- ====================================================== --}}
-        <div class="mt-auto flex items-center space-x-3">
+        {{-- Action Buttons --}}
+        <div class="mt-auto flex flex-col sm:flex-row items-center gap-3">
             <a href="{{ route('login') }}" 
-               class="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold transition border hover:bg-white/10 @if(in_array($packageName, ['Silver Plan'])) text-current border-gray-500/50 @else text-white border-white/50 @endif">
-                Detail
+               class="w-full text-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border backdrop-blur-sm 
+                      @if(in_array($packageName, ['Silver Plan'])) text-gray-800 border-gray-400/50 hover:bg-gray-100 hover:border-gray-500 
+                      @else text-white border-white/30 hover:bg-white/10 hover:border-white/60 @endif">
+                View Details
             </a>
             
             <a href="{{ route('login') }}"
-               class="w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold transition border border-transparent bg-blue-500 text-white hover:bg-blue-400">
-                Pesan
+               class="w-full text-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 border border-transparent bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] transform hover:-translate-y-0.5">
+                Order Now
             </a>
         </div>
     </div>

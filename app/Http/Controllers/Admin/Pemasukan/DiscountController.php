@@ -10,10 +10,38 @@ use Illuminate\Validation\Rule;
 
 class DiscountController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $discounts = Discount::latest()->paginate(10);
+        $query = Discount::latest();
 
+        // 1. Fitur Search (berdasarkan kode diskon)
+        if ($request->filled('search')) {
+            $query->where('code', 'like', '%' . $request->search . '%');
+        }
+
+        // 2. Fitur Filter Status (Active / Inactive)
+        if ($request->filled('status')) {
+            if ($request->status == 'active') {
+                $query->where('is_active', true)
+                    ->where(function ($q) {
+                        $q->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+                    })
+                    ->where(function ($q) {
+                        $q->whereNull('max_uses')->orWhereRaw('current_uses < max_uses');
+                    });
+            } elseif ($request->status == 'inactive') {
+                $query->where(function ($q) {
+                    $q->where('is_active', false)
+                        ->orWhere('expires_at', '<', now())
+                        ->orWhereRaw('max_uses IS NOT NULL AND current_uses >= max_uses');
+                });
+            }
+        }
+
+        // 3. Eksekusi query dengan paginasi
+        $discounts = $query->paginate(10)->withQueryString();
+
+        // 4. Return ke view dengan tetap menjaga session logic bawaanmu
         return view('admin.pemasukan.discounts.index', [
             'discounts' => $discounts,
             'openEditModalId' => session('open_edit_modal', 0),

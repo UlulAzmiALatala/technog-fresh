@@ -32,10 +32,15 @@ class ExpenseController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        // [BARU] Fitur Filter (berdasarkan type: Full / DP)
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
         // Paginasi 10 data per halaman
         $expenses = $query->paginate(10)->withQueryString();
 
-        // Hitung total hanya untuk hasil yang difilter bulan ini (opsional, tapi variabelnya tetap dikirim agar tidak error)
+        // Hitung total hanya untuk hasil yang difilter bulan ini
         $totalThisMonth = Expense::where('type', '!=', 'project')
             ->whereBetween('expense_date', [now()->startOfMonth(), now()->endOfMonth()])
             ->sum('amount');

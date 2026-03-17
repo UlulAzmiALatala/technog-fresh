@@ -1,78 +1,74 @@
-{{-- Lokasi: resources/views/admin/pemasukan/discounts/partials/add-modal.blade.php --}}
+<template x-teleport="body">
+    <div x-show="isAddModalOpen" x-cloak class="fixed inset-0 z-[990] flex items-center justify-center p-4">
+        
+        {{-- Layer Backdrop Super Blur --}}
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[30px] overflow-y-auto"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+             @click="isAddModalOpen = false"></div>
 
-<div x-show="isAddModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen px-4 text-center md:items-center sm:block sm:p-0">
-        {{-- Overlay --}}
-        <div x-show="isAddModalOpen" 
-             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="isAddModalOpen = false" aria-hidden="true">
-        </div>
-
-        <div x-show="isAddModalOpen" 
-             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-             class="inline-block w-full max-w-lg p-8 my-20 overflow-hidden text-left transition-all transform bg-white dark:bg-slate-800 rounded-lg shadow-xl 2xl:max-w-2xl">
+        <div class="relative bg-white/95 dark:bg-slate-800/95 w-full max-w-2xl max-h-[95vh] overflow-y-auto rounded-[2.5rem] shadow-2xl border border-white/10 z-10"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8" x-transition:enter-end="opacity-100 translate-y-0">
             
-            <div class="flex items-center justify-between space-x-4">
-                <h1 class="text-xl font-medium text-gray-800 dark:text-white">Add New Discount</h1>
-                <button @click="isAddModalOpen = false" class="text-gray-600 dark:text-gray-400 focus:outline-none hover:text-gray-700 dark:hover:text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center sticky top-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md z-20">
+                <h3 class="text-xl text-slate-900 dark:text-white tracking-tight font-bold uppercase">Add New Discount</h3>
+                <button @click="isAddModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times fa-lg"></i>
                 </button>
             </div>
             
-            <form class="mt-5" action="{{ route('admin.pemasukan.discounts.store') }}" method="POST">
+            <form action="{{ route('admin.pemasukan.discounts.store') }}" method="POST" class="p-8 space-y-6">
                 @csrf
-                <div class="space-y-6">
-                    {{-- Discount Code --}}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="add_code" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Discount Code</label>
-                        <input type="text" name="code" id="add_code" value="{{ old('code') }}" required 
-                               x-on:input="$el.value = $el.value.toUpperCase()"
-                               class="block w-full mt-1 border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:text-white">
+                        <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Discount Code</label>
+                        <input type="text" name="code" value="{{ old('code') }}" required 
+                               x-on:input="$el.value = $el.value.toUpperCase()" placeholder="e.g. PROMO2026"
+                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 font-black tracking-widest focus:ring-indigo-500">
                         <x-input-error :messages="$errors->get('code')" class="mt-2" />
                     </div>
 
-                    {{-- Amount dengan Dukungan Desimal --}}
                     <div>
-                        <label for="add_amount" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Amount ($)</label>
-                        <div class="relative mt-1">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <span class="text-gray-500 sm:text-sm">$</span>
-                            </div>
-                            <input type="number" name="amount" id="add_amount" step="0.01" value="{{ old('amount') }}" required 
-                                   class="block w-full rounded-md border-gray-300 dark:border-slate-600 pl-7 pr-12 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:text-white" placeholder="0.00">
+                        <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Amount ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400">$</span>
+                            <input type="number" name="amount" step="0.01" value="{{ old('amount') }}" required placeholder="0.00"
+                                   class="w-full pl-8 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 font-normal focus:ring-indigo-500">
                         </div>
                         <x-input-error :messages="$errors->get('amount')" class="mt-2" />
                     </div>
+                </div>
 
-                    {{-- Expires At --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="add_expires_at" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Expires At (Optional)</label>
-                        <input type="date" name="expires_at" id="add_expires_at" value="{{ old('expires_at') }}" class="block w-full mt-1 border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:text-white">
-                        <x-input-error :messages="$errors->get('expires_at')" class="mt-2" />
-                    </div>
-
-                    {{-- Max Uses (Stock) --}}
-                    <div>
-                        <label for="add_max_uses" class="block text-sm font-medium text-gray-700 dark:text-slate-300">Max Uses (Stock)</label>
-                        <input type="number" name="max_uses" id="add_max_uses" value="{{ old('max_uses') }}" class="block w-full mt-1 border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:text-white" placeholder="Leave empty for unlimited">
+                        <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Max Uses (Stock)</label>
+                        <input type="number" name="max_uses" value="{{ old('max_uses') }}" placeholder="Leave empty for unlimited"
+                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 font-normal focus:ring-indigo-500">
                         <x-input-error :messages="$errors->get('max_uses')" class="mt-2" />
                     </div>
 
-                    {{-- Status Active --}}
-                    <div class="flex items-center">
-                        <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" id="add_is_active" value="1" checked class="h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-700">
-                        <label for="add_is_active" class="ml-2 block text-sm text-gray-900 dark:text-slate-300">Activate this code</label>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Expires At</label>
+                        <input type="date" name="expires_at" value="{{ old('expires_at') }}" 
+                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 font-normal focus:ring-indigo-500">
+                        <x-input-error :messages="$errors->get('expires_at')" class="mt-2" />
                     </div>
                 </div>
 
-                <div class="mt-8 flex justify-end space-x-4">
-                    <button type="button" @click="isAddModalOpen = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700">Save Discount</button>
+                <div class="flex items-center p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <input type="hidden" name="is_active" value="0">
+                    <input type="checkbox" name="is_active" id="add_is_active" value="1" checked 
+                           class="h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-800">
+                    <label for="add_is_active" class="ml-3 block text-sm font-bold text-slate-900 dark:text-white">Activate this discount code immediately</label>
+                </div>
+
+                <div class="flex space-x-4 pt-4 border-t border-slate-100 dark:border-slate-700 mt-6">
+                    <button type="button" @click="isAddModalOpen = false" 
+                            class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-2xl font-bold transition-colors">Cancel</button>
+                    <button type="submit" 
+                            class="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-900/20 font-bold transition-colors">Save Discount</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
+</template>

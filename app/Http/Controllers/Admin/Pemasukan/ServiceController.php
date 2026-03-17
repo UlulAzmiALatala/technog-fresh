@@ -15,11 +15,12 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        // [BAGIAN BARU] Menghitung data statistik
         $totalServices = Service::count();
         $totalCategories = Category::where('type', 'service')->count();
 
-        // Logika query Anda yang sudah ada
+        // [TAMBAHKAN BARIS INI] Ambil data kategori dari database
+        $categories = Category::where('type', 'service')->get();
+
         $query = Service::with('category')->latest();
 
         if ($request->filled('search')) {
@@ -30,15 +31,14 @@ class ServiceController extends Controller
             $query->where('package_plan', $request->package_plan);
         }
 
-        // [MODIFIKASI] Menambahkan withQueryString() agar filter tidak hilang saat ganti halaman
         $services = $query->paginate(10)->withQueryString();
 
-        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
-        // dan menyesuaikan path view Anda
-        return view('admin.pemasukan.index', compact(
+        // [PASTIKAN VARIABEL $categories IKUT DIKIRIM KE COMPACT]
+        return view('admin.pemasukan.services.index', compact(
             'services',
             'totalServices',
-            'totalCategories'
+            'totalCategories',
+            'categories' // <--- Tambahkan ini
         ));
     }
 

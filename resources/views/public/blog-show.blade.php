@@ -1,15 +1,19 @@
 <x-public>
 
-    {{-- Memberi judul dinamis sesuai artikel yang dibuka --}}
     <x-slot name="title">
         {{ $post->title }} - TechnoG Blog
     </x-slot>
 
-    {{-- Tidak ada <x-slot name="hero">, semua konten masuk ke slot utama --}}
+    {{-- Wrapper Utama dengan overflow-x-hidden untuk mencegah bug horizontal scroll --}}
+    <div class="relative overflow-x-hidden bg-white" x-data="{ animate: false }" x-init="setTimeout(() => animate = true, 100)">
+        
+        {{-- Subtle Background Blobs untuk Header Artikel --}}
+        <div class="absolute top-0 inset-x-0 h-[500px] overflow-hidden z-0 pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-indigo-50/50 blur-[100px]"></div>
+            <div class="absolute top-20 -left-20 w-[400px] h-[400px] rounded-full bg-cyan-50/50 blur-[100px]"></div>
+        </div>
 
-    {{-- Wrapper Utama untuk Pemicu Animasi --}}
-    <div x-data="{ animate: false }" x-init="setTimeout(() => animate = true, 100)">
-        <article class="py-24" x-data="{
+        <article class="pt-32 pb-24 relative z-10" x-data="{
             share(platform) {
                 const url = encodeURIComponent(window.location.href);
                 const text = encodeURIComponent(document.title);
@@ -32,90 +36,166 @@
                 }
             }
         }">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                {{-- Breadcrumbs --}}
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                {{-- Breadcrumbs (Sleek Style) --}}
                 <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-                     class="mb-8 text-sm text-gray-500 transition-all duration-700 ease-out">
-                    <a href="{{ route('home') }}" class="hover:text-indigo-600">Home</a>
-                    <span class="mx-2">&sol;</span>
-                    <a href="{{ route('public.blog') }}" class="hover:text-indigo-600">Blog</a>
+                     class="mb-8 flex items-center justify-center space-x-2 text-sm text-gray-500 font-medium transition-all duration-700 ease-out">
+                    <a href="{{ route('home') }}" class="hover:text-indigo-600 transition-colors">Home</a>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+                    <a href="{{ route('public.blog') }}" class="hover:text-indigo-600 transition-colors">Blog</a>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+                    <span class="text-indigo-600 truncate max-w-[200px] sm:max-w-xs">{{ $post->title }}</span>
                 </div>
 
                 {{-- Article Header --}}
                 <div :class="animate ? 'opacity-100 translate-y-0 delay-100' : 'opacity-0 translate-y-8'"
                      class="text-center mb-12 transition-all duration-700 ease-out">
-                    <p class="text-base font-semibold text-indigo-600">{{ $post->category->name ?? 'Article' }}</p>
-                    <h1 class="mt-2 text-4xl font-extrabold text-gray-900 tracking-tight">{{ $post->title }}</h1>
-                    <div class="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
-                        <div class="flex-shrink-0">
-                            <img class="h-10 w-10 rounded-full object-cover" src="{{ $post->user->avatar ? asset('storage/' . $post->user->avatar) : 'https://placehold.co/40x40/e2e8f0/64748b?text=' . substr($post->user->name, 0, 1) }}" alt="{{ $post->user->name }}">
+                    
+                    {{-- Floating Category Badge --}}
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-bold uppercase tracking-wider shadow-sm border border-indigo-100 mb-6">
+                        {{ $post->category->name ?? 'Article' }}
+                    </span>
+                    
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.15] max-w-3xl mx-auto">
+                        {{ $post->title }}
+                    </h1>
+                    
+                    <div class="mt-8 flex items-center justify-center space-x-6 text-sm text-gray-500 font-medium">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 p-[2px] shadow-md">
+                                <img class="h-full w-full rounded-full object-cover border-2 border-white" 
+                                     src="{{ $post->user->avatar ? asset('storage/' . $post->user->avatar) : 'https://placehold.co/40x40/e2e8f0/64748b?text=' . substr($post->user->name, 0, 1) }}" 
+                                     alt="{{ $post->user->name }}">
+                            </div>
+                            <span class="text-gray-900">{{ $post->user->name }}</span>
                         </div>
-                        <div>
-                            <span>By <span class="font-medium text-gray-900">{{ $post->user->name }}</span></span>
-                            <span class="mx-2">&middot;</span>
+                        <span class="text-gray-300">|</span>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-calendar-days"></i>
                             <span>{{ $post->created_at->format('M d, Y') }}</span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Main Image --}}
-                <div :class="animate ? 'opacity-100 translate-y-0 delay-200' : 'opacity-0 translate-y-8'"
-                     class="mb-12 group transition-all duration-700 ease-out">
-                    <div class="overflow-hidden rounded-lg shadow-xl">
-                        <img class="w-full h-auto max-h-[500px] object-cover rounded-lg transition-transform duration-300 ease-in-out group-hover:scale-105"
+                {{-- Main Image Showcase --}}
+                <div :class="animate ? 'opacity-100 translate-y-0 delay-200' : 'opacity-0 translate-y-12'"
+                     class="mb-16 relative transition-all duration-700 ease-out">
+                    <div class="absolute inset-0 bg-indigo-500 rounded-[2.5rem] blur-2xl opacity-10 translate-y-4"></div>
+                    <div class="relative overflow-hidden rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-gray-100 bg-white p-2">
+                        <img class="w-full h-auto max-h-[600px] object-cover rounded-[2rem]"
                              src="{{ $post->image ? asset('storage/' . $post->image) : 'https://placehold.co/1200x600/e2e8f0/cbd5e0?text=TechnoG' }}"
                              alt="{{ $post->title }}">
                     </div>
                 </div>
 
-                {{-- Content --}}
+                {{-- Content Body (Dioptimalkan agar sangat rapi dan enak dibaca) --}}
                 <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'"
-                     class="prose prose-lg max-w-none prose-indigo transition-all duration-700 ease-out">
+                     class="prose prose-lg md:prose-xl max-w-none prose-indigo prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-indigo-600 prose-a:font-semibold hover:prose-a:text-indigo-500 prose-img:rounded-[1.5rem] prose-img:shadow-lg prose-blockquote:border-l-indigo-500 prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:text-gray-700 transition-all duration-700 ease-out">
                     {!! $post->body !!}
                 </div>
 
-                {{-- Share Buttons --}}
+                {{-- Author Box & Share (Premium Card Design) --}}
                 <div :class="animate ? 'opacity-100 translate-y-0 delay-500' : 'opacity-0 translate-y-8'"
-                     class="mt-12 pt-8 border-t border-gray-200 transition-all duration-700 ease-out">
-                    <h4 class="text-lg font-bold text-gray-900">Share This Article</h4>
-                    <div class="mt-4 flex space-x-4">
-                        <a href="#" @click.prevent="share('facebook')" class="text-gray-400 hover:text-blue-600 transition-colors"><span class="sr-only">Facebook</span><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
-                        <a href="#" @click.prevent="share('twitter')" class="text-gray-400 hover:text-sky-500 transition-colors"><span class="sr-only">Twitter</span><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
-                        <a href="#" @click.prevent="share('linkedin')" class="text-gray-400 hover:text-blue-700 transition-colors"><span class="sr-only">LinkedIn</span><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+                     class="mt-20 p-8 sm:p-10 bg-gray-50 rounded-[2.5rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col md:flex-row items-center justify-between gap-8 transition-all duration-700 ease-out">
+                    
+                    {{-- Author Bio --}}
+                    <div class="flex items-center gap-6">
+                        <div class="flex-shrink-0 relative">
+                            <div class="absolute inset-0 bg-indigo-400 rounded-full blur-md opacity-40"></div>
+                            <img class="relative h-20 w-20 rounded-full object-cover border-4 border-white shadow-md" 
+                                 src="{{ $post->user->avatar ? asset('storage/' . $post->user->avatar) : 'https://placehold.co/80x80/e2e8f0/64748b?text=' . substr($post->user->name, 0, 1) }}" 
+                                 alt="{{ $post->user->name }}">
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold tracking-widest text-indigo-500 uppercase mb-1">Written By</p>
+                            <h4 class="text-2xl font-extrabold text-gray-900">{{ $post->user->name }}</h4>
+                            <p class="text-gray-500 mt-1 font-medium">Writer at TechnoG Solutions</p>
+                        </div>
+                    </div>
+
+                    {{-- Vertical Divider (Desktop only) --}}
+                    <div class="hidden md:block w-px h-16 bg-gray-200"></div>
+
+                    {{-- Share Buttons --}}
+                    <div class="text-center md:text-left">
+                        <p class="text-sm font-bold tracking-widest text-gray-400 uppercase mb-4">Share Article</p>
+                        <div class="flex items-center gap-3">
+                            {{-- Facebook --}}
+                            <button @click.prevent="share('facebook')" class="h-12 w-12 rounded-full bg-white border border-gray-200 text-gray-400 hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2] shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center">
+                                <span class="sr-only">Facebook</span>
+                                <i class="fa-brands fa-facebook-f fa-lg"></i>
+                            </button>
+                            {{-- Twitter / X --}}
+                            <button @click.prevent="share('twitter')" class="h-12 w-12 rounded-full bg-white border border-gray-200 text-gray-400 hover:bg-black hover:text-white hover:border-black shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center">
+                                <span class="sr-only">Twitter</span>
+                                <i class="fa-brands fa-x-twitter fa-lg"></i>
+                            </button>
+                            {{-- LinkedIn --}}
+                            <button @click.prevent="share('linkedin')" class="h-12 w-12 rounded-full bg-white border border-gray-200 text-gray-400 hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center">
+                                <span class="sr-only">LinkedIn</span>
+                                <i class="fa-brands fa-linkedin-in fa-lg"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Author Bio --}}
-                <div :class="animate ? 'opacity-100 translate-y-0 delay-[600ms]' : 'opacity-0 translate-y-8'"
-                     class="mt-16 pt-8 border-t border-gray-200 flex items-center transition-all duration-700 ease-out">
-                    <div class="flex-shrink-0">
-                        <img class="h-16 w-16 rounded-full object-cover" src="{{ $post->user->avatar ? asset('storage/' . $post->user->avatar) : 'https://placehold.co/64x64/e2e8f0/64748b?text=' . substr($post->user->name, 0, 1) }}" alt="{{ $post->user->name }}">
-                    </div>
-                    <div class="ml-4">
-                        <h4 class="text-lg font-bold text-gray-900">{{ $post->user->name }}</h4>
-                        <p class="text-gray-600">Writer at TechnoG Solutions</p>
-                    </div>
-                </div>
             </div>
         </article>
 
-        {{-- Related Posts --}}
-        <aside x-data="{ animate: false }" x-intersect.once="animate = true" class="py-24 bg-gray-50 border-t border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-                    class="text-2xl font-bold text-gray-900 mb-8 transition-all duration-700 ease-out">
-                    Read Other Articles
-                </h2>
-                <div :class="animate ? 'opacity-100 translate-y-0 delay-200' : 'opacity-0 translate-y-8'"
-                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 ease-out">
-                    @foreach ($relatedPosts as $relatedPost)
-                        <div class="group">
-                            <a href="{{ route('public.blog.show', $relatedPost->slug) }}">
-                                <div class="overflow-hidden rounded-lg shadow-md">
-                                    <img class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" src="{{ $relatedPost->image ? asset('storage/' . $relatedPost->image) : 'https://placehold.co/600x400/e2e8f0/cbd5e0?text=TechnoG' }}" alt="{{ $relatedPost->title }}">
+        {{-- Related Posts Section --}}
+        <aside class="py-24 bg-slate-900 relative overflow-hidden" x-data="{ animateRelated: false }" x-intersect.once="animateRelated = true">
+            {{-- Dark Futuristic BG Elements --}}
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-indigo-600/20 blur-[150px] -translate-y-1/2"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-16">
+                    <h2 :class="animateRelated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                        class="text-sm font-bold tracking-widest text-cyan-400 uppercase tracking-[0.2em] transition-all duration-700 ease-out">
+                        Keep Exploring
+                    </h2>
+                    <h3 :class="animateRelated ? 'opacity-100 translate-y-0 delay-100' : 'opacity-0 translate-y-8'"
+                        class="mt-2 text-3xl md:text-4xl font-extrabold text-white tracking-tight transition-all duration-700 ease-out">
+                        Read Other Articles
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach ($relatedPosts as $index => $relatedPost)
+                        {{-- Card Desain Konsisten dengan Index Blog --}}
+                        <div :class="animateRelated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+                             class="group bg-white/5 backdrop-blur-xl rounded-[2rem] p-4 sm:p-6 shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/10 transition-all duration-500 ease-out hover:-translate-y-2 hover:bg-white/10 hover:border-white/20"
+                             style="transition-delay: {{ ($index + 2) * 150 }}ms;">
+                            
+                            <a href="{{ route('public.blog.show', $relatedPost->slug) }}" class="block relative overflow-hidden rounded-[1.5rem]">
+                                {{-- Floating Category Badge --}}
+                                <div class="absolute top-4 left-4 z-20">
+                                    <span class="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-indigo-700 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                        {{ $relatedPost->category->name ?? 'Article' }}
+                                    </span>
                                 </div>
-                                <h3 class="mt-4 text-lg font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">{{ $relatedPost->title }}</h3>
+                                
+                                {{-- Image with Zoom Effect --}}
+                                <div class="relative h-48 w-full bg-gray-800 overflow-hidden">
+                                    <div class="absolute inset-0 bg-gray-900/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                                    <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" 
+                                         src="{{ $relatedPost->image ? asset('storage/' . $relatedPost->image) : 'https://placehold.co/600x400/1e293b/cbd5e0?text=TechnoG' }}" 
+                                         alt="{{ $relatedPost->title }}">
+                                </div>
                             </a>
+                            
+                            <div class="mt-6 px-2">
+                                <a href="{{ route('public.blog.show', $relatedPost->slug) }}">
+                                    <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors leading-snug line-clamp-2">
+                                        {{ $relatedPost->title }}
+                                    </h3>
+                                </a>
+                                <div class="mt-4 flex items-center justify-between text-xs text-gray-400 font-medium border-t border-white/10 pt-4">
+                                    <span>{{ $relatedPost->user->name ?? 'TechnoG Team' }}</span>
+                                    <span>{{ \Carbon\Carbon::parse($relatedPost->published_at)->format('M d, Y') }}</span>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>

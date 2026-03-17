@@ -1,46 +1,28 @@
-{{-- Lokasi: resources/views/admin/pemasukan/discounts/partials/delete-modal.blade.php --}}
-
-<div x-show="isDeleteModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen px-4 text-center md:items-center sm:block sm:p-0">
-        {{-- Latar belakang modal --}}
-        <div x-show="isDeleteModalOpen" 
-             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="isDeleteModalOpen = false" aria-hidden="true">
-        </div>
-
-        {{-- Konten Modal --}}
-        <div x-show="isDeleteModalOpen" 
-             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-             class="inline-block w-full max-w-md p-8 my-20 overflow-hidden text-left transition-all transform bg-white dark:bg-slate-800 rounded-lg shadow-xl">
+<template x-teleport="body">
+    <div x-show="isDeleteModalOpen" x-cloak class="fixed inset-0 z-[990] flex items-center justify-center p-4">
+        
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[30px]"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+             @click="isDeleteModalOpen = false"></div>
+        
+        <div class="relative bg-white/95 dark:bg-slate-800/95 w-full max-w-md rounded-[2.5rem] p-12 text-center shadow-2xl border border-white/10 z-10"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
             
-            <div class="flex items-start">
-                <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
-                    <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
-                </div>
-                <div class="ml-4 text-left">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
-                        Confirm Deletion
-                    </h3>
-                    <div class="mt-2">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Are you sure you want to delete this discount code? This action cannot be undone.
-                        </p>
-                    </div>
-                </div>
+            <div class="w-20 h-20 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl">
+                <i class="fas fa-trash-alt"></i>
             </div>
 
-            <form class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse" :action="deleteUrl" method="POST">
+            <h3 class="text-2xl text-slate-900 dark:text-white font-bold tracking-tighter uppercase">Delete Discount?</h3>
+            <p class="text-slate-500 mt-4 text-sm font-normal">Are you sure you want to delete this code? This action cannot be undone.</p>
+
+            <form :action="deleteUrl" method="POST" class="mt-10 flex space-x-4">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm">
-                    Confirm Delete
-                </button>
-                <button type="button" @click="isDeleteModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-slate-600 shadow-sm px-4 py-2 bg-white dark:bg-slate-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 sm:mt-0 sm:w-auto sm:text-sm">
-                    Cancel
-                </button>
+                <button type="button" @click="isDeleteModalOpen = false" 
+                        class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 rounded-2xl font-bold transition-colors">Cancel</button>
+                <button type="submit" 
+                        class="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold transition-colors shadow-lg shadow-red-900/20">Delete Now</button>
             </form>
         </div>
     </div>
-</div>
+</template>
