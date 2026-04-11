@@ -342,15 +342,15 @@
                 founders: [
                     {
                         id: 1,
-                        name: 'Andri Rizki',
+                        name: 'Muhamad Andri Rizki',
                         role: 'Founder & Statistical Analyst',
                         image: "{{ asset('images/founders/fp-adnan.jpeg') }}",
                         shortBio: "The brain behind every data analysis and statistical model.",
                         fullBio: "Andri ensures that every solution we build is grounded in solid statistical models and accurate data analysis. With a deep passion for unlocking patterns, he forms the strategic foundation of TechnoG Solutions.",
                         socials: {
                             linkedin: "https://www.linkedin.com/in/muhamad-andri-rizki-s-stat-a7a394296",
-                            github: "#",
-                            instagram: "https://www.instagram.com/andririzki11?igsh=YzBlemI4OHZ2cnZm"
+                            instagram: "https://www.instagram.com/andririzki11?igsh=YzBlemI4OHZ2cnZm",
+                            github: "#"
                         }
                     },
                     {
