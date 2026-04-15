@@ -15,12 +15,17 @@
                 <img src="{{ asset('images/backgrounds/contact-hero.jpg') }}" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'" alt="Contact Background" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gray-900/70 backdrop-blur-sm"></div>
             </div>
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
+            
+            {{-- Padding disamakan: pt-56 pb-20 --}}
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24 text-center z-10">
                 <div x-data="{}" x-init="$nextTick(() => { $el.querySelectorAll('.fade-in-item').forEach((item, index) => setTimeout(() => item.classList.add('in-view'), index * 200)) })">
+                    
+                    {{-- Judul diubah agar lebih profesional dan pas untuk 2 baris --}}
                     <h1 class="fade-in-item text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-300 pb-2 leading-tight">
-                        Contact Us
+                        Get in Touch <br class="hidden sm:block"> With Our Experts
                     </h1>
-                    <p class="fade-in-item mt-4 text-lg md:text-xl text-indigo-100 max-w-3xl mx-auto font-light">
+                    
+                    <p class="fade-in-item mt-6 text-lg md:text-xl text-indigo-100 max-w-3xl mx-auto font-light">
                         Have a question, an idea, or want to discuss a potential partnership? Our team is ready to listen and help you build the future.
                     </p>
                 </div>

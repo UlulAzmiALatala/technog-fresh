@@ -1,79 +1,131 @@
-<header x-data="{ openMenu: false }" class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg shadow-sm">
+{{-- Smart Header dengan pendeteksi Scroll --}}
+<header x-data="{ openMenu: false, scrolled: false }" 
+        @scroll.window="scrolled = (window.pageYOffset > 20)"
+        :class="scrolled ? 'py-2 bg-white/95 shadow-[0_4px_30px_rgba(0,0,0,0.05)]' : 'py-4 bg-white/80'"
+        class="fixed top-0 inset-x-0 z-[100] backdrop-blur-xl border-b border-gray-100 transition-all duration-500 ease-out">
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-24">
+        <div class="flex items-center justify-between transition-all duration-500" :class="scrolled ? 'h-16' : 'h-20'">
             
             {{-- Logo --}}
-            <div class="flex-shrink-0">
-                <a href="{{ route('home') }}" title="TechnoG Solutions Logo">
-                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" class="h-16 w-auto">
+            <div class="flex-shrink-0 flex items-center">
+                <a href="{{ route('home') }}" class="block transform transition-transform hover:scale-105" title="TechnoG Solutions Logo">
+                    <img src="{{ asset('images/Logo-Utama-Color.png') }}" alt="TechnoG Solutions Logo" 
+                         class="w-auto transition-all duration-500"
+                         :class="scrolled ? 'h-10' : 'h-14'">
                 </a>
             </div>
             
-            {{-- Navigasi Desktop --}}
-            <nav class="hidden lg:flex lg:items-center lg:space-x-8">
-                <a href="{{ route('home') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('home') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">Home</a>
-                <a href="{{ route('public.services') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('public.services') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">Services</a>
-                <a href="{{ route('public.why-choose-us') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('public.why-choose-us') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">Why Choose Us</a>
-                <a href="{{ route('public.blog') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('public.blog*') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">Blog</a>
-                <a href="{{ route('public.about') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('public.about') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">About Us</a>
-                <a href="{{ route('public.contact') }}" class="relative py-2 text-sm font-medium transition-colors duration-300 ease-in-out after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-indigo-600 after:origin-center after:transition-transform after:duration-300 {{ request()->routeIs('public.contact') ? 'text-indigo-600 after:scale-x-100' : 'text-gray-500 hover:text-indigo-600 after:scale-x-0 hover:after:scale-x-100' }}">Contact</a>
+            {{-- Navigasi Desktop (SaaS Pill Style) --}}
+            <nav class="hidden lg:flex lg:items-center lg:space-x-1">
+                <a href="{{ route('home') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('home') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Home
+                </a>
+                <a href="{{ route('public.services') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.services') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Services
+                </a>
+                <a href="{{ route('public.portfolio') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.portfolio*') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Portfolio
+                </a>
+                <a href="{{ route('public.why-choose-us') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.why-choose-us') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Why Choose Us
+                </a>
+                <a href="{{ route('public.blog') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.blog*') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Blog
+                </a>
+                <a href="{{ route('public.about') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.about') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   About
+                </a>
+                <a href="{{ route('public.contact') }}" 
+                   class="px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 {{ request()->routeIs('public.contact') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-indigo-600' }}">
+                   Contact
+                </a>
             </nav>
 
             {{-- Tombol Auth & Hamburger --}}
             <div class="flex items-center">
                 
                 {{-- Tombol Auth Desktop --}}
-                <div class="hidden lg:flex items-center space-x-2 ml-6">
+                <div class="hidden lg:flex items-center gap-4 ml-2 pl-6 border-l border-gray-200">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="px-5 py-2.5 text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors duration-300">Dashboard</a>
+                        <a href="{{ url('/dashboard') }}" class="group flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-gray-700 bg-gray-50 border border-gray-200 rounded-xl hover:bg-white hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+                            <i class="fa-solid fa-layer-group text-gray-400 group-hover:text-indigo-500 transition-colors"></i> Dashboard
+                        </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-5 py-2 text-sm font-semibold text-gray-700 bg-transparent border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-indigo-600 transition-all duration-300">Log in</a>
+                        <a href="{{ route('login') }}" class="text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors duration-300 px-2">
+                            Sign In
+                        </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="flex items-center space-x-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out transform hover:-translate-y-0.5">
-                                <span>Register</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            <a href="{{ route('register') }}" class="group relative inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gray-900 rounded-xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.25)] transition-all duration-300 hover:-translate-y-0.5">
+                                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <span class="relative z-10">Get Started</span>
+                                <i class="fa-solid fa-arrow-right relative z-10 transform group-hover:translate-x-1 transition-transform"></i>
                             </a>
                         @endif
                     @endauth
                 </div>
                 
-                {{-- Hamburger Button --}}
-                <div class="lg:hidden ml-4">
-                    <button @click="openMenu = !openMenu" class="p-2 rounded-md text-gray-500 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" :aria-expanded="openMenu.toString()">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                            <path :class="{'hidden': openMenu, 'inline-flex': !openMenu }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            <path :class="{'hidden': !openMenu, 'inline-flex': openMenu }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                {{-- Hamburger Button (Mobile) --}}
+                <div class="lg:hidden ml-4 flex items-center">
+                    <button @click="openMenu = !openMenu" 
+                            class="relative w-11 h-11 bg-white shadow-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-all duration-300 flex items-center justify-center" 
+                            aria-controls="mobile-menu" 
+                            :aria-expanded="openMenu.toString()">
+                        <span class="sr-only">Toggle menu</span>
+                        <div class="w-5 h-5 flex flex-col justify-center items-center gap-1.5">
+                            <span class="w-full h-0.5 bg-current rounded-full transform transition-all duration-300" :class="openMenu ? 'rotate-45 translate-y-2' : ''"></span>
+                            <span class="w-full h-0.5 bg-current rounded-full transition-all duration-300" :class="openMenu ? 'opacity-0 translate-x-3' : ''"></span>
+                            <span class="w-full h-0.5 bg-current rounded-full transform transition-all duration-300" :class="openMenu ? '-rotate-45 -translate-y-2' : ''"></span>
+                        </div>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Menu Mobile --}}
-    <div x-show="openMenu" id="mobile-menu" @click.away="openMenu = false" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4" class="lg:hidden bg-white shadow-lg border-t border-gray-200" style="display: none;">
+    {{-- Menu Mobile (Floating Card Design) --}}
+    <div x-show="openMenu" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 -translate-y-4 scale-95" 
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100" 
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100" 
+         x-transition:leave-end="opacity-0 -translate-y-4 scale-95" 
+         @click.away="openMenu = false"
+         class="lg:hidden absolute top-full left-4 right-4 mt-2 bg-white/95 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 rounded-[2rem] overflow-hidden" 
+         style="display: none;">
         
-        <div class="pt-2 pb-3 space-y-1">
-            <a href="{{ route('home') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('home') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">Home</a>
-            <a href="{{ route('public.services') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('public.services') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">Services</a>
-            <a href="{{ route('public.why-choose-us') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('public.why-choose-us') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">Why Choose Us</a>
-            <a href="{{ route('public.blog') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('public.blog*') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">Blog</a>
-            <a href="{{ route('public.about') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('public.about') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">About Us</a>
-            <a href="{{ route('public.contact') }}" @click="openMenu = false" class="block pl-3 pr-4 py-3 text-base font-medium {{ request()->routeIs('public.contact') ? 'border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300' }}">Contact</a>
+        <div class="p-3 space-y-1">
+            <a href="{{ route('home') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('home') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Home</a>
+            <a href="{{ route('public.services') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.services') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Services</a>
+            <a href="{{ route('public.portfolio') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.portfolio*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Portfolio</a>
+            <a href="{{ route('public.why-choose-us') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.why-choose-us') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Why Choose Us</a>
+            <a href="{{ route('public.blog') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.blog*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Blog</a>
+            <a href="{{ route('public.about') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.about') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">About Us</a>
+            <a href="{{ route('public.contact') }}" class="block px-5 py-3.5 rounded-xl text-base font-bold {{ request()->routeIs('public.contact') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">Contact</a>
         </div>
         
-        <div class="border-t border-gray-200 pt-4 pb-3">
+        <div class="p-5 bg-gray-50/80 border-t border-gray-100">
             @auth
-                <div class="px-4">
-                    <a href="{{ url('/dashboard') }}" class="block w-full text-left px-4 py-2 text-base font-medium text-gray-600 rounded-md hover:bg-gray-100">Dashboard</a>
-                </div>
+                <a href="{{ url('/dashboard') }}" class="flex justify-center items-center w-full px-4 py-3.5 text-base font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all">
+                    Go to Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
             @else
-                <div class="px-4 space-y-2">
-                    <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100">Log in</a>
+                <div class="flex flex-col gap-3">
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Register</a>
+                        <a href="{{ route('register') }}" class="flex justify-center items-center w-full px-4 py-3.5 text-sm font-bold text-white bg-gray-900 rounded-xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] hover:bg-indigo-600 transition-colors">
+                            Get Started Free
+                        </a>
                     @endif
+                    <a href="{{ route('login') }}" class="flex justify-center items-center w-full px-4 py-3.5 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 shadow-sm transition-colors">
+                        Sign In to Account
+                    </a>
                 </div>
             @endauth
         </div>

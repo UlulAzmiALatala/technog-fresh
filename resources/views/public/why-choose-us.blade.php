@@ -15,10 +15,10 @@
                 <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80" alt="Collaborative Team" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gray-900/70 backdrop-blur-sm"></div>
             </div>
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center z-10">
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24 text-center z-10">
                 <div x-data="{}" x-init="$nextTick(() => { $el.querySelectorAll('.fade-in-item').forEach((item, index) => setTimeout(() => item.classList.add('in-view'), index * 200)) })">
                     <h1 class="fade-in-item text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-300 pb-2">
-                        Your Strategic Technology Partner
+                        Your Strategic <br class="hidden sm:block"> Technology Partner
                     </h1>
                     <p class="fade-in-item mt-6 text-xl text-indigo-100 max-w-3xl mx-auto font-light">
                         More than just developers, we are partners dedicated to leveraging our expertise in technology and data analysis for your business success.
