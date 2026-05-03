@@ -1,35 +1,29 @@
-{{-- 
-=======================================================================================
-MODAL HAPUS ARTIKEL (Partial)
-=======================================================================================
-- Ini adalah komponen <x-modal> standar.
-- Dikontrol oleh Alpine.js dari index.blade.php.
-- Nama modal: "delete-post-modal"
-- Form action-nya dinamis: x-bind:action="deleteAction"
-=======================================================================================
---}}
-<x-modal name="delete-post-modal" :show="$errors->any() && session('modal_form') === 'delete'" focusable>
-    <form method="POST" x-bind:action="deleteAction" class="p-6">
-        @csrf
-        @method('DELETE')
+{{-- Lokasi: resources/views/admin/founder/posts/partials/delete-modal.blade.php --}}
+<template x-teleport="body">
+    <div x-show="isDeleteModalOpen" x-cloak class="fixed inset-0 z-[1000] flex items-center justify-center p-4 overflow-y-auto">
+        {{-- Layer Backdrop Fisik --}}
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-[30px]" @click="isDeleteModalOpen = false"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"></div>
 
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Are you sure you want to delete this article?') }}
-        </h2>
+        {{-- Konten Modal --}}
+        <div class="relative bg-white/95 dark:bg-slate-800/95 w-full max-w-md rounded-[2.5rem] p-12 text-center shadow-2xl border border-white/10"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95">
+             
+            <div class="w-20 h-20 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl shrink-0">
+                <i class="fas fa-trash-alt"></i>
+            </div>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Once this article is deleted, all of its data will be permanently lost. This action cannot be undone.') }}
-        </p>
+            <h3 class="text-2xl text-slate-900 dark:text-white font-bold tracking-tighter uppercase">Hapus Artikel?</h3>
+            <p class="text-slate-500 dark:text-slate-400 mt-4 text-sm font-normal leading-relaxed">
+                Tindakan ini bersifat permanen. Artikel yang dihapus tidak dapat dikembalikan.
+            </p>
 
-        <div class="mt-6 flex justify-end">
-            <x-secondary-button x-on:click="$dispatch('close')">
-                {{ __('Cancel') }}
-            </x-secondary-button>
-
-            <x-danger-button type="submit" class="ml-3">
-                {{ __('Delete Article') }}
-            </x-danger-button>
+            <form :action="deleteUrl" method="POST" class="mt-10 flex space-x-4">
+                @csrf
+                @method('DELETE')
+                <button type="button" @click="isDeleteModalOpen = false" class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded-2xl font-bold transition-none">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold transition-none shadow-lg shadow-red-900/20">Ya, Hapus</button>
+            </form>
         </div>
-    </form>
-</x-modal>
-
+    </div>
+</template>

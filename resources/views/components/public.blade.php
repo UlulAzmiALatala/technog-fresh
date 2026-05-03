@@ -77,21 +77,21 @@
 
         @include('layouts.public-footer')
 
-        {{-- Tombol Back to Top --}}
+        {{-- Tombol Back to Top (Dark Premium Glassmorphism) --}}
         <div x-data="{ showButton: false }" 
              x-init="window.addEventListener('scroll', () => { showButton = window.scrollY > 400 })" 
-             class="fixed bottom-5 right-5 z-50">
+             class="fixed bottom-28 right-8 z-40"> 
             <template x-if="showButton">
                 <button @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
                         x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 translate-y-2"
-                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:enter-start="opacity-0 translate-y-4 scale-90"
+                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                         x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 translate-y-2"
-                        class="p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
+                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-4 scale-90"
+                        class="p-3.5 bg-slate-900/70 backdrop-blur-md text-slate-400 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_25px_rgba(79,70,229,0.25)] hover:bg-slate-800/90 hover:text-white hover:-translate-y-1 hover:border-indigo-500/50 focus:outline-none transition-all duration-300 border border-slate-700/50 group" 
                         aria-label="Kembali ke atas">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:-translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
                     </svg>
                 </button>

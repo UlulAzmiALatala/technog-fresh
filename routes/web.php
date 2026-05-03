@@ -26,7 +26,7 @@ use App\Http\Controllers\Admin\Founder\ManagementFeeController;
 use App\Http\Controllers\Admin\Founder\PostController;
 use App\Http\Controllers\Admin\Founder\ReportController;
 use App\Http\Controllers\Admin\Founder\UserController;
-use App\Http\Controllers\Admin\Founder\WorkerController; // FIX: Import WorkerController
+use App\Http\Controllers\Admin\Founder\WorkerController;
 use App\Http\Controllers\Admin\Founder\TestimonialController;
 use App\Http\Controllers\Admin\Pemasukan\OrderManagementController;
 use App\Http\Controllers\Admin\Pemasukan\ServiceController;
@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\Pengeluaran\ProjectExpenseController;
 use App\Http\Controllers\Admin\Founder\SettingsController;
 use App\Http\Controllers\Admin\Founder\SocialLinkController;
 use App\Http\Controllers\Admin\Founder\LogoController;
+use App\Http\Controllers\Admin\Pemasukan\MeetingController; // FIX: Import MeetingController
 
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -64,6 +65,7 @@ Route::name('public.')->group(function () {
     Route::get('/contact', [LandingPageController::class, 'contact'])->name('contact');
     Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
     Route::get('/why-choose-us', [LandingPageController::class, 'whyChooseUs'])->name('why-choose-us');
+    Route::post('/meeting-request', [ContactController::class, 'requestMeeting'])->name('meeting.request');
 });
 
 // Redirects Bahasa Indonesia ke Inggris
@@ -174,7 +176,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::middleware(['role:Founder'])->group(function () {
                 Route::resource('users', UserController::class)->except(['create', 'store']);
 
-                // FIX: Tambahkan Route Worker Database di sini
                 Route::resource('workers', WorkerController::class);
 
                 Route::prefix('settings')->name('settings.')->group(function () {
@@ -201,11 +202,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('testimonials', \App\Http\Controllers\Admin\Founder\TestimonialController::class);
 
-        // --- Fitur Keuangan (Pemasukan & Pengeluaran) ---
+        // --- Fitur Keuangan (Pemasukan & Pengeluaran) & Meetings ---
         Route::middleware(['role:Founder|Pemasukan dan Pengeluaran'])->group(function () {
 
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {
+
+                // ---> ROUTE BARU: Manajemen Meeting <---
+                Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings.index');
+                Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.update-status');
                 Route::resource('services', ServiceController::class)->except(['show']);
                 Route::post('services/categories/ajax', [CategoryController::class, 'storeServiceAjax'])->name('services.categories.storeAjax');
 

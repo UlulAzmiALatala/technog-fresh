@@ -1,258 +1,181 @@
-{{-- Script "brain" for this feature --}}
-<script>
-    function caseStudyPageManager(initialCategories) {
-        return {
-            // === State untuk Kategori (dari create.blade.php) ===
-            categories: initialCategories,
-            openAddCategoryModal: false,
-            newCategoryName: '',
-            errorMessage: '',
-            
-            // === State untuk Modal Add Case Study ===
-            // Kita pisahkan ID untuk modal Add dan Edit
-            addModalCategoryId: '{{ old('category_id') }}' || '',
-
-            // === State untuk Modal Edit/Delete (dari proposal lama) ===
-            editItem: {},
-            deleteAction: '',
-            
-            // === Fungsi untuk Modal Add Category (dari create.blade.php) ===
-            openCategoryModal() {
-                this.openAddCategoryModal = true;
-                this.newCategoryName = '';
-                this.errorMessage = '';
-            },
-            async handleStoreCategory() {
-                this.errorMessage = '';
-                try {
-                    const response = await fetch("{{ route('admin.founder.case-studies.categories.storeAjax') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({ name: this.newCategoryName })
-                    });
-                    const data = await response.json();
-                    if (!response.ok) throw data;
-
-                    if (data.success) {
-                        this.categories.push(data.category);
-                        // Otomatis pilih kategori yang baru dibuat
-                        this.addModalCategoryId = data.category.id; 
-                        // Jika modal edit terbuka, update juga di sana
-                        if (this.editItem.id) {
-                            this.editItem.category_id = data.category.id;
-                        }
-                        this.openAddCategoryModal = false;
-                    }
-                } catch (error) {
-                    this.errorMessage = error.errors?.name?.[0] || 'An error occurred while saving.';
-                }
-            },
-
-            // === Fungsi untuk Modal Add Case Study ===
-            openAddModal() {
-                // Reset/set default
-                this.addModalCategoryId = '{{ old('category_id') }}' || '';
-                this.$dispatch('open-modal', 'add-case-study-modal');
-            },
-
-            // === Fungsi untuk Modal Edit Case Study ===
-            openEditModal(item) {
-                // Saat tombol edit diklik, kita copy item ke editItem
-                // Kita gunakan JSON parse/stringify untuk membuat salinan,
-                // agar jika user cancel, data di tabel tidak berubah.
-                this.editItem = JSON.parse(JSON.stringify(item));
-                this.$dispatch('open-modal', 'edit-case-study-modal');
-            },
-
-            // === Fungsi untuk Modal Delete Case Study ===
-            openDeleteModal(actionUrl) {
-                this.deleteAction = actionUrl;
-                this.$dispatch('open-modal', 'delete-case-study-modal');
-            }
-        }
-    }
-</script>
-
-{{-- 
-    [REFACTOR] Inisialisasi Alpine "Brain" di level tertinggi.
-    Kita inject $categories sebagai JSON.
---}}
+{{-- Lokasi: resources/views/admin/founder/case-studies/index.blade.php --}}
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Case Study Management') }}
-            </h2>
-            
-            {{-- [REFACTOR] Tombol "Add" sekarang memicu fungsi Alpine --}}
-            <button
-                type="button"
-                x-data="{}" {{-- x-data kosong agar bisa panggil fungsi parent --}}
-                x-on:click.prevent="$dispatch('open-add-modal')"
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700"
-            >
-                + Add Case Study
+            <div>
+                <h2 class="text-2xl text-slate-900 dark:text-white tracking-tight font-black uppercase">Portfolio Management</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-widest mt-1 uppercase">Manage & track your case studies</p>
+            </div>
+            <button @click="window.caseStudyManager.openAddModal()" 
+                    class="px-6 py-3 bg-[#5046e5] hover:bg-[#4338ca] rounded-2xl text-xs text-white uppercase tracking-widest font-bold transition-all shadow-lg shadow-indigo-500/30">
+                <i class="fas fa-plus mr-2"></i> Add Case Study
             </button>
         </div>
     </x-slot>
 
-    {{-- 
-        [PERBAIKAN] Menggunakan kutip tunggal (') untuk x-data
-        agar JSON (@json) yang menggunakan kutip ganda (") tidak bentrok.
-    --}}
-    <div 
-        class="mt-4"
-        x-data='caseStudyPageManager(@json($categories))'
-        @open-add-modal.window="openAddModal"
-    >
-
-        {{-- Search & Filter Features (Tidak berubah) --}}
-        <div class="mb-6 bg-white p-4 rounded-lg shadow-sm">
-            <form action="{{ route('admin.founder.case-studies.index') }}" method="GET">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="md:col-span-2">
-                        <label for="search" class="sr-only">Search</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                            </div>
-                            <input type="text" name="search" id="search" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Search by title or client name..." value="{{ request('search') }}">
-                        </div>
+    <div x-data="pageManager(@js($categories))" class="space-y-8 py-4 font-normal relative">
+        
+        {{-- CONTROL PANEL (Search & Filters) --}}
+        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/40 dark:border-slate-700/50 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+            
+            <form action="{{ route('admin.founder.case-studies.index') }}" method="GET" class="relative z-10 flex flex-col md:flex-row gap-4">
+                
+                <div class="flex-1 relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
                     </div>
-                    <div>
-                        <label for="category_id_filter" class="sr-only">Filter by category</label>
-                        <select id="category_id_filter" name="category_id" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" onchange="this.form.submit()">
-                            <option value="">All Categories</option>
-                            {{-- Dropdown filter ini tetap pakai @foreach standar --}}
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by title or client name..." 
+                           class="w-full pl-11 rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder:text-slate-400">
                 </div>
+
+                <div class="md:w-56">
+                    <select name="category_id" onchange="this.form.submit()" 
+                            class="w-full rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-600 dark:text-slate-300">
+                        <option value="">All Industries</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                @if(request()->hasAny(['search', 'category_id']) && (request('search') != '' || request('category_id') != ''))
+                    <a href="{{ route('admin.founder.case-studies.index') }}" 
+                       class="px-6 py-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 rounded-2xl font-bold flex items-center justify-center transition-all" title="Clear Filters">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                @endif
             </form>
         </div>
 
-        {{-- Session Error Message (Penting untuk validasi modal) --}}
-        @if (session('error') || $errors->any())
-            <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-md">
-                <span class="font-bold">{{ session('error') ?? 'Validation errors occurred!' }}</span>
-                @if($errors->any())
-                <ul class="list-disc list-inside mt-2">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                @endif
+        {{-- TABLE SECTION --}}
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/50 dark:border-slate-700/50 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="text-slate-400 uppercase tracking-widest text-[10px] border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
+                            <th class="p-6 font-bold">Project Details</th>
+                            <th class="p-6 font-bold text-center">Category</th>
+                            <th class="p-6 font-bold text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
+                        @forelse ($caseStudies as $caseStudy)
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors duration-300 group">
+                                
+                                <td class="p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-16 w-24">
+                                            <img class="h-16 w-24 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-700" 
+                                                 src="{{ $caseStudy->image ? asset('storage/'. $caseStudy->image) : 'https://placehold.co/300x200/e2e8f0/cbd5e0?text=No%20Image' }}" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-slate-900 dark:text-white font-bold text-base line-clamp-1">{{ $caseStudy->title }}</div>
+                                            <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-1 font-bold">
+                                                <i class="fas fa-building mr-1"></i> Client: <span class="text-indigo-500">{{ $caseStudy->client_name }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="p-6 text-center">
+                                    <span class="px-4 py-1.5 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700">
+                                        {{ $caseStudy->category->name ?? 'Uncategorized' }}
+                                    </span>
+                                </td>
+
+                                <td class="p-6 text-center">
+                                    <div class="flex justify-center space-x-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                                        <button type="button" @click="openEditModal({{ $caseStudy->toJson() }})" 
+                                                class="h-10 w-10 flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-100 hover:text-indigo-600 rounded-xl transition-colors shadow-sm">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <button type="button" @click.prevent="openDeleteModal(`{{ route('admin.founder.case-studies.destroy', $caseStudy->id) }}`)" 
+                                                class="h-10 w-10 flex items-center justify-center bg-red-50 dark:bg-red-900/20 text-red-600 hover:bg-red-500 hover:text-white rounded-xl transition-colors shadow-sm">
+                                            <i class="fas fa-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="p-24 text-center">
+                                    <div class="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 dark:border-slate-700">
+                                        <i class="fas fa-briefcase text-3xl text-slate-300 dark:text-slate-600"></i>
+                                    </div>
+                                    <p class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">No case studies found.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if ($caseStudies->hasPages())
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-4 rounded-[2rem] border border-white/40 dark:border-slate-700/50 shadow-sm mt-6">
+                {{ $caseStudies->links() }}
             </div>
         @endif
 
-        {{-- Tabel Utama --}}
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Project Title</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                                <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($caseStudies as $caseStudy)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-md object-cover" src="{{ $caseStudy->image ? asset('storage/'. $caseStudy->image) : 'https://placehold.co/100x100/e2e8f0/cbd5e0?text=No%20Image' }}" alt="{{ $caseStudy->title }}">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $caseStudy->title }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $caseStudy->client_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $caseStudy->category->name ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        
-                                        {{-- [REFACTOR] Tombol Edit memanggil fungsi Alpine --}}
-                                        <button
-                                            type="button"
-                                            x-on:click.prevent="openEditModal({{ json_encode($caseStudy) }})"
-                                            class="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            Edit
-                                        </button>
-
-                                        {{-- [REFACTOR] Tombol Delete memanggil fungsi Alpine --}}
-                                        <button
-                                            type="button"
-                                            x-on:click.prevent="openDeleteModal('{{ route('admin.founder.case-studies.destroy', $caseStudy->id) }}')"
-                                            class="text-red-600 hover:text-red-900 ml-2"
-                                        >
-                                            Delete
-                                        </button>
-
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        No case studies found.
-                                    </td>
-                                </tr>
-                            {{-- [PERBAIKAN] Mengganti @endforeach menjadi @endforelse --}}
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Pagination Links --}}
-                <div class="mt-6">
-                    {{ $caseStudies->links() }}
-                </div>
-            </div>
-        </div>
-
-        {{-- 
-            [REFACTOR] Memanggil 3 file partial modal kita.
-            Kita TIDAK perlu passing $categories lagi, karena mereka sudah ada di Alpine 'brain'.
-        --}}
+        {{-- Include Modals --}}
         @include('admin.founder.case-studies.partials.add-modal')
         @include('admin.founder.case-studies.partials.edit-modal')
         @include('admin.founder.case-studies.partials.delete-modal')
+        @include('admin.founder.case-studies.partials.category-modal')
+    </div>
 
+    @push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('pageManager', (initialCategories) => ({
+                categories: initialCategories,
+                isAddModalOpen: false, isEditModalOpen: false, isDeleteModalOpen: false, isCategoryModalOpen: false,
+                newCategoryName: '', categoryErrorMessage: '', deleteUrl: '',
+                addModalCategoryId: '', 
+                editItem: { id: null, title: '', client_name: '', problem: '', solution: '', result: '', category_id: '', image: null },
+                
+                init() {
+                    window.caseStudyManager = this;
+                    const modalForm = '{{ old('modal_form') }}';
+                    if (modalForm === 'add') this.isAddModalOpen = true;
+                    if (modalForm === 'edit') this.isEditModalOpen = true;
 
-        {{-- [REFACTOR] Modal "Add Category" (dari create.blade.php) --}}
-        {{-- Modal ini dikontrol oleh 'openAddCategoryModal' dari Alpine 'brain' --}}
-        <div x-show="openAddCategoryModal" class="fixed inset-0 z-50 overflow-y-auto" @keydown.escape.window="openAddCategoryModal = false" style="display: none;">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div x-show="openAddCategoryModal" @click="openAddCategoryModal = false" x-transition.opacity class="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-                <div x-show="openAddCategoryModal" x-transition class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <form @submit.prevent="handleStoreCategory()">
-                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">Add Case Study Category</h3>
-                            <div class="mt-4">
-                                <label for="new_category_name" class="block text-sm font-medium text-gray-700">Category Name</label>
-                                <input type="text" x-model="newCategoryName" id="new_category_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                <p x-show="errorMessage" x-text="errorMessage" class="text-sm text-red-600 mt-2"></p>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="submit" class="w-full inline-flex justify-center rounded-md border shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 sm:ml-3 sm:w-auto">Save</button>
-                            <button type="button" @click="openAddCategoryModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border sm:mt-0 sm:w-auto px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    // FITUR KUNCI BODY SCROLL
+                    // Mencegah scrollbar browser bocor di sebelah kanan saat modal terbuka
+                    this.$watch('isAddModalOpen', val => document.body.style.overflow = val ? 'hidden' : '');
+                    this.$watch('isEditModalOpen', val => document.body.style.overflow = val ? 'hidden' : '');
+                    this.$watch('isCategoryModalOpen', val => document.body.style.overflow = val ? 'hidden' : '');
+                    this.$watch('isDeleteModalOpen', val => document.body.style.overflow = val ? 'hidden' : '');
+                },
+                openAddModal() { this.addModalCategoryId = ''; this.isAddModalOpen = true; },
+                openEditModal(item) { this.editItem = { ...item }; this.isEditModalOpen = true; },
+                openDeleteModal(url) { this.deleteUrl = url; this.isDeleteModalOpen = true; },
+                openCategoryModal() { this.newCategoryName = ''; this.categoryErrorMessage = ''; this.isCategoryModalOpen = true; },
+                
+                async handleStoreCategory() {
+                    this.categoryErrorMessage = '';
+                    try {
+                        const response = await fetch("{{ route('admin.founder.case-studies.categories.storeAjax') }}", {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                            body: JSON.stringify({ name: this.newCategoryName })
+                        });
+                        const data = await response.json();
+                        if (!response.ok) throw data;
 
-    </div> {{-- End of x-data wrapper --}}
+                        if (data.success) {
+                            this.categories.push(data.category);
+                            this.addModalCategoryId = data.category.id;
+                            this.editItem.category_id = data.category.id; 
+                            this.isCategoryModalOpen = false;
+                        }
+                    } catch (error) {
+                        this.categoryErrorMessage = error.errors?.name?.[0] || 'Gagal menyimpan kategori.';
+                    }
+                }
+            }));
+        });
+    </script>
+    @endpush
 </x-admin-layout>
-

@@ -10,15 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
-    /**
-     * Menampilkan daftar layanan.
-     */
     public function index(Request $request)
     {
         $totalServices = Service::count();
         $totalCategories = Category::where('type', 'service')->count();
-
-        // [TAMBAHKAN BARIS INI] Ambil data kategori dari database
         $categories = Category::where('type', 'service')->get();
 
         $query = Service::with('category')->latest();
@@ -33,28 +28,14 @@ class ServiceController extends Controller
 
         $services = $query->paginate(10)->withQueryString();
 
-        // [PASTIKAN VARIABEL $categories IKUT DIKIRIM KE COMPACT]
         return view('admin.pemasukan.services.index', compact(
             'services',
             'totalServices',
             'totalCategories',
-            'categories' // <--- Tambahkan ini
+            'categories'
         ));
     }
 
-    /**
-     * Menampilkan form untuk membuat layanan baru.
-     */
-    public function create()
-    {
-        $categories = Category::where('type', 'service')->get();
-
-        return view('admin.pemasukan.create', compact('categories'));
-    }
-
-    /**
-     * Menyimpan layanan baru ke database.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -67,9 +48,10 @@ class ServiceController extends Controller
             'features' => 'nullable|string',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'modal_form' => 'nullable|string',
         ]);
 
-        $data = $request->except('image');
+        $data = $request->except(['image', 'modal_form']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('service_images', 'public');
@@ -77,22 +59,9 @@ class ServiceController extends Controller
 
         Service::create($data);
 
-        return redirect()->route('admin.pemasukan.services.index')
-            ->with('success', 'Layanan baru berhasil ditambahkan.');
+        return back()->with('success', 'Layanan baru berhasil ditambahkan.');
     }
 
-    /**
-     * Menampilkan form untuk mengedit layanan.
-     */
-    public function edit(Service $service)
-    {
-        $categories = Category::where('type', 'service')->get();
-        return view('admin.pemasukan.edit', compact('service', 'categories'));
-    }
-
-    /**
-     * Memperbarui layanan di database.
-     */
     public function update(Request $request, Service $service)
     {
         $request->validate([
@@ -105,9 +74,10 @@ class ServiceController extends Controller
             'features' => 'nullable|string',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'modal_form' => 'nullable|string',
         ]);
 
-        $data = $request->except('image');
+        $data = $request->except(['image', 'modal_form']);
 
         if ($request->hasFile('image')) {
             if ($service->image) {
@@ -118,20 +88,16 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        return redirect()->route('admin.pemasukan.services.index')
-            ->with('success', 'Layanan berhasil diperbarui.');
+        return back()->with('success', 'Layanan berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus layanan dari database.
-     */
     public function destroy(Service $service)
     {
         if ($service->image) {
             Storage::disk('public')->delete($service->image);
         }
         $service->delete();
-        return redirect()->route('admin.pemasukan.services.index')
-            ->with('success', 'Layanan berhasil dihapus.');
+
+        return back()->with('success', 'Layanan berhasil dihapus.');
     }
 }

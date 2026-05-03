@@ -10,8 +10,11 @@ class WorkerController extends Controller
 {
     public function index()
     {
-        $workers = Worker::latest()->get();
-        return view('admin.founder.workers.index', compact('workers'));
+        // Menggunakan pagination agar rapi saat data bertambah banyak
+        $workers = Worker::latest()->paginate(15);
+        $totalWorkers = Worker::count();
+
+        return view('admin.founder.workers.index', compact('workers', 'totalWorkers'));
     }
 
     public function store(Request $request)
@@ -22,8 +25,11 @@ class WorkerController extends Controller
             'bank_name' => 'required|string',
             'bank_account_number' => 'required|string',
             'bank_account_name' => 'required|string',
+            'modal_form' => 'required|string', // Menangkap state modal
         ]);
-        Worker::create($data);
+
+        Worker::create($request->except('modal_form'));
+
         return back()->with('success', 'Worker added successfully.');
     }
 
@@ -31,11 +37,15 @@ class WorkerController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email',
             'bank_name' => 'required|string',
             'bank_account_number' => 'required|string',
             'bank_account_name' => 'required|string',
+            'modal_form' => 'required|string',
         ]);
-        $worker->update($data);
+
+        $worker->update($request->except('modal_form'));
+
         return back()->with('success', 'Worker data updated.');
     }
 

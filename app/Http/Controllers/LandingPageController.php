@@ -7,7 +7,9 @@ use App\Models\Post;
 use App\Models\CaseStudy;
 use Illuminate\Http\Request;
 use App\Models\Category;
-use App\Models\Testimonial; // 1. Import model Testimonial
+use App\Models\Testimonial;
+use App\Models\Setting;     // <-- Tambahan Import
+use App\Models\SocialLink;  // <-- Tambahan Import
 
 class LandingPageController extends Controller
 {
@@ -36,11 +38,10 @@ class LandingPageController extends Controller
     public function services()
     {
         // 1. Ambil semua kategori 'service' dan langsung load relasi 'services' nya.
-        // Ini jauh lebih efisien dan scalable.
         $serviceCategories = Category::where('type', 'service')
-            ->whereHas('services') // Ini bagus, pertahankan untuk tidak menampilkan kategori kosong
+            ->whereHas('services')
             ->with(['services' => function ($query) {
-                $query->orderBy('price', 'asc'); // Urutkan layanan dari harga termurah
+                $query->orderBy('price', 'asc');
             }])
             ->get();
 
@@ -56,7 +57,6 @@ class LandingPageController extends Controller
 
     public function portfolio()
     {
-        // Sebaiknya tambahkan filter status di sini juga
         $caseStudies = CaseStudy::where('status', 'PUBLISHED')->with('category')->latest()->paginate(10);
         return view('public.portfolio', compact('caseStudies'));
     }
@@ -105,18 +105,27 @@ class LandingPageController extends Controller
 
         // 2. Ambil testimoni yang ditandai sebagai 'featured'
         $testimonials = Testimonial::where('is_featured', true)
-            ->with('user') // Eager load data user (nama, foto, dll)
+            ->with('user')
             ->latest()
-            ->take(3) // Ambil 3 testimoni terbaru yang featured
+            ->take(3)
             ->get();
 
         // 3. Kirim data caseStudies dan testimonials ke view
         return view('public.why-choose-us', compact('caseStudies', 'testimonials'));
     }
 
-
+    /**
+     * Menampilkan halaman Kontak Publik dengan data dinamis dari Admin Settings
+     */
     public function contact()
     {
-        return view('public.contact');
+        // 1. Ambil data settings (berupa array key-value)
+        $settings = Setting::pluck('value', 'key');
+
+        // 2. Ambil data social media
+        $socialLinks = SocialLink::orderBy('sort_order')->get();
+
+        // 3. Kirim ke view
+        return view('public.contact', compact('settings', 'socialLinks'));
     }
 }

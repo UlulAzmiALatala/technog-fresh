@@ -1,82 +1,77 @@
-<x-modal name="edit-post-modal" :show="$errors->any() && session('modal_form') === 'edit'" maxWidth="2xl" focusable>
-    <form method="POST" :action="`{{ url('admin/founder/posts') }}/${editItem.id}`" class="p-6" enctype="multipart/form-data">
-        @csrf
-        @method('PATCH')
+{{-- Lokasi: resources/views/admin/founder/posts/partials/edit-modal.blade.php --}}
+<template x-teleport="body">
+    <div x-show="isEditModalOpen" x-cloak class="fixed inset-0 z-[990] flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-[30px]" @click="isEditModalOpen = false"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"></div>
 
-        <input type="hidden" name="modal_form" value="edit">
-        
-        <input type="hidden" name="id" x-model="editItem.id">
-
-        <h2 class="text-lg font-medium text-gray-900">
-            Edit Article
-        </h2>
-
-        <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <div class="lg:col-span-2 space-y-6">
-                <div>
-                    <x-input-label for="edit_title" value="Article Title" />
-                    <x-text-input type="text" name="title" id="edit_title" class="mt-1 block w-full" x-model="editItem.title" required autofocus />
-                    <x-input-error :messages="$errors->get('title')" class="mt-2" />
-                </div>
-                <div>
-                    <x-input-label for="edit_body" value="Content Body" />
-                    <textarea name="body" id="edit_body" rows="10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" x-model="editItem.body"></textarea>
-                    <x-input-error :messages="$errors->get('body')" class="mt-2" />
-                </div>
+        <div class="relative bg-white/95 dark:bg-slate-800/95 w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl border border-white/10 flex flex-col"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95">
+             
+            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <h3 class="text-xl text-slate-900 dark:text-white tracking-tight font-bold uppercase">Edit Artikel</h3>
+                <button type="button" @click="isEditModalOpen = false" class="text-slate-400 transition-none"><i class="fas fa-times fa-lg"></i></button>
             </div>
 
-            <div class="space-y-6">
-                <div>
-                    <x-input-label for="edit_category_id_select" value="Article Category" />
-                    <div class="flex items-center space-x-2 mt-1">
-                        <select id="edit_category_id_select" name="category_id" x-model="editItem.category_id" class="block w-full rounded-md border-gray-300 shadow-sm" required>
-                            <option value="">Select Category</option>
-                            <template x-for="category in categories" :key="category.id">
-                                <option :value="category.id" x-text="category.name"></option>
-                            </template>
-                        </select>
-                        <button type="button" @click="openAddCategoryForm()" class="px-3 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 text-sm font-semibold">+</button>
+            <form :action="`{{ url('admin/founder/posts') }}/${editItem.id}`" method="POST" enctype="multipart/form-data" class="p-6 overflow-y-auto custom-scrollbar">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="modal_form" value="edit">
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-5">
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Judul Artikel</label>
+                            <input type="text" name="title" x-model="editItem.title" required
+                                   class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 font-normal outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Isi Konten</label>
+                            <textarea name="body" x-model="editItem.body" rows="6" required
+                                      class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 font-normal outline-none"></textarea>
+                        </div>
                     </div>
-                    <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
-                </div>
-                
-                <div>
-                    <x-input-label for="edit_status" value="Status" />
-                    <select name="status" id="edit_status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" x-model="editItem.status" required>
-                        <option value="DRAFT">Draft</option>
-                        <option value="PUBLISHED">Published</option>
-                    </select>
-                    <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                </div>
 
-                <div class="space-y-2">
-                    <x-input-label for="edit_image" value="Featured Image" />
-                    <template x-if="editImagePreview">
-                        <img :src="editImagePreview" class="w-full h-32 object-cover rounded-md border border-gray-200">
-                    </template>
-                    <template x-if="!editImagePreview && editItem.image_url">
-                         <img :src="editItem.image_url" class="w-full h-32 object-cover rounded-md border border-gray-200">
-                    </template>
-                    <div x-show="!editImagePreview && !editItem.image_url" class="w-full h-32 bg-gray-100 rounded-md flex items-center justify-center border-2 border-dashed border-gray-300 my-2">
-                        <span class="text-gray-400">Image Preview</span>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Kategori</label>
+                            <div class="flex items-center space-x-2">
+                                <select name="category_id" x-model="editItem.category_id" required 
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 font-normal outline-none">
+                                    <template x-for="category in categories" :key="category.id">
+                                        <option :value="category.id" x-text="category.name" :selected="category.id == editItem.category_id"></option>
+                                    </template>
+                                </select>
+                                <button type="button" @click="openAddCategoryForm()" class="h-11 w-11 flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-xl transition-none font-bold shrink-0"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Status</label>
+                            <select name="status" x-model="editItem.status" required class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 font-normal outline-none">
+                                <option value="DRAFT">Draft</option>
+                                <option value="PUBLISHED">Published</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Ganti Gambar (Opsional)</label>
+                            <div class="relative w-full h-28 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+                                <template x-if="editImagePreview">
+                                    <img :src="editImagePreview" class="w-full h-full object-cover">
+                                </template>
+                                <span x-show="!editImagePreview" class="text-slate-400 text-xs font-bold uppercase tracking-widest">Upload Baru</span>
+                                <input type="file" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                       @change="editImagePreview = URL.createObjectURL($event.target.files[0])">
+                            </div>
+                        </div>
                     </div>
-                    <input type="file" name="image" id="edit_image" class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                           @change="editImagePreview = URL.createObjectURL($event.target.files[0])">
-                    <x-input-error :messages="$errors->get('image')" class="mt-2" />
                 </div>
-            </div>
+
+                <div class="flex space-x-4 pt-6">
+                    <button type="button" @click="isEditModalOpen = false" class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded-2xl font-bold transition-none">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none font-bold transition-none">Update Artikel</button>
+                </div>
+            </form>
         </div>
-
-        <div class="mt-6 flex justify-end">
-            <x-secondary-button x-on:click="$dispatch('close')">
-                {{ __('Cancel') }}
-            </x-secondary-button>
-
-            <x-primary-button type="submit" class="ml-3">
-                Update Article
-            </x-primary-button>
-        </div>
-    </form>
-</x-modal>
-
+    </div>
+</template>

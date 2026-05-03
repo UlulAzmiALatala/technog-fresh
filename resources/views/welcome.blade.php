@@ -21,7 +21,6 @@
             <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900 z-20"></div>
             
             {{-- Lapisan 3: Konten Utama dengan Mouse Parallax --}}
-            {{-- PERBAIKAN: pt-20 diubah menjadi pt-32 sm:pt-40 pb-16 agar posisi tengahnya sempurna --}}
             <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-30 pt-32 sm:pt-40 pb-16">
                 
                 <div x-data="{ x: 0, y: 0, animate: false }"
@@ -80,10 +79,8 @@
                        class="group relative block bg-gray-900 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(99,102,241,0.2)] overflow-hidden h-[26rem] transition-all duration-500 hover:-translate-y-2 border border-gray-200/50"
                        style="transition-delay: {{ $index * 150 }}ms;">
                         
-                        {{-- Background Image --}}
                         <img alt="{{ $service->name }}" src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/600x800/374151/FFFFFF?text=TechnoG' }}" class="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:opacity-40" />
                         
-                        {{-- Top Badge --}}
                         @if($service->package_plan)
                             <div class="absolute top-5 left-5 z-20">
                                 <span class="bg-white/90 text-indigo-700 text-xs font-extrabold px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm uppercase tracking-wider">
@@ -92,12 +89,10 @@
                             </div>
                         @endif
 
-                        {{-- Floating Icon Top Right --}}
                         <div class="absolute top-5 right-5 z-20 bg-white/20 backdrop-blur-md text-white w-10 h-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 border border-white/30">
                             <i class="fa-solid fa-arrow-right -rotate-45"></i>
                         </div>
 
-                        {{-- Content Gradient & Text --}}
                         <div class="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent">
                             <div class="relative z-20 transform transition-transform duration-500 group-hover:-translate-y-2">
                                 <h3 class="text-2xl font-bold text-white leading-tight mb-2">{{ $service->name }}</h3>
@@ -122,7 +117,7 @@
         </div>
     </section>
 
-    {{-- 3. SUCCESS STORIES SHOWCASE (Konsisten dengan halaman Portfolio) --}}
+    {{-- 3. SUCCESS STORIES SHOWCASE (Portfolio) --}}
     <section x-data="{ animate: false }" x-intersect.once="animate = true" class="py-32 bg-white relative overflow-hidden border-t border-gray-100">
         <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-50/80 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
 
@@ -171,7 +166,7 @@
         </div>
     </section>
 
-    {{-- 4. LATEST BLOG POSTS (Konsisten dengan halaman Blog) --}}
+    {{-- 4. LATEST BLOG POSTS --}}
     <section x-data="{ animate: false }" x-intersect.once="animate = true" class="py-32 bg-gray-50 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div :class="animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="text-center mb-16 transition-all duration-700 ease-out">
@@ -247,6 +242,163 @@
         </div>
     </section>
 
+    {{-- 6. SMART WELCOME POP-UP (Let's Meet & Form) --}}
+    <div x-data="welcomePopup()" x-init="initPopup()" class="relative z-[100]">
+        
+        <!-- FLOATING BUTTON -->
+        <button @click="openManual()" 
+                x-show="!isOpen"
+                x-transition:enter="ease-out duration-500 delay-500" 
+                x-transition:enter-start="opacity-0 translate-y-8" 
+                x-transition:enter-end="opacity-100 translate-y-0"
+                class="fixed bottom-8 right-8 z-50 group flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.5)] hover:shadow-[0_10px_40px_rgba(79,70,229,0.8)] transition-all duration-300 hover:-translate-y-1 focus:outline-none overflow-hidden border border-indigo-400/50">
+            
+            <div class="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out skew-x-[30deg]"></div>
+
+            <span class="relative flex h-3 w-3 z-10">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-white shadow-[0_0_10px_#fff]"></span>
+            </span>
+            <span class="font-extrabold text-sm tracking-wide relative z-10 drop-shadow-md">Let's Meet</span>
+            
+            {{-- SVG Ikon Kalender --}}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 group-hover:rotate-12 group-hover:scale-110 transition-all duration-300 relative z-10 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </button>
+
+        <!-- Backdrop Blur -->
+        <div x-show="isOpen" 
+             x-transition:enter="ease-out duration-500" 
+             x-transition:enter-start="opacity-0" 
+             x-transition:enter-end="opacity-100" 
+             x-transition:leave="ease-in duration-300" 
+             x-transition:leave-start="opacity-100" 
+             x-transition:leave-end="opacity-0" 
+             class="fixed inset-0 bg-slate-950/80 backdrop-blur-md"
+             style="display: none;">
+        </div>
+
+        <!-- Modal Content -->
+        <div x-show="isOpen" 
+             x-transition:enter="ease-out duration-500" 
+             x-transition:enter-start="opacity-0 translate-y-8 scale-95" 
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100" 
+             x-transition:leave="ease-in duration-300" 
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100" 
+             x-transition:leave-end="opacity-0 translate-y-8 scale-95" 
+             class="fixed inset-0 flex items-center justify-center p-4"
+             style="display: none;">
+            
+            <!-- Glassmorphism Card -->
+            <div @click.away="closePopup()" class="relative w-full max-w-lg bg-white/5 border border-white/10 rounded-[2.5rem] shadow-2xl p-8 sm:p-10 backdrop-blur-2xl overflow-hidden transition-all duration-300 ease-in-out">
+                
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl"></div>
+
+                {{-- TOMBOL CLOSE (X) DENGAN SVG --}}
+                <button @click="closePopup()" class="absolute top-5 right-5 w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/20 text-white/50 hover:text-white border border-white/10 rounded-full transition-all duration-300 z-50 focus:outline-none group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- KONTEN 1: Sambutan -->
+                <div x-show="!showForm" 
+                     x-transition:enter="ease-out duration-500 delay-100" 
+                     x-transition:enter-start="opacity-0 -translate-x-8" 
+                     x-transition:enter-end="opacity-100 translate-x-0" 
+                     class="relative z-10 text-center">
+                    
+                    {{-- IKON DISKUSI (REPLACE HANDSHAKE) DENGAN SVG --}}
+                    <div class="w-20 h-20 bg-indigo-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Let's Meet!</h2>
+                    <p class="text-indigo-100/70 mb-8 text-base leading-relaxed">
+                        Punya ide project brilian? Mari jadwalkan sesi diskusi (Online / Tatap Muka) bersama tim expert <strong>TechnoG Solutions</strong>.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button type="button" @click="showForm = true" class="flex items-center justify-center px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/25 focus:outline-none">
+                            Jadwalkan Meeting 
+                            {{-- SVG Ikon Panah Kanan --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KONTEN 2: Form Input -->
+                <div x-show="showForm" 
+                     x-transition:enter="ease-out duration-500 delay-100" 
+                     x-transition:enter-start="opacity-0 translate-x-8" 
+                     x-transition:enter-end="opacity-100 translate-x-0" 
+                     class="relative z-10" 
+                     style="display: none;">
+                    
+                    <div class="flex items-center mb-6">
+                        {{-- TOMBOL BACK (KEMBALI) DENGAN SVG --}}
+                        <button type="button" @click="showForm = false" class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/20 text-white/50 hover:text-white border border-white/10 rounded-full transition-all duration-300 mr-4 focus:outline-none group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <h3 class="text-xl font-bold text-white">Detail Meeting</h3>
+                    </div>
+
+                    <form action="{{ route('public.meeting.request') }}" method="POST" class="space-y-4 text-left">
+                        @csrf
+                        <div>
+                            <label class="block text-xs text-white/70 mb-1 ml-1">Nama / Perusahaan</label>
+                            <input type="text" name="name" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-indigo-500 focus:ring-indigo-500 transition-colors" placeholder="Misal: PT. Agung Perkasa">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-white/70 mb-1 ml-1">WhatsApp / Email</label>
+                            <input type="text" name="contact" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-indigo-500 focus:ring-indigo-500 transition-colors" placeholder="0812xxxx / email@domain.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-white/70 mb-1 ml-1">Preferensi Meeting</label>
+                            <select name="meeting_type" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-indigo-500 transition-colors appearance-none">
+                                <option value="Online (Zoom / GMeet)" class="text-gray-900">Online (Zoom / Google Meet)</option>
+                                <option value="Offline (Tatap Muka)" class="text-gray-900">Offline (Tatap Muka - Yogyakarta)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1 ml-1">Tanggal</label>
+                                <input type="date" name="meeting_date" required style="color-scheme: dark;" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-indigo-500 focus:ring-indigo-500 transition-colors appearance-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1 ml-1">Jam</label>
+                                <input type="time" name="meeting_time" required style="color-scheme: dark;" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-indigo-500 focus:ring-indigo-500 transition-colors appearance-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-white/70 mb-1 ml-1">Topik Singkat</label>
+                            <textarea name="topic" rows="2" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-indigo-500 focus:ring-indigo-500 transition-colors" placeholder="Misal: Pembuatan web logistics..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full flex items-center justify-center py-4 mt-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/25">
+                            Kirim Permintaan 
+                            {{-- SVG Ikon Kirim/Paper Plane --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 transform -rotate-45 relative bottom-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     {{-- Script Initialization --}}
     <x-slot name="pageScripts">
         <script>
@@ -281,9 +433,46 @@
                                 } else { output += ''; }
                             }
                             this.displayText = output;
-                            if (frame >= Math.max(...queue.map(q => q.end))) { clearInterval(this.intervalId); }
+                            if (frame >= Math.max(...queue.length > 0 ? queue.map(q => q.end) : [0])) { clearInterval(this.intervalId); }
                             frame++;
                         }, 40);
+                    }
+                }));
+
+                // Smart Welcome Popup Logic
+                Alpine.data('welcomePopup', () => ({
+                    isOpen: false,
+                    showForm: false, // Menambahkan state form
+                    
+                    initPopup() {
+                        // Ambil waktu terakhir pengunjung melihat pop-up
+                        const lastSeen = localStorage.getItem('technog_popup_time');
+                        const now = new Date().getTime();
+                        
+                        // Set masa tunggu (cooldown): 1 jam dalam milidetik
+                        // (1 jam * 60 menit * 60 detik * 1000 ms)
+                        const cooldownPeriod = 1 * 60 * 60 * 1000; 
+
+                        // Munculkan otomatis jika belum pernah lihat, ATAU jika sudah lewat 1 jam
+                        if (!lastSeen || (now - lastSeen > cooldownPeriod)) {
+                            setTimeout(() => {
+                                this.isOpen = true;
+                            }, 3500); 
+                        }
+                    },
+                    
+                    // Fungsi baru untuk buka lewat tombol floating
+                    openManual() {
+                        this.isOpen = true;
+                    },
+
+                    closePopup() {
+                        this.isOpen = false;
+                        // Kembalikan form ke layar utama setelah pop-up tertutup
+                        setTimeout(() => { this.showForm = false; }, 500); 
+                        
+                        // Simpan waktu saat ini (jam/tanggal dia menutup pop-up)
+                        localStorage.setItem('technog_popup_time', new Date().getTime());
                     }
                 }));
             });

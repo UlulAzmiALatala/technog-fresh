@@ -39,9 +39,15 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
+    // Rute bawaan verifikasi via link
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
+
+    // Rute BARU untuk submit verifikasi via OTP
+    Route::post('verify-otp', [VerifyEmailController::class, 'verifyOtp'])
+        ->middleware('throttle:6,1')
+        ->name('verification.verify.otp');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')

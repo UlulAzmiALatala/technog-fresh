@@ -10,12 +10,8 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    /**
-     * Menampilkan daftar pengguna dengan fungsionalitas filter dan pencarian.
-     */
     public function index(Request $request)
     {
-        // [BAGIAN BARU] Menghitung data statistik untuk kartu
         $totalUsers = User::count();
         $newUsersThisMonth = User::where('created_at', '>=', now()->startOfMonth())->count();
         $totalClients = User::role('Client')->count();
@@ -23,7 +19,6 @@ class UserController extends Controller
             $query->where('name', '!=', 'Client');
         })->count();
 
-        // Kode Anda yang sudah ada
         $roles = Role::all();
         $query = User::where('id', '!=', Auth::id())->with('roles');
 
@@ -40,10 +35,8 @@ class UserController extends Controller
             });
         }
 
-        // [MODIFIKASI] Menggunakan paginate() agar pagination berfungsi
         $users = $query->latest()->paginate(12)->withQueryString();
 
-        // [MODIFIKASI] Mengirim semua variabel (termasuk statistik) ke view
         return view('admin.founder.users.index', compact(
             'users',
             'roles',
@@ -54,54 +47,26 @@ class UserController extends Controller
         ));
     }
 
-    /**
-     * [BARU] Menampilkan halaman detail pengguna.
-     */
-    public function show(User $user)
-    {
-        return view('admin.founder.users.show', compact('user'));
-    }
-
-    /**
-     * Menampilkan form untuk mengedit peran pengguna.
-     */
-    public function edit(User $user)
-    {
-        $roles = Role::all();
-        return view('admin.founder.users.edit', compact('user', 'roles'));
-    }
-
-    /**
-     * Memperbarui peran pengguna.
-     */
     public function update(Request $request, User $user)
     {
         $request->validate([
             'role' => 'required|exists:roles,name',
+            'modal_form' => 'required|string', // Menangkap state modal
         ]);
 
         $user->syncRoles($request->role);
 
-        return redirect()->route('admin.founder.users.index')
-            ->with('success', 'Peran pengguna berhasil diperbarui.');
+        return back()->with('success', 'Peran pengguna berhasil diperbarui.');
     }
 
-
-
-    /**
-     * Menghapus pengguna dari database.
-     */
     public function destroy(User $user)
     {
-        // Tambahan keamanan: pastikan founder tidak bisa menghapus dirinya sendiri
         if ($user->id === Auth::id()) {
-            return redirect()->route('admin.founder.users.index')
-                ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
         $user->delete();
 
-        return redirect()->route('admin.founder.users.index')
-            ->with('success', 'Pengguna berhasil dihapus.');
+        return back()->with('success', 'Pengguna berhasil dihapus.');
     }
 }

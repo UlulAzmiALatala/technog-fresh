@@ -1,37 +1,26 @@
-{{-- Lokasi: resources/views/admin/founder/settings/socials/partials/delete-modal.blade.php (FILE BARU) --}}
-<div x-show="isDeleteModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen px-4 text-center md:items-center sm:block sm:p-0">
-        {{-- Latar belakang --}}
-        <div x-show="isDeleteModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-             class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="isDeleteModalOpen = false" aria-hidden="true"></div>
+<template x-teleport="body">
+    <div x-show="isDeleteModalOpen" x-cloak class="fixed inset-0 z-[1000] flex items-center justify-center p-4 overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-[30px]" @click="isDeleteModalOpen = false"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"></div>
 
-        {{-- Konten Modal --}}
-        <div x-show="isDeleteModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-             class="inline-block w-full max-w-md p-8 my-20 overflow-hidden text-left transition-all transform bg-white dark:bg-slate-800 rounded-lg shadow-xl">
-            
-            <div class="flex items-center justify-between space-x-4">
-                <h1 class="text-xl font-medium text-gray-800 dark:text-white">Delete Social Link</h1>
-                <button @click="isDeleteModalOpen = false" class="text-gray-600 dark:text-gray-400 focus:outline-none hover:text-gray-700 dark:hover:text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </button>
+        <div class="relative bg-white/95 dark:bg-slate-800/95 w-full max-w-md rounded-[2.5rem] p-12 text-center shadow-2xl border border-white/10"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95">
+             
+            <div class="w-20 h-20 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl shrink-0">
+                <i class="fas fa-trash-alt"></i>
             </div>
-            
-            <p class="mt-4 text-sm text-gray-600 dark:text-slate-400">
-                Are you sure you want to delete this social media link? This action cannot be undone.
+
+            <h3 class="text-2xl text-slate-900 dark:text-white font-bold tracking-tighter uppercase">Delete Link?</h3>
+            <p class="text-slate-500 dark:text-slate-400 mt-4 text-sm font-normal leading-relaxed">
+                This action is permanent. The social media link will be removed from your site.
             </p>
-            
-            <form class="mt-5" :action="deleteUrl" method="POST">
+
+            <form :action="deleteUrl" method="POST" class="mt-10 flex space-x-4">
                 @csrf
                 @method('DELETE')
-                <div class="mt-8 flex justify-end space-x-4">
-                    <button type="button" @click="isDeleteModalOpen = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700">
-                        Delete
-                    </button>
-                </div>
+                <button type="button" @click="isDeleteModalOpen = false" class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded-2xl font-bold transition-none">Cancel</button>
+                <button type="submit" class="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold transition-none shadow-lg shadow-red-900/20">Delete</button>
             </form>
         </div>
     </div>
-</div>
+</template>
