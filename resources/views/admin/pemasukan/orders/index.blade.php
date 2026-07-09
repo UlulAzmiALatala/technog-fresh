@@ -5,7 +5,6 @@
                 <h2 class="text-2xl text-slate-900 dark:text-white tracking-tight font-black uppercase">Order Management</h2>
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-widest mt-1 uppercase">Track & Manage Client Projects</p>
             </div>
-            {{-- Tombol Add New Service sudah dihilangkan sesuai instruksi --}}
         </div>
     </x-slot>
 
@@ -80,13 +79,13 @@
                         <i class="fas fa-search text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Order ID or Client Name..." 
-                           class="w-full pl-11 rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder:text-slate-400">
+                           class="w-full pl-11 rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder:text-slate-400 dark:text-white outline-none">
                 </div>
 
                 {{-- Filter Status --}}
                 <div class="md:w-64">
                     <select name="status" onchange="this.form.submit()" 
-                            class="w-full rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-600 dark:text-slate-300">
+                            class="w-full rounded-2xl border-slate-200 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-slate-600 dark:text-slate-300 outline-none">
                         <option value="">All Statuses</option>
                         <option value="Menunggu Pembayaran" @selected(request('status') == 'Menunggu Pembayaran')>Waiting for Payment</option>
                         <option value="Menunggu Konfirmasi" @selected(request('status') == 'Menunggu Konfirmasi')>Waiting for Confirmation</option>
@@ -113,8 +112,8 @@
                     <thead>
                         <tr class="text-slate-400 uppercase tracking-widest text-[10px] border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
                             <th class="p-6 font-bold">Order ID</th>
-                            <th class="p-6 font-bold">Client</th>
-                            <th class="p-6 font-bold">Date</th>
+                            <th class="p-6 font-bold">Client Info</th>
+                            <th class="p-6 font-bold">Contact & Needs</th> {{-- Kolom Baru --}}
                             <th class="p-6 font-bold text-right">Total Price</th>
                             <th class="p-6 font-bold text-center">Payment</th>
                             <th class="p-6 font-bold text-center">Status</th>
@@ -124,16 +123,48 @@
                     <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
                         @forelse ($orders as $order)
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-colors duration-300 group">
-                                <td class="p-6 whitespace-nowrap text-sm font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">#{{ $order->id }}</td>
-                                <td class="p-6 whitespace-nowrap text-sm text-slate-900 dark:text-white font-bold">{{ $order->user->name }}</td>
-                                <td class="p-6 whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $order->created_at->format('d M Y') }}</td>
+                                <td class="p-6 whitespace-nowrap text-sm font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
+                                    #{{ $order->id }}
+                                    <div class="text-[10px] text-slate-400 font-bold mt-1">{{ $order->created_at->format('d M Y') }}</div>
+                                </td>
+                                
+                                <td class="p-6 whitespace-nowrap">
+                                    <div class="text-sm text-slate-900 dark:text-white font-bold">{{ $order->user->name }}</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-1"><i class="fas fa-envelope mr-1"></i> {{ $order->user->email }}</div>
+                                </td>
+                                
+                                {{-- EKSTRAKSI NOTES UNTUK NOMOR WA & MESSAGE --}}
+                                <td class="p-6">
+                                    @php
+                                        preg_match('/WhatsApp:\s*([^\n]+)/', $order->notes ?? '', $waMatch);
+                                        $waNumber = $waMatch[1] ?? '-';
+                                        
+                                        // Ambil Requirement (baris setelah "Project Requirements:")
+                                        $reqText = '-';
+                                        if (str_contains($order->notes ?? '', 'Project Requirements:')) {
+                                            $parts = explode('Project Requirements:', $order->notes);
+                                            $reqText = trim($parts[1] ?? '-');
+                                        }
+                                    @endphp
+                                    
+                                    @if($waNumber !== '-')
+                                        <div class="flex items-center text-xs text-emerald-600 dark:text-emerald-400 font-bold mb-1">
+                                            <i class="fab fa-whatsapp mr-1.5 text-sm"></i> {{ $waNumber }}
+                                        </div>
+                                    @endif
+                                    
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 max-w-[200px]" title="{{ $reqText }}">
+                                        {{ $reqText }}
+                                    </div>
+                                </td>
+
                                 <td class="p-6 whitespace-nowrap text-right font-black text-slate-900 dark:text-white text-lg tracking-tight">
                                     $ {{ number_format($order->total_price, 0, ',', '.') }}
                                 </td>
                                 
                                 {{-- PAYMENT BADGE --}}
                                 <td class="p-6 whitespace-nowrap text-center">
-                                    @if(optional($order->invoice)->status == 'Lunas')
+                                    @if(optional($order->invoice)->status == 'Paid')
                                         <span class="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-200/50 dark:border-emerald-800/50 flex items-center justify-center w-max mx-auto">
                                             <i class="fas fa-check-circle mr-1.5"></i> Paid
                                         </span>
@@ -148,18 +179,23 @@
                                 <td class="p-6 whitespace-nowrap text-center">
                                     <span @class([
                                         'px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border flex items-center justify-center w-max mx-auto',
-                                        'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-800/50' => $order->status == 'Selesai',
-                                        'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-800/50' => $order->status == 'Diproses',
-                                        'bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-800/50' => $order->status == 'Menunggu Konfirmasi',
-                                        'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600' => $order->status == 'Menunggu Pembayaran',
-                                        'bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-800/50' => $order->status == 'Dibatalkan',
+                                        'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-800/50' => $order->status == 'Selesai' || $order->status == 'Completed',
+                                        'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-800/50' => $order->status == 'Diproses' || $order->status == 'Processing',
+                                        'bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-800/50' => $order->status == 'Menunggu Konfirmasi' || $order->status == 'Awaiting Confirmation',
+                                        'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600' => $order->status == 'Menunggu Pembayaran' || $order->status == 'Pending Payment',
+                                        'bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-800/50' => $order->status == 'Dibatalkan' || $order->status == 'Cancelled',
                                     ])>
                                         @switch($order->status)
-                                            @case('Selesai') <i class="fas fa-check-double mr-1.5"></i> Completed @break
-                                            @case('Diproses') <i class="fas fa-cogs mr-1.5"></i> In Progress @break
-                                            @case('Menunggu Konfirmasi') <i class="fas fa-search-dollar mr-1.5"></i> Reviewing @break
-                                            @case('Menunggu Pembayaran') <i class="fas fa-wallet mr-1.5"></i> Pending @break
-                                            @case('Dibatalkan') <i class="fas fa-ban mr-1.5"></i> Cancelled @break
+                                            @case('Selesai') 
+                                            @case('Completed') <i class="fas fa-check-double mr-1.5"></i> Completed @break
+                                            @case('Diproses') 
+                                            @case('Processing') <i class="fas fa-cogs mr-1.5"></i> In Progress @break
+                                            @case('Menunggu Konfirmasi') 
+                                            @case('Awaiting Confirmation') <i class="fas fa-search-dollar mr-1.5"></i> Reviewing @break
+                                            @case('Menunggu Pembayaran') 
+                                            @case('Pending Payment') <i class="fas fa-wallet mr-1.5"></i> Pending @break
+                                            @case('Dibatalkan') 
+                                            @case('Cancelled') <i class="fas fa-ban mr-1.5"></i> Cancelled @break
                                             @default {{ $order->status }}
                                         @endswitch
                                     </span>

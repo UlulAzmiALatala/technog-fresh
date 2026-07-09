@@ -36,7 +36,7 @@ use App\Http\Controllers\Admin\Pengeluaran\ProjectExpenseController;
 use App\Http\Controllers\Admin\Founder\SettingsController;
 use App\Http\Controllers\Admin\Founder\SocialLinkController;
 use App\Http\Controllers\Admin\Founder\LogoController;
-use App\Http\Controllers\Admin\Pemasukan\MeetingController; // FIX: Import MeetingController
+use App\Http\Controllers\Admin\Pemasukan\MeetingController;
 
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -57,7 +57,12 @@ Route::get('/', [LandingPageController::class, 'index'])->name('home');
 
 Route::name('public.')->group(function () {
     Route::get('/about-us', [LandingPageController::class, 'about'])->name('about');
+
     Route::get('/services', [LandingPageController::class, 'services'])->name('services');
+    Route::get('/services/{service}', [LandingPageController::class, 'showService'])->name('services.show');
+    Route::post('/services/request-order', [LandingPageController::class, 'requestOrder'])->name('services.request-order');
+    Route::post('/services/manual-payment', [LandingPageController::class, 'submitManualPayment'])->name('services.manual-payment');
+
     Route::get('/success-stories', [LandingPageController::class, 'portfolio'])->name('portfolio');
     Route::get('/success-stories/{caseStudy:slug}', [LandingPageController::class, 'showCaseStudy'])->name('portfolio.show');
     Route::get('/blog', [LandingPageController::class, 'blog'])->name('blog');
@@ -175,7 +180,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Khusus Founder
             Route::middleware(['role:Founder'])->group(function () {
                 Route::resource('users', UserController::class)->except(['create', 'store']);
-
                 Route::resource('workers', WorkerController::class);
 
                 Route::prefix('settings')->name('settings.')->group(function () {
@@ -208,7 +212,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Pemasukan
             Route::prefix('pemasukan')->name('pemasukan.')->group(function () {
 
-                // ---> ROUTE BARU: Manajemen Meeting <---
                 Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings.index');
                 Route::patch('/meetings/{id}/status', [MeetingController::class, 'updateStatus'])->name('meetings.update-status');
                 Route::resource('services', ServiceController::class)->except(['show']);

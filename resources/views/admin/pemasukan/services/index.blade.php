@@ -175,7 +175,8 @@
                 deleteUrl: '',
                 
                 addCategoryId: '{{ old('category_id') }}' || '',
-                editData: { id: null, name: '', package_plan: '', price: '', estimated_duration: '', duration_unit: '', category_id: '', features: '', description: '', imageUrl: null },
+                // UPDATE: Menambahkan 'use_case' dan 'workflow' agar reaktif di modal Edit
+                editData: { id: null, name: '', project_type: '', package_plan: '', price: '', estimated_duration: '', duration_unit: '', category_id: '', features: '', description: '', use_case: '', workflow: '', imageUrl: null },
 
                 init() {
                     window.serviceManager = this;
@@ -188,7 +189,6 @@
                         this.isEditModalOpen = true;
                     }
 
-                    // PERBAIKAN: Fungsi cerdas untuk mengecek apakah MASIH ADA modal yang terbuka
                     const checkScrollLock = () => {
                         if (this.isAddModalOpen || this.isEditModalOpen || this.isDeleteModalOpen || this.isCategoryModalOpen) {
                             document.body.style.overflow = 'hidden';
@@ -197,7 +197,6 @@
                         }
                     };
 
-                    // Pantau semua state modal dan jalankan fungsi cerdas di atas
                     this.$watch('isAddModalOpen', checkScrollLock);
                     this.$watch('isEditModalOpen', checkScrollLock);
                     this.$watch('isDeleteModalOpen', checkScrollLock);

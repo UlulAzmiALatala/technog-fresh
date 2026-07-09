@@ -14,13 +14,21 @@ class Service extends Model
     protected $fillable = [
         'category_id',
         'name',
+        'project_type',
         'package_plan',
         'price',
         'estimated_duration',
         'duration_unit',
         'description',
+        'use_case',
+        'workflow',
         'features',
         'image',
+    ];
+
+    // Tambahkan baris ini agar Laravel mem-parsing JSON secara otomatis
+    protected $casts = [
+        'features' => 'array',
     ];
 
     public function category(): BelongsTo

@@ -26,6 +26,13 @@
                                    class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">
                             @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Project Type / Deliverable</label>
+                            <input type="text" name="project_type" value="{{ old('project_type') }}" placeholder="e.g. Pembuatan Website, Analisis Data, Infrastructure"
+                                   class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">
+                            @error('project_type') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                        </div>
                         
                         <div>
                             <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Package Plan</label>
@@ -85,9 +92,9 @@
                             @error('category_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <div x-data="{ imgPreview: null }">
+                        <div class="p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30">
                             <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Service Image</label>
-                            <div class="flex items-center space-x-4 p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30">
+                            <div class="flex items-center space-x-4" x-data="{ imgPreview: null }">
                                 <div class="w-20 h-20 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-sm shrink-0">
                                     <template x-if="imgPreview">
                                         <img :src="imgPreview" class="w-full h-full object-cover">
@@ -104,22 +111,39 @@
                         </div>
                     </div>
 
-                    {{-- Full Width Bawah --}}
+                    {{-- Full Width Bawah (Deskripsi Konten) --}}
                     <div class="lg:col-span-2 space-y-6">
-                        <div>
-                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Key Features</label>
-                            <textarea name="features" rows="3" placeholder="Use new line for each feature..."
-                                      class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('features') }}</textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Full Description (Overview)</label>
+                                <textarea name="description" rows="3" placeholder="Deskripsi arsitektur level atas..."
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('description') }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Ideal Use Case</label>
+                                <textarea name="use_case" rows="3" placeholder="Layanan ini sangat tepat jika..."
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('use_case') }}</textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Full Description</label>
-                            <textarea name="description" rows="4" 
-                                      class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('description') }}</textarea>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Execution Workflow</label>
+                                <textarea name="workflow" rows="4" placeholder="Step 1...&#10;Step 2...&#10;Step 3..."
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('workflow') }}</textarea>
+                                <p class="text-[10px] text-slate-400 mt-1">Gunakan 'Enter' untuk baris/step baru.</p>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Key Features (Outputs)</label>
+                                <textarea name="features" rows="4" placeholder="Fitur A...&#10;Fitur B...&#10;Fitur C..."
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">{{ old('features') }}</textarea>
+                                <p class="text-[10px] text-slate-400 mt-1">Gunakan 'Enter' untuk baris/fitur baru.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex space-x-4 pt-8 mt-4">
+                <div class="flex space-x-4 pt-8 mt-4 border-t border-slate-100 dark:border-slate-700">
                     <button type="button" @click="isAddModalOpen = false" class="flex-1 py-4 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded-2xl font-bold uppercase tracking-widest transition-none">Cancel</button>
                     <button type="submit" class="flex-1 py-4 bg-[#5046e5] hover:bg-[#4338ca] text-white rounded-2xl shadow-lg shadow-indigo-500/30 font-bold uppercase tracking-widest transition-none">Save Service</button>
                 </div>

@@ -27,6 +27,13 @@
                                    class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">
                             @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                         </div>
+
+                        <div>
+                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Project Type / Deliverable</label>
+                            <input type="text" name="project_type" x-model="editData.project_type" placeholder="e.g. Pembuatan Website, Analisis Data, Infrastructure"
+                                   class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none">
+                            @error('project_type') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                        </div>
                         
                         <div>
                             <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Package Plan</label>
@@ -81,9 +88,9 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div class="p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30">
                             <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Service Image</label>
-                            <div class="flex items-center space-x-4 p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30">
+                            <div class="flex items-center space-x-4">
                                 <div class="w-20 h-20 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-sm shrink-0">
                                     <template x-if="editData.imageUrl">
                                         <img :src="editData.imageUrl" class="w-full h-full object-cover">
@@ -102,15 +109,30 @@
 
                     {{-- Full Width Bawah --}}
                     <div class="lg:col-span-2 space-y-6">
-                        <div>
-                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Key Features</label>
-                            <textarea name="features" x-model="editData.features" rows="3"
-                                      class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Full Description (Overview)</label>
+                                <textarea name="description" x-model="editData.description" rows="3" 
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Ideal Use Case</label>
+                                <textarea name="use_case" x-model="editData.use_case" rows="3" 
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Full Description</label>
-                            <textarea name="description" x-model="editData.description" rows="4" 
-                                      class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Execution Workflow</label>
+                                <textarea name="workflow" x-model="editData.workflow" rows="4" 
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-widest text-slate-400 mb-2 font-bold">Key Features (Outputs)</label>
+                                <textarea name="features" x-model="editData.features" rows="4"
+                                          class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 dark:text-white py-3 px-4 focus:ring-indigo-500 outline-none"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>

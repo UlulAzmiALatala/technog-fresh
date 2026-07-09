@@ -40,11 +40,14 @@ class ServiceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'project_type' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'package_plan' => 'required|in:Silver Plan,Gold Plan,Platinum Sphere,Diamond Class,Ultima Partnership,Custom Engagement',
             'price' => 'required|numeric|min:0',
             'estimated_duration' => 'required|integer|min:1',
             'duration_unit' => 'required|in:Hari,Minggu,Bulan',
+            'use_case' => 'nullable|string', // <-- TAMBAHAN BARU
+            'workflow' => 'nullable|string', // <-- TAMBAHAN BARU
             'features' => 'nullable|string',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -66,11 +69,14 @@ class ServiceController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'project_type' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'package_plan' => 'required|in:Silver Plan,Gold Plan,Platinum Sphere,Diamond Class,Ultima Partnership,Custom Engagement',
             'price' => 'required|numeric|min:0',
             'estimated_duration' => 'required|integer|min:1',
             'duration_unit' => 'required|in:Hari,Minggu,Bulan',
+            'use_case' => 'nullable|string', // <-- TAMBAHAN BARU
+            'workflow' => 'nullable|string', // <-- TAMBAHAN BARU
             'features' => 'nullable|string',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

@@ -114,6 +114,82 @@
                 {{-- KOLOM KIRI: Informasi Detail & Worker Resources --}}
                 <div class="lg:col-span-2 space-y-8">
                     
+                    {{-- Client Info & Delivery Plan Row --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-slate-700">
+                            <h4 class="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6 flex items-center">
+                                <i class="fas fa-id-card mr-3 text-indigo-500"></i> Client Info
+                            </h4>
+                            <div class="space-y-5">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Client Name</p>
+                                    <p class="font-bold text-slate-900 dark:text-white text-lg">{{ $order->user->name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
+                                    <p class="font-medium text-slate-600 dark:text-slate-300">{{ $order->user->email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-slate-700">
+                            <h4 class="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6 flex items-center">
+                                <i class="fas fa-shipping-fast mr-3 text-indigo-500"></i> Delivery Plan
+                            </h4>
+                            <div class="space-y-5">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Delivery Type</p>
+                                    <p class="font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest text-sm">{{ $order->delivery_option ?? 'Standard' }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Final Deadline</p>
+                                    <p class="font-bold text-slate-900 dark:text-white text-lg">
+                                        {{ $order->due_date ? \Carbon\Carbon::parse($order->due_date)->format('d F Y') : 'Waiting Payment' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ========================================================= --}}
+                    {{-- NEW COMPONENT: PROJECT REQUIREMENTS & WHATSAPP FOLLOW UP  --}}
+                    {{-- ========================================================= --}}
+                    @if($order->notes)
+                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div class="p-8 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/30 flex justify-between items-center">
+                            <h3 class="text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white flex items-center">
+                                <i class="fas fa-comment-dots mr-3 text-indigo-500"></i> Project Notes & Requirements
+                            </h3>
+                            
+                            @php
+                                // Ekstrak nomor WhatsApp dari text notes menggunakan Regex
+                                preg_match('/WhatsApp:\s*([^\n]+)/', $order->notes, $waMatch);
+                                $waNumber = $waMatch[1] ?? null;
+                                // Bersihkan nomor WA (Hapus spasi, +, -, dll) untuk Link URL
+                                $cleanWaNumber = $waNumber ? preg_replace('/[^0-9]/', '', $waNumber) : null;
+                                
+                                // Format nomor Indonesia: Ubah 08 menjadi 628
+                                if(str_starts_with($cleanWaNumber, '08')) {
+                                    $cleanWaNumber = '62' . substr($cleanWaNumber, 1);
+                                }
+                            @endphp
+
+                            @if($cleanWaNumber)
+                            <a href="https://wa.me/{{ $cleanWaNumber }}" target="_blank" class="px-5 py-2.5 bg-[#25D366] hover:bg-[#128C7E] text-white text-[10px] uppercase tracking-widest font-black rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center group">
+                                <i class="fab fa-whatsapp text-lg mr-2 group-hover:scale-110 transition-transform"></i> Chat Client
+                            </a>
+                            @endif
+                        </div>
+                        <div class="p-8">
+                            <div class="prose prose-sm dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
+                                {!! nl2br(e($order->notes)) !!}
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    {{-- ========================================================= --}}
+
+
                     {{-- Payment History & Verification --}}
                     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl overflow-hidden shadow-sm rounded-[2rem] border border-slate-200 dark:border-slate-700">
                         <div class="p-8 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/30">
@@ -269,42 +345,6 @@
                         </div>
                     </div>
 
-                    {{-- Client Info & Delivery Plan Row --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-                            <h4 class="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6 flex items-center">
-                                <i class="fas fa-id-card mr-3 text-indigo-500"></i> Client Info
-                            </h4>
-                            <div class="space-y-5">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Client Name</p>
-                                    <p class="font-bold text-slate-900 dark:text-white text-lg">{{ $order->user->name }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
-                                    <p class="font-medium text-slate-600 dark:text-slate-300">{{ $order->user->email }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-[2rem] p-8 shadow-sm border border-slate-200 dark:border-slate-700">
-                            <h4 class="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6 flex items-center">
-                                <i class="fas fa-shipping-fast mr-3 text-indigo-500"></i> Delivery Plan
-                            </h4>
-                            <div class="space-y-5">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Delivery Type</p>
-                                    <p class="font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest text-sm">{{ $order->delivery_option ?? 'Standard' }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Final Deadline</p>
-                                    <p class="font-bold text-slate-900 dark:text-white text-lg">
-                                        {{ $order->due_date ? \Carbon\Carbon::parse($order->due_date)->format('d F Y') : 'Waiting Payment' }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {{-- KOLOM KANAN: Management Panels --}}
