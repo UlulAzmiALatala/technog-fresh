@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        {{-- THE DUAL-ENGINE ADVANTAGE --}}
+        {{-- THE DUAL-ENGINE ADVANTAGE (IKON SVG MURNI) --}}
         <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
                 <h2 class="fade-in-item text-sm font-bold tracking-widest text-indigo-600 uppercase">Core Competency</h2>
@@ -79,15 +79,21 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
                 <div class="fade-in-item bg-slate-50 rounded-[2rem] p-10 border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                    <div class="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center mb-8 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-code-branch text-2xl text-white"></i>
+                    <div class="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center mb-8 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform text-white">
+                        {{-- SVG IT Engineering --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                        </svg>
                     </div>
                     <h4 class="text-2xl font-black text-slate-900 mb-4">Enterprise IT Engineering</h4>
                     <p class="text-slate-600 leading-relaxed font-medium">Dikepalai oleh arsitek IT spesialis, kami merancang infrastruktur monolith maupun decoupled menggunakan ekosistem teruji seperti Laravel dan React. Fokus pada keamanan, stabilitas (*stable pattern*), dan kecepatan respon sistem.</p>
                 </div>
                 <div class="fade-in-item bg-slate-50 rounded-[2rem] p-10 border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group" style="transition-delay: 100ms;">
-                    <div class="w-14 h-14 bg-emerald-600 rounded-xl flex items-center justify-center mb-8 shadow-lg shadow-emerald-600/30 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-chart-line text-2xl text-white"></i>
+                    <div class="w-14 h-14 bg-emerald-600 rounded-xl flex items-center justify-center mb-8 shadow-lg shadow-emerald-600/30 group-hover:scale-110 transition-transform text-white">
+                        {{-- SVG Statistical Data --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
                     </div>
                     <h4 class="text-2xl font-black text-slate-900 mb-4">Statistical & Data Science</h4>
                     <p class="text-slate-600 leading-relaxed font-medium">Dikendalikan oleh statistisi profesional, kami tidak sekadar mengelola database. Kami mengekstraksi raw data menjadi model prediktif dan laporan wawasan presisi yang menavigasi strategi bisnis Anda.</p>
@@ -150,21 +156,22 @@
                             $ovDesc = 'Solusi eksklusif yang menggabungkan antarmuka aplikasi berkinerja tinggi dengan mesin analitik data real-time di latar belakang.';
                         }
 
+                        // Menggunakan path SVG MURNI untuk Pillars
                         $pillars = [];
                         if($catName === 'IT SOLUTION') {
                             $pillars = [
-                                ['title' => 'Stable Pattern Architecture', 'desc' => 'Kami menggunakan arsitektur Laravel monolith modern yang sangat efisien, mengkombinasikan kecepatan rendering Blade dengan reaktivitas state Alpine.js.', 'img' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-server', 'color' => 'indigo'],
-                                ['title' => 'Secure & Scalable Framework', 'desc' => 'Perlindungan data aset B2B adalah prioritas. Arsitektur backend dirancang berlapis untuk menangkal ancaman sekaligus siap diekspansi secara horizontal.', 'img' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-shield-halved', 'color' => 'slate']
+                                ['title' => 'Stable Pattern Architecture', 'desc' => 'Kami menggunakan arsitektur Laravel monolith modern yang sangat efisien, mengkombinasikan kecepatan rendering Blade dengan reaktivitas state Alpine.js.', 'img' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M21.75 17.25v-.228a4.5 4.5 0 0 0-.12-1.03l-2.268-9.64a3.375 3.375 0 0 0-3.285-2.602H7.923a3.375 3.375 0 0 0-3.285 2.602l-2.268 9.64a4.5 4.5 0 0 0-.12 1.03v.228m19.5 0a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3m19.5 0a3 3 0 0 0-3-3H5.25a3 3 0 0 0-3 3m16.5 0h.008v.008h-.008v-.008Zm-3 0h.008v.008h-.008v-.008Z" />', 'color' => 'indigo'],
+                                ['title' => 'Secure & Scalable Framework', 'desc' => 'Perlindungan data aset B2B adalah prioritas. Arsitektur backend dirancang berlapis untuk menangkal ancaman sekaligus siap diekspansi secara horizontal.', 'img' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />', 'color' => 'slate']
                             ];
                         } elseif($catName === 'STATISTICAL SOLUTION') {
                             $pillars = [
-                                ['title' => 'Data-Driven Corporate Strategy', 'desc' => 'Singkirkan keputusan spekulatif. Setiap pergerakan korporat didasarkan pada visualisasi matriks risiko, uji hipotesis, dan data validasi ril.', 'img' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-chart-pie', 'color' => 'emerald'],
-                                ['title' => 'Complex Metrical Modeling', 'desc' => 'Tim kami menangani pembersihan data, regresi logistik, hingga analisis deret waktu untuk efisiensi rantai pasok dan pemetaan pasar.', 'img' => 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-calculator', 'color' => 'teal']
+                                ['title' => 'Data-Driven Corporate Strategy', 'desc' => 'Singkirkan keputusan spekulatif. Setiap pergerakan korporat didasarkan pada visualisasi matriks risiko, uji hipotesis, dan data validasi ril.', 'img' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />', 'color' => 'emerald'],
+                                ['title' => 'Complex Metrical Modeling', 'desc' => 'Tim kami menangani pembersihan data, regresi logistik, hingga analisis deret waktu untuk efisiensi rantai pasok dan pemetaan pasar.', 'img' => 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />', 'color' => 'teal']
                             ];
                         } else {
                             $pillars = [
-                                ['title' => 'Seamless Hybrid Integration', 'desc' => 'Kami mengintegrasikan model analitik langsung ke dalam web dashboard (WMS, ERP) sehingga eksekutif dapat memantau kalkulasi secara real-time.', 'img' => 'https://images.unsplash.com/photo-1587440871875-191322ee64b0?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-network-wired', 'color' => 'cyan'],
-                                ['title' => 'Automated Pipeline Efficiency', 'desc' => 'Alur kerja otomasi yang mempercepat ritme operasional perusahaan B2B tanpa mengorbankan ketelitian data masuk.', 'img' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80', 'icon' => 'fa-gears', 'color' => 'sky']
+                                ['title' => 'Seamless Hybrid Integration', 'desc' => 'Kami mengintegrasikan model analitik langsung ke dalam web dashboard (WMS, ERP) sehingga eksekutif dapat memantau kalkulasi secara real-time.', 'img' => 'https://images.unsplash.com/photo-1587440871875-191322ee64b0?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />', 'color' => 'cyan'],
+                                ['title' => 'Automated Pipeline Efficiency', 'desc' => 'Alur kerja otomasi yang mempercepat ritme operasional perusahaan B2B tanpa mengorbankan ketelitian data masuk.', 'img' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46" />', 'color' => 'sky']
                             ];
                         }
                     @endphp
@@ -209,7 +216,9 @@
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
                                     <div class="fade-in-item {{ $pIndex % 2 === 0 ? 'lg:order-1' : 'lg:order-2' }}">
                                         <div class="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-{{ $pillar['color'] }}-50 border border-{{ $pillar['color'] }}-100 text-{{ $pillar['color'] }}-600 mb-6 shadow-sm">
-                                            <i class="fa-solid {{ $pillar['icon'] }} text-xl"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                                                {!! $pillar['icon'] !!}
+                                            </svg>
                                         </div>
                                         <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{{ $pillar['title'] }}</h3>
                                         <p class="mt-5 text-lg text-slate-600 leading-relaxed font-medium">{{ $pillar['desc'] }}</p>
@@ -229,54 +238,85 @@
             </div>
         </div>
 
-        {{-- ENTERPRISE TECH STACK --}}
-        <div class="mt-40 bg-slate-950 py-24 border-y border-slate-800 relative overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                <h2 class="text-sm font-bold tracking-widest text-indigo-400 uppercase tracking-[0.2em] mb-12">Our Technology Stack</h2>
-                <div class="flex flex-wrap justify-center gap-6 sm:gap-8 max-w-4xl mx-auto">
-                    @php
-                        $stacks = [
-                            ['name' => 'Laravel', 'icon' => 'fa-laravel', 'color' => 'text-[#FF2D20]'],
-                            ['name' => 'React.js', 'icon' => 'fa-react', 'color' => 'text-[#61DAFB]'],
-                            ['name' => 'Node.js', 'icon' => 'fa-node-js', 'color' => 'text-[#339933]'],
-                            ['name' => 'Vue / Alpine', 'icon' => 'fa-vuejs', 'color' => 'text-[#4FC08D]'],
-                            ['name' => 'MySQL', 'icon' => 'fa-database', 'color' => 'text-[#4479A1]'],
-                            ['name' => 'Tailwind', 'icon' => 'fa-css3-alt', 'color' => 'text-[#06B6D4]'],
-                            ['name' => 'Python', 'icon' => 'fa-python', 'color' => 'text-[#3776AB]'],
-                        ];
-                    @endphp
-                    @foreach($stacks as $stack)
-                        <div class="flex flex-col items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-5 hover:bg-white/10 transition-colors cursor-default min-w-[120px]">
-                            <i class="fa-brands {{ $stack['icon'] }} {{ $stack['color'] }} text-4xl drop-shadow-lg"></i>
-                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">{{ $stack['name'] }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
-        {{-- SECTION 1: MEASURABLE IMPACT --}}
+        {{-- SECTION 1: MEASURABLE IMPACT (DENGAN ANIMASI ANGKA) --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-32">
-            <div x-data x-intersect:enter.once="$el.classList.add('is-in-view')" class="bg-indigo-600 rounded-[2.5rem] p-10 sm:p-16 relative overflow-hidden shadow-2xl shadow-indigo-600/20">
+            <div x-data="{ shown: false }" x-intersect.once="shown = true" class="bg-indigo-600 rounded-[2.5rem] p-10 sm:p-16 relative overflow-hidden shadow-2xl shadow-indigo-600/20">
                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                 <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-indigo-400/40">
-                    <div class="fade-in-item pt-8 md:pt-0">
-                        <div class="text-5xl sm:text-6xl font-black text-white mb-2">99.9%</div>
+                    
+                    {{-- Animasi 99.9% --}}
+                    <div class="fade-in-item pt-8 md:pt-0" :class="shown ? 'in-view' : ''">
+                        <div class="text-5xl sm:text-6xl font-black text-white mb-2 flex items-center justify-center"
+                             x-data="{ current: 0, target: 99.9, time: 2000 }"
+                             x-init="$watch('shown', val => { 
+                                if(val) { 
+                                    let start = null;
+                                    const step = (timestamp) => {
+                                        if (!start) start = timestamp;
+                                        const progress = Math.min((timestamp - start) / time, 1);
+                                        const easeOut = 1 - Math.pow(1 - progress, 4);
+                                        current = (easeOut * target).toFixed(1);
+                                        if (progress < 1) window.requestAnimationFrame(step);
+                                        else current = target.toFixed(1);
+                                    };
+                                    window.requestAnimationFrame(step);
+                                }
+                             })">
+                            <span x-text="current">0</span><span>%</span>
+                        </div>
                         <div class="text-indigo-200 font-bold tracking-[0.2em] uppercase text-xs">System Uptime</div>
                     </div>
-                    <div class="fade-in-item pt-8 md:pt-0">
-                        <div class="text-5xl sm:text-6xl font-black text-white mb-2">100%</div>
+
+                    {{-- Animasi 100% --}}
+                    <div class="fade-in-item pt-8 md:pt-0" :class="shown ? 'in-view' : ''">
+                        <div class="text-5xl sm:text-6xl font-black text-white mb-2 flex items-center justify-center"
+                             x-data="{ current: 0, target: 100, time: 2000 }"
+                             x-init="$watch('shown', val => { 
+                                if(val) { 
+                                    let start = null;
+                                    const step = (timestamp) => {
+                                        if (!start) start = timestamp;
+                                        const progress = Math.min((timestamp - start) / time, 1);
+                                        const easeOut = 1 - Math.pow(1 - progress, 4);
+                                        current = Math.floor(easeOut * target);
+                                        if (progress < 1) window.requestAnimationFrame(step);
+                                        else current = target;
+                                    };
+                                    window.requestAnimationFrame(step);
+                                }
+                             })">
+                            <span x-text="current">0</span><span>%</span>
+                        </div>
                         <div class="text-indigo-200 font-bold tracking-[0.2em] uppercase text-xs">Data Confidentiality</div>
                     </div>
-                    <div class="fade-in-item pt-8 md:pt-0">
-                        <div class="text-5xl sm:text-6xl font-black text-white mb-2">24/7</div>
+
+                    {{-- Animasi 24/7 --}}
+                    <div class="fade-in-item pt-8 md:pt-0" :class="shown ? 'in-view' : ''">
+                        <div class="text-5xl sm:text-6xl font-black text-white mb-2 flex items-center justify-center"
+                             x-data="{ current: 0, target: 24, time: 2000 }"
+                             x-init="$watch('shown', val => { 
+                                if(val) { 
+                                    let start = null;
+                                    const step = (timestamp) => {
+                                        if (!start) start = timestamp;
+                                        const progress = Math.min((timestamp - start) / time, 1);
+                                        const easeOut = 1 - Math.pow(1 - progress, 4);
+                                        current = Math.floor(easeOut * target);
+                                        if (progress < 1) window.requestAnimationFrame(step);
+                                        else current = target;
+                                    };
+                                    window.requestAnimationFrame(step);
+                                }
+                             })">
+                            <span x-text="current">0</span><span>/7</span>
+                        </div>
                         <div class="text-indigo-200 font-bold tracking-[0.2em] uppercase text-xs">Priority SLA Support</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- SECTION 2: THE DEVELOPMENT LIFECYCLE --}}
+        {{-- SECTION 2: THE DEVELOPMENT LIFECYCLE (SVG ICONS) --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-32">
             <div class="text-center mb-16" x-data x-intersect:enter.once="$el.classList.add('is-in-view')">
                 <h2 class="fade-in-item text-sm font-bold tracking-widest text-indigo-600 uppercase tracking-[0.2em]">Our Methodology</h2>
@@ -288,16 +328,18 @@
                 <div class="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
                 @php
                     $lifecycles = [
-                        ['step' => '01', 'title' => 'Consultation', 'desc' => 'Pemetaan objektif IT & metrik statistik.', 'icon' => 'fa-comments'],
-                        ['step' => '02', 'title' => 'Architecture', 'desc' => 'Perancangan UI/UX & relasi database.', 'icon' => 'fa-sitemap'],
-                        ['step' => '03', 'title' => 'Agile Build', 'desc' => 'Pengembangan iteratif dengan UAT ketat.', 'icon' => 'fa-laptop-code'],
-                        ['step' => '04', 'title' => 'Deployment', 'desc' => 'Peluncuran ke production & serah terima IP.', 'icon' => 'fa-server'],
+                        ['step' => '01', 'title' => 'Consultation', 'desc' => 'Pemetaan objektif IT & metrik statistik.', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />'],
+                        ['step' => '02', 'title' => 'Architecture', 'desc' => 'Perancangan UI/UX & relasi database.', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />'],
+                        ['step' => '03', 'title' => 'Agile Build', 'desc' => 'Pengembangan iteratif dengan UAT ketat.', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />'],
+                        ['step' => '04', 'title' => 'Deployment', 'desc' => 'Peluncuran ke production & serah terima IP.', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.45m.04-8.13a10.97 10.97 0 0 1 10.45 10.45M5.55 5.55l12.9 12.9M5.55 18.45l12.9-12.9" />'],
                     ];
                 @endphp
                 @foreach($lifecycles as $index => $cycle)
                     <div class="fade-in-item relative z-10 bg-white p-8 rounded-2xl shadow-lg border border-slate-100 text-center group">
                         <div class="w-14 h-14 mx-auto bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
-                            <i class="fa-solid {{ $cycle['icon'] }} text-xl text-slate-400 group-hover:text-white transition-colors"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-slate-400 group-hover:text-white transition-colors">
+                                {!! $cycle['icon'] !!}
+                            </svg>
                         </div>
                         <div class="text-[10px] font-black text-indigo-500 mb-2">PHASE {{ $cycle['step'] }}</div>
                         <h4 class="text-lg font-bold text-slate-800 mb-2">{{ $cycle['title'] }}</h4>
@@ -438,7 +480,7 @@
                   x-transition.opacity.duration.300ms
                   class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
 
-             {{-- Modal Container --}}
+             {{-- Modal Container (Diperbesar) --}}
              <div x-show="modalState > 0"
                   x-transition:enter="ease-out duration-400"
                   x-transition:enter-start="opacity-0 translate-y-8 scale-95"
@@ -543,10 +585,9 @@
                                               $mBtnArrow = 'group-hover:bg-cyan-50 group-hover:text-cyan-600 group-hover:border-cyan-100';
                                           }
 
-                                          // 1. LOGIKA PINTAR UNTUK FEATURES (OUTPUTS)
+                                          // LOGIKA PINTAR UNTUK FEATURES (JSON ATAU TEKS ENTER)
                                           $rawFeatures = $sService->features;
                                           $featuresArray = [];
-                                          
                                           if (is_array($rawFeatures)) {
                                               $featuresArray = $rawFeatures;
                                           } else {
@@ -558,24 +599,31 @@
                                               }
                                           }
 
-                                          // 2. LOGIKA UNTUK WORKFLOW
+                                          // LOGIKA UNTUK WORKFLOW (ARRAY ATAU TEKS ENTER)
                                           $rawWorkflow = $sService->workflow;
-                                          $workflowArray = $rawWorkflow 
-                                              ? explode("\n", $rawWorkflow) 
-                                              : [
-                                                  'Requirement & Metrical Analysis',
-                                                  'Architecture & Model Design',
-                                                  'Agile Development & QA',
-                                                  'Deployment & Handover'
-                                                ];
+                                          $workflowArray = [];
+                                          if (is_array($rawWorkflow)) {
+                                              $workflowArray = $rawWorkflow;
+                                          } else {
+                                              $decodedWf = json_decode($rawWorkflow, true);
+                                              if(is_array($decodedWf)) {
+                                                  $workflowArray = $decodedWf;
+                                              } else {
+                                                  $workflowArray = $rawWorkflow ? explode("\n", $rawWorkflow) : [
+                                                      'Requirement & Metrical Analysis',
+                                                      'Architecture & Model Design',
+                                                      'Agile Development & QA',
+                                                      'Deployment & Handover'
+                                                  ];
+                                              }
+                                          }
 
-                                          // 3. SUSUN PAYLOAD DATA
+                                          // SUSUN PAYLOAD DATA
                                           $mailData = [
                                               'name' => $sService->name,
                                               'type' => $sService->project_type ?? 'Enterprise Solution',
                                               'overview' => trim($sService->description ?? '') ?: 'Deskripsi arsitektur level atas akan dipaparkan lebih lanjut.',
                                               
-                                              // Filter spasi dan baris kosong
                                               'outputs'  => array_values(array_filter(array_map('trim', $featuresArray), 'strlen')),
                                               'workflow' => array_values(array_filter(array_map('trim', $workflowArray), 'strlen')),
                                               
@@ -605,26 +653,33 @@
                           @endforeach
                       </div>
 
-                      {{-- STEP 3: DETAIL LAYANAN (B2B STRUCTURAL FORMAT - REVISED 2 ROWS) --}}
+                      {{-- STEP 3: DETAIL LAYANAN (B2B STRUCTURAL FORMAT - 2 ROWS) --}}
                       <div x-show="modalState === 3" 
                            x-transition:enter="transition ease-out duration-300 delay-100" 
                            x-transition:enter-start="opacity-0 translate-x-4" 
                            x-transition:enter-end="opacity-100 translate-x-0" 
                            class="space-y-8">
                           
-                          {{-- ROW 1: Overview, Use Case & Workflow --}}
+                          {{-- ROW 1: Overview, Our Strengths & How it works --}}
                           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                               
-                              {{-- KOLOM KIRI: Overview & Use Case (Lebar 7/12) --}}
+                              {{-- KOLOM KIRI: Overview & Our Strengths (Lebar 7/12) --}}
                               <div class="lg:col-span-7 space-y-6 flex flex-col">
                                   {{-- 1. Penjelasan Project --}}
                                   <div class="bg-white p-6 sm:p-7 rounded-[1.5rem] border border-slate-200 shadow-sm relative overflow-hidden group hover:border-indigo-200 transition-colors flex-grow">
                                       <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform"></div>
-                                      
+                                      <div class="flex items-center gap-3 mb-4">
+                                          <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                              </svg>
+                                          </div>
+                                          <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Project Overview</h4>
+                                      </div>
                                       <p class="text-slate-600 text-sm leading-relaxed font-medium text-justify" x-text="selectedService.overview"></p>
                                   </div>
 
-                                  {{-- 2. Jika Ingin Seperti Apa (Ideal Use Case) --}}
+                                  {{-- 2. Our Strengths --}}
                                   <div class="bg-slate-900 p-6 sm:p-7 rounded-[1.5rem] shadow-lg relative overflow-hidden group">
                                       <div class="absolute -right-4 -bottom-4 opacity-10">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
@@ -637,18 +692,18 @@
                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
                                               </span>
-                                              <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-widest">When to use this service?</h4>
+                                              <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Our Strengths</h4>
                                           </div>
                                           <p class="text-slate-300 text-sm leading-relaxed font-medium" x-text="selectedService.use_case"></p>
                                       </div>
                                   </div>
                               </div>
 
-                              {{-- KOLOM KANAN: Workflow Pelaksanaan (Lebar 5/12) --}}
+                              {{-- KOLOM KANAN: How it works --}}
                               <div class="lg:col-span-5">
                                   <div class="bg-slate-50 p-6 sm:p-7 rounded-[1.5rem] border border-slate-200 h-full">
                                       <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                          <i class="fa-solid fa-timeline text-slate-400"></i> Execution Workflow
+                                          <i class="fa-solid fa-timeline text-slate-400"></i> How It Works
                                       </h4>
                                       {{-- UI Stepper Timeline --}}
                                       <div class="space-y-0 relative">
@@ -668,13 +723,13 @@
                               </div>
                           </div>
 
-                          {{-- ROW 2: Final Deliverables (Full Width - Grid 3 Kolom) --}}
+                          {{-- ROW 2: Your Advantages (Full Width - Grid 3 Kolom) --}}
                           <div class="pt-2">
                               <div class="flex items-center gap-3 mb-5 ml-1">
                                   <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-                                      <i class="fa-solid fa-box-open text-sm"></i>
+                                      <i class="fa-solid fa-award text-sm"></i>
                                   </div>
-                                  <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Final Deliverables</h4>
+                                  <h4 class="text-sm font-black text-slate-800 uppercase tracking-widest">Your Advantages</h4>
                               </div>
                               
                               <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -691,7 +746,7 @@
                                       </template>
                                   </template>
                                   <template x-if="!selectedService.outputs || selectedService.outputs.length === 0">
-                                      <li class="col-span-full italic text-slate-400 text-xs p-5 bg-white rounded-xl border border-slate-200 text-center">Spesifikasi output sedang dikonfigurasi.</li>
+                                      <li class="col-span-full italic text-slate-400 text-xs p-5 bg-white rounded-xl border border-slate-200 text-center">Spesifikasi keunggulan sedang dikonfigurasi.</li>
                                   </template>
                               </ul>
                           </div>
@@ -703,9 +758,9 @@
                       <button @click.stop="$dispatch('open-meeting-modal'); closeModal()" 
                               class="w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm uppercase tracking-widest transition-colors shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 group focus:outline-none">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
-                          Request Consultation 
+                          Let's Talk 
                       </button>
                   </div>
              </div>

@@ -65,7 +65,7 @@
         </section>
     </x-slot>
 
-    {{-- 2. FEATURED SERVICES --}}
+    {{-- 2. FEATURED SERVICES (MODERN B2B ENTERPRISE CARD) --}}
     <section id="featured-services" class="bg-[#fafcff] py-32 overflow-hidden relative" x-data="{ animate: false }" x-intersect.once="animate = true">
         <div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-80 pointer-events-none"></div>
         
@@ -83,12 +83,12 @@
             
             <div :class="animate ? 'opacity-100 translate-y-0 delay-300' : 'opacity-0 translate-y-8'" class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-700 ease-out">
                 @forelse ($services as $index => $service)
-                    <a href="{{ route('public.services.show', $service->id) }}" 
+                    <a href="{{ route('public.services') }}" 
                        class="group relative block bg-slate-900 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)] hover:shadow-[0_30px_60px_rgba(79,70,229,0.2)] overflow-hidden h-[28rem] transition-all duration-500 hover:-translate-y-3 border border-slate-200/50"
                        style="transition-delay: {{ $index * 150 }}ms;">
                         
                         <img alt="{{ $service->name }}" src="{{ $service->image ? asset('storage/' . $service->image) : 'https://placehold.co/600x800/1e293b/FFFFFF?text=TechnoG' }}" 
-                             class="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:opacity-40" />
+                             class="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:opacity-30" />
                         
                         <div class="absolute top-6 left-6 z-20 flex flex-col gap-2">
                             <span class="bg-indigo-600/90 text-white text-[10px] font-black px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm uppercase tracking-widest border border-indigo-500/50 w-max shadow-[0_4px_10px_rgba(0,0,0,0.3)]">
@@ -103,15 +103,18 @@
                             <i class="fa-solid fa-arrow-right -rotate-45 text-lg"></i>
                         </div>
 
-                        <div class="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent">
+                        <div class="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent">
                             <div class="relative z-20 transform transition-transform duration-500 group-hover:-translate-y-2">
                                 <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight mb-2 drop-shadow-lg [text-shadow:_0_2px_15px_rgb(0_0_0_/_100%)]">
                                     {{ $service->name }}
                                 </h3>
-                                <div class="flex items-center gap-2 mt-4 border-t border-white/20 pt-4">
-                                    <i class="fa-solid fa-tag text-indigo-400"></i>
-                                    <span class="text-indigo-400 font-bold text-sm">$</span>
-                                    <span class="text-2xl font-black text-white tracking-tight">{{ number_format($service->price, 0, '.', ',') }}</span>
+                                
+                                {{-- REVISI: Harga dihapus, diganti cuplikan deskripsi & Link CTA B2B --}}
+                                <p class="text-sm text-slate-300 line-clamp-2 mt-3 font-medium leading-relaxed">
+                                    {{ Str::limit(strip_tags($service->description ?? 'Solusi enterprise strategis untuk menunjang operasional perusahaan Anda.'), 100) }}
+                                </p>
+                                <div class="flex items-center gap-2 mt-6 text-cyan-400 text-xs font-black uppercase tracking-widest group-hover:text-cyan-300 transition-colors">
+                                    View Enterprise Specs <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
                                 </div>
                             </div>
                         </div>
@@ -270,6 +273,8 @@
         </script>
         <script>
             document.addEventListener('alpine:initializing', () => {
+                
+                // Animasi Text Hero
                 Alpine.data('textScramble', (originalText) => ({
                     originalText: originalText, displayText: '', alphabet: '!<>-_\\/[]{}—=+*^?#________', intervalId: null,
                     init() {
@@ -294,22 +299,16 @@
                         }, 40);
                     }
                 }));
+
             });
         </script>
     </x-slot>
 
-    {{-- [WAJIB] CSS untuk Efek Fade In --}}
+    {{-- [WAJIB] CSS --}}
     <style>
-        .fade-in-item {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .is-in-view .fade-in-item,
-        .fade-in-item.in-view {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        [x-cloak] { display: none !important; }
+        .fade-in-item { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .is-in-view .fade-in-item, .fade-in-item.in-view { opacity: 1; transform: translateY(0); }
         .is-in-view .fade-in-item:nth-child(2) { transition-delay: 0.15s; }
         .is-in-view .fade-in-item:nth-child(3) { transition-delay: 0.3s; }
     </style>
