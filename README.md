@@ -16,16 +16,14 @@
   </p>
 </div>
 
-<!-- 🥇 GLOWING GOLD DIVIDER -->
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/yellow.png" width="100%">
+---
 
 <div align="center">
   <h3><i>"Menerjemahkan kompleksitas bisnis menjadi mahakarya digital yang presisi, elegan, dan berskala tinggi."</i></h3>
   <p><b>TechnoG Solutions</b> adalah entitas perusahaan rintisan <i>(Tech Agency)</i> yang berdedikasi untuk merekayasa ekosistem digital terintegrasi. Repositori ini menyimpan inti arsitektur dari <b>Portal Resmi Korporat TechnoG</b>, dirancang untuk merepresentasikan visi perusahaan, layanan strategis, dan identitas merek di ranah global.</p>
 </div>
 
-<!-- 🥇 GLOWING GOLD DIVIDER -->
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/yellow.png" width="100%">
+---
 
 ## 🌐 The TechnoG Ecosystem Matrix
 
@@ -60,8 +58,7 @@ Sebagai pusat gravitasi bisnis, portal ini terhubung dengan berbagai lini produk
   </tr>
 </table>
 
-<!-- 🥇 GLOWING GOLD DIVIDER -->
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/yellow.png" width="100%">
+---
 
 ## 🏛️ Arsitektur Teknologi (Engineering Philosophy)
 
@@ -79,8 +76,7 @@ Kami membangun infrastruktur digital dengan memprioritaskan performa <i>SEO</i>,
 *   **Utility-First Styling:** Desain antarmuka eksklusif, adaptif, dan berpiksel sempurna (*pixel-perfect*) yang dieksekusi secara murni menggunakan **Tailwind CSS**.
 *   **Modular Scalability:** Penulisan *source code* berskala *enterprise* untuk memastikan penambahan fitur dan integrasi produk baru dapat dilakukan dengan mulus.
 
-<!-- 🥇 GLOWING GOLD DIVIDER -->
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/yellow.png" width="100%">
+---
 
 ## 👥 Tim Eksekutif & Pendiri (Board of Founders)
 
@@ -105,8 +101,7 @@ Keunggulan ekosistem TechnoG Solutions lahir dari sinergi kepemimpinan dan keahl
   </tr>
 </table>
 
-<!-- 🥇 GLOWING GOLD DIVIDER -->
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/yellow.png" width="100%">
+---
 
 ## 💻 Cuplikan Mahakarya (Corporate Preview)
 
